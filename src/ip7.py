@@ -1,7 +1,8 @@
-import db
 import MySQLdb
-from extractor import jobtitle
-from db import Database
+
+from src import db
+from src.db import Database
+from src.extractor import jobtitle
 
 conn = db.connectTo(Database.FETCHFLOW)
 cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
