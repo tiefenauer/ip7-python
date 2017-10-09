@@ -10,9 +10,7 @@ def extract_relevant_tags(record):
     # writeToFile(soup)
     extracted_tags = []
     extract_tags(soup, extracted_tags)
-    stripped_tags = strip_tags(extracted_tags)
-    all_tags = move_up(stripped_tags)
-    return all_tags
+    return extracted_tags
 
 
 def print_tags(tags):
@@ -50,6 +48,9 @@ def is_relevant(tag, regexes=RELEVANT_TAGS):
 
 
 def has_children(tag):
+    if hasattr(tag, 'findAll'):
+        relevant_children = tag.findAll(RELEVANT_TAGS)
+        return len(relevant_children) > 0
     return hasattr(tag, 'children') \
            and len(list(tag.children)) > 0
 
