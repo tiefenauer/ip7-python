@@ -15,16 +15,6 @@ fetchflow = {
 
 _conn_fetchflow = None
 
-
-# Simple routine to run a query on a database and print the results:
-def executeQuery(query, conn):
-    cur = conn.cursor()
-
-    cur.execute(query)
-
-    for firstname, lastname in cur.fetchall():
-        print(firstname, lastname)
-
 def connectTo(database):
     if database == Database.FETCHFLOW:
         return createConnection(_conn_fetchflow, fetchflow)
