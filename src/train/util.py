@@ -4,7 +4,7 @@ import re
 
 def find_str1_in_str2(str1, str2):
     """finds indices of occurences of str1 in str2"""
-    return [match.start() for match in re.finditer(re.escape(str1), str2)]
+    return (match.start() for match in re.finditer(re.escape(str1), str2))
 
 
 def create_contexts(text, word):
