@@ -19,6 +19,3 @@ def remove_html_clutter(soup):
 def remove_stop_words(text):
     return ' '.join([word for word in text.split(' ') if word not in stopwords_de])
 
-
-def remove_stopwords(tags):
-    return tags

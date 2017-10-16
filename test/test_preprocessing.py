@@ -39,4 +39,4 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_remove_stopwords_should_remove_stopwords(self):
         result = preprocessing.remove_stop_words("Man ist nur dann ein Superheld, wenn man sich selbst für super hält!")
-        assert_that(True, is_(True))
+        assert_that(result, is_('Man Superheld, super hält!'))
