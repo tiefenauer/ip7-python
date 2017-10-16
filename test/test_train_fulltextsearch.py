@@ -59,10 +59,8 @@ class TestFullTextSearch(unittest.TestCase):
         assert_that(len(result), is_(1))
 
     def test_create_contexts(self):
-        # arrange
-        indices = {57, 137, 353, 433}
-        # act
-        result = testee.create_contexts(indices, lorem_ipsum, 'sed')
+        # arrange/act
+        result = testee.create_contexts(lorem_ipsum, 'sed')
         # assert
         assert_that(result, contains_inanyorder(
             '...ng elitr, sed diam nonu...',
@@ -70,3 +68,11 @@ class TestFullTextSearch(unittest.TestCase):
             '...ng elitr, sed diam nonu...',
             '...yam erat, sed diam volu...'
         ))
+
+    def test_create_contexts_with_whitespaces(self):
+        # arrange
+        text = "bli bla blu blö                   keyword                                 lorem ipsum dolor"
+        # act
+        result = testee.create_contexts(text, 'keyword')
+        # assert
+        assert_that(result, contains_inanyorder('...a blu blö keyword lorem ips...'))
