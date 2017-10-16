@@ -3,6 +3,7 @@ import unittest
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
+import src.train.util
 from src import train_fulltextsearch as testee
 
 lorem_ipsum = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut ' \
@@ -47,7 +48,7 @@ class TestFullTextSearch(unittest.TestCase):
 
     def test_find_string_occurences(self):
         # arrange/act
-        result = testee.find_str1_in_str2('sed', lorem_ipsum)
+        result = src.train.util.find_str1_in_str2('sed', lorem_ipsum)
         # assert
         assert_that(result, contains_inanyorder(57, 137, 353, 433))
 
@@ -55,12 +56,12 @@ class TestFullTextSearch(unittest.TestCase):
         # arrange
         str1_with_unescaped_chars = 'C++ Programmierer'
         str2 = 'blablablabla C++ Programmierer blabblablabl'
-        result = testee.find_str1_in_str2(str1_with_unescaped_chars, str2)
+        result = src.train.util.find_str1_in_str2(str1_with_unescaped_chars, str2)
         assert_that(len(result), is_(1))
 
     def test_create_contexts(self):
         # arrange/act
-        result = testee.create_contexts(lorem_ipsum, 'sed')
+        result = src.train.util.create_contexts(lorem_ipsum, 'sed')
         # assert
         assert_that(result, contains_inanyorder(
             '...ng elitr, sed diam nonu...',
@@ -73,6 +74,6 @@ class TestFullTextSearch(unittest.TestCase):
         # arrange
         text = "bli bla blu blö                   keyword                                 lorem ipsum dolor"
         # act
-        result = testee.create_contexts(text, 'keyword')
+        result = src.train.util.create_contexts(text, 'keyword')
         # assert
         assert_that(result, contains_inanyorder('...a blu blö keyword lorem ips...'))

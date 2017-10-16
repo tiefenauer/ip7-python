@@ -1,11 +1,10 @@
-import collections
 import logging
-import re
 import sys
 
 import pandas
 
 from src.job_importer import process_stream
+from src.train.util import create_contexts
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -16,37 +15,12 @@ _job_names = _job_names['job_name']
 
 def match_with_whitelist(row, job_names=_job_names):
     dom_str = str(row['dom'])
-    for job_name in job_names:
-        if job_name in dom_str:
-            yield {
-                'job_id': row['id'],
-                'job_name': job_name,
-                'job_context': create_contexts(dom_str, job_name)
-            }
-
-
-def find_str1_in_str2(str1, str2):
-    """finds indices of occurences of str1 in str2"""
-    return [match.start() for match in re.finditer(re.escape(str1), str2)]
-
-
-def create_contexts(text, word):
-    contexts = list()
-    str1 = re.sub('\s\s+', ' ', word)
-    str2 = re.sub('\s\s+', ' ', text)
-    indices = find_str1_in_str2(str1, str2)
-    for ix in indices:
-        contexts.append('...' + str2[ix - 10:ix + len(word) + 10] + '...')
-    return contexts
-
-
-def flatten(it):
-    for x in it:
-        if (isinstance(x, collections.Iterable) and
-                not isinstance(x, str)):
-            yield from flatten(x)
-        else:
-            yield x
+    for job_name in (j for j in job_names if j in dom_str):
+        yield {
+            'job_id': row['id'],
+            'job_name': job_name,
+            'job_context': create_contexts(dom_str, job_name)
+        }
 
 
 if __name__ == '__main__':
