@@ -10,19 +10,19 @@ RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol'}
 IRRELEVANT_TAGS = {'meta', 'link', 'style', 'script', 'noscript', 'iframe', 'form', 'input', 'img'}
 
 
-def extract_tags(tag, tags=[]):
-    if is_nested(tag):
+def extract_tags(soup, tags=[]):
+    if is_nested(soup):
         # nested tag
-        for el in (el for el in tag.children if el.string != '\n'):
+        for el in (el for el in soup.children if el.string != '\n'):
             extract_tags(el, tags)
         return
 
     # leaf tag
-    if is_relevant(tag) and tag not in tags:
-        tag = strip_content(tag)
-        tag = remove_all_attrs(tag)
-        if len(tag.getText(strip=True)) > 0:
-            tags.append(tag)
+    if is_relevant(soup) and soup not in tags:
+        soup = strip_content(soup)
+        soup = remove_all_attrs(soup)
+        if len(soup.getText(strip=True)) > 0:
+            tags.append(soup)
 
 
 def is_nested(el):

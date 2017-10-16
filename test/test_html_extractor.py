@@ -1,18 +1,9 @@
 import unittest
+
+from bs4 import BeautifulSoup, NavigableString
 from hamcrest import *
+
 from src import html_extractor
-from bs4 import BeautifulSoup, NavigableString, Tag
-
-
-def read_sample_file(filename):
-    with open('./resources/' + filename + '.html', 'r', encoding='utf-8') as file:
-        return BeautifulSoup(file.read(), 'html.parser')
-
-
-def write_extracted_tags(extracted_tags, filename):
-    with open('./resources/' + filename + '_extracted.html', 'w+', encoding='utf-8') as file:
-        for tag in extracted_tags:
-            file.write(str(tag) + '\n')
 
 
 def create_tag(markup):
@@ -21,16 +12,6 @@ def create_tag(markup):
 
 
 class TestHtmlParser(unittest.TestCase):
-    def test_extract_tags_with_real_html_sample_returns_correct_extracted_tags(self):
-        # arrange
-        soup = read_sample_file('sample_vacancy')
-        extracted_tags = []
-        # act
-        html_extractor.extract_tags(soup, extracted_tags)
-        # assert
-        expected_tags = [child for child in read_sample_file('sample_vacancy_extracted').children if type(child) is Tag]
-        assert_that(extracted_tags, equal_to(expected_tags))
-
     def test_is_relevant_with_relevant_tag_returns_true(self):
         # arrange
         tag_p = create_tag('<p></p>')
