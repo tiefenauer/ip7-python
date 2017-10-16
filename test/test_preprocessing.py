@@ -38,5 +38,26 @@ class TestPreprocessing(unittest.TestCase):
         assert_that(extracted_tags, equal_to(expected_tags))
 
     def test_remove_stopwords_should_remove_stopwords(self):
+        # arrange/act
         result = preprocessing.remove_stop_words("Man ist nur dann ein Superheld, wenn man sich selbst für super hält!")
+        # assert
         assert_that(result, is_('Man Superheld, super hält!'))
+
+    def test_stem_single_word_returns_stem(self):
+        # arrange/act
+        aufeinand = preprocessing.stem('aufeinander')
+        kategori = preprocessing.stem('kategorie')
+        # assert
+        assert_that(aufeinand, is_('aufeinand'))
+        assert_that(kategori, is_('kategori'))
+
+    def test_stem_multiple_words_returns_stems(self):
+        # arrange
+        sentence = preprocessing.stem('aufeinander kategorie')
+        words = preprocessing.stem(['aufeinander', 'kategorie'])
+        # act
+        sentence_stemmed = preprocessing.stem(sentence)
+        words_stemmed = preprocessing.stem(words)
+        # assert
+        assert_that(sentence_stemmed, is_('aufeinand kategori'))
+        assert_that(list(words_stemmed), is_(['aufeinand', 'kategori']))
