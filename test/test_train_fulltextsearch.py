@@ -33,6 +33,7 @@ class TestFullTextSearch(unittest.TestCase):
     def test_match_with_whitelist(self):
         # arrange
         row = {
+            'id': 123,
             'dom': 'Lorem Arzt ipsum dolor sit amet, Bauer consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.'
         }
         job_names = ['Arzt', 'Lehrer', 'Bauer']
@@ -46,9 +47,16 @@ class TestFullTextSearch(unittest.TestCase):
 
     def test_find_string_occurences(self):
         # arrange/act
-        result = testee.find_string_occurences('sed', lorem_ipsum)
+        result = testee.find_str1_in_str2('sed', lorem_ipsum)
         # assert
         assert_that(result, contains_inanyorder(57, 137, 353, 433))
+
+    def test_find_string_occurences_with_escape_characters(self):
+        # arrange
+        str1_with_unescaped_chars = 'C++ Programmierer'
+        str2 = 'blablablabla C++ Programmierer blabblablabl'
+        result = testee.find_str1_in_str2(str1_with_unescaped_chars, str2)
+        assert_that(len(result), is_(1))
 
     def test_create_contexts(self):
         # arrange

@@ -11,24 +11,32 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 _job_names = pandas.read_csv('../resource/tbfulljob_DE.csv', delimiter=';')
 _job_names.columns = ['job_name']
+_job_names = _job_names['job_name']
 
 
 def match_with_whitelist(row, job_names=_job_names):
     dom_str = str(row['dom'])
     for job_name in job_names:
-        indices = find_string_occurences(job_name, dom_str)
+        indices = find_str1_in_str2(job_name, dom_str)
 
         if indices:
-            logging.info('Found one!')
             yield {
+                'job_id': row['id'],
                 'job_name': job_name,
                 'job_context': create_contexts(indices, dom_str, job_name)
             }
 
 
-def find_string_occurences(str1, str2):
+def find_str1_in_str2(str1, str2):
     """finds indices of occurences of str1 in str2"""
-    return [match.start() for match in re.finditer(str1, str2)]
+    return [match.start() for match in re.finditer(re.escape(str1), str2)]
+
+
+def create_contexts(indices, text, word):
+    contexts = list()
+    for ix in indices:
+        contexts.append('...' + text[ix - 10:ix + len(word) + 10] + '...')
+    return contexts
 
 
 def flatten(it):
@@ -41,16 +49,11 @@ def flatten(it):
 
 
 if __name__ == '__main__':
-    result = process_stream(match_with_whitelist)
-    result = flatten(result)
-    for matches in result:
-        matches_set = set(matches)
-        logging.info('Match: ' + matches)
+    matches_for_jobs = process_stream(match_with_whitelist)
+    for matches_for_job in matches_for_jobs:
+        for match in list(matches_for_job):
+            id = match['job_id']
+            name = match['job_name']
+            context = ', '.join(match['job_context'])
+            logging.info('Match: job_id={}, job_name={}, job_context={}'.format(id, name, context))
     logging.info("done!")
-
-
-def create_contexts(indices, text, word):
-    contexts = list()
-    for ix in indices:
-        contexts.append('...' + text[ix-10:ix+len(word)+10] + '...')
-    return contexts
