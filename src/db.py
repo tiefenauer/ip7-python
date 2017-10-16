@@ -1,38 +1,42 @@
-import MySQLdb
 from enum import Enum
+import mysql.connector
 
 
 class Database(Enum):
     FETCHFLOW = 1
 
-# credentials
-fetchflow = {
-    'hostname': 'localhost',
-    'username': 'root',
-    'password': 'NAdu6004',
-    'database': 'fetchflow'
+
+_config = {
+    Database.FETCHFLOW: {
+        'host': '127.0.0.1',
+        'user': 'root',
+        'password': 'NAdu6004',
+        'database': 'fetchflow'
+    }
 }
+# credentials
 
 _conn_fetchflow = None
 
+
 def connectTo(database):
-    if database == Database.FETCHFLOW:
-        return createConnection(_conn_fetchflow, fetchflow)
+    return createConnection(_conn_fetchflow, _config[database])
+
+
+def createConnection(conn, config):
+    if conn is None:
+        conn = mysql.connector.connect(user=config['user'], password=config['password'], host=config['host'], database=config['database'])
+    return conn
+
 
 def close(connection):
     if connection is not None:
         connection.close()
 
-def createConnection(conn, credentials):
-    if conn is None:
-        conn = MySQLdb.connect(host=credentials['hostname'], user=credentials['username'], passwd=credentials['password'],
-                                   db=credentials['database'])
-    return conn
-
-#db_fetchflow = MySQLdb.connect(host=fetchflow['hostname'], user=fetchflow['username'], passwd=fetchflow['password'],
+# db_fetchflow = MySQLdb.connect(host=fetchflow['hostname'], user=fetchflow['username'], passwd=fetchflow['password'],
 #                               db=fetchflow['database'])
 
-#db_fetchflow.close()
+# db_fetchflow.close()
 
 
 # print "Using pymysql…"

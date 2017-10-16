@@ -1,11 +1,11 @@
-import MySQLdb
+import mysql.connector
 
 from src import db
 from src.db import Database
 from src.extractor import jobtitle
 
 conn = db.connectTo(Database.FETCHFLOW)
-cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+cursor = conn.cursor(dictionary=True)
 
 batchsize = 100
 
