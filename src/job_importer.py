@@ -17,8 +17,8 @@ def process_stream(callback):
     logging.info('processing {} rows'.format(num_total))
 
     batchsize = 1000
-    for i in tqdm(range(0, num_total, batchsize), unit_scale=batchsize, unit=' rows'):
+    for i in tqdm(range(0, batchsize, batchsize), unit_scale=batchsize, unit=' rows'):
         cursor.execute("SELECT contentbytes AS dom FROM labeled_text WHERE has_job_title = 0 LIMIT %s OFFSET %s",
                        (batchsize, batchsize))
         for row in cursor:
-            callback(row['dom'])
+            yield callback(row)
