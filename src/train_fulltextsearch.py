@@ -18,9 +18,12 @@ def match_with_whitelist(row, job_names=_job_names):
     for job_name in job_names:
         indices = find_string_occurences(job_name, dom_str)
 
-        if job_name in dom_str or 'html' in dom_str:
+        if indices:
             logging.info('Found one!')
-            yield job_name
+            yield {
+                'job_name': job_name,
+                'job_context': create_contexts(indices, dom_str, job_name)
+            }
 
 
 def find_string_occurences(str1, str2):
