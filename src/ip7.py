@@ -4,7 +4,7 @@ from src import db
 from src.db import Database
 from src.extractor import jobtitle
 
-conn = db.connectTo(Database.FETCHFLOW)
+conn = db.connect_to(Database.FETCHFLOW)
 cursor = conn.cursor(dictionary=True)
 
 batchsize = 100

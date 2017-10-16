@@ -19,7 +19,7 @@ female = r"(\/-?in)|(\/-?euse)|(\/-?frau)"
 
 def create_training_data():
     jobs = create_job_map()
-    conn = db.connectTo(Database.FETCHFLOW)
+    conn = db.connect_to(Database.FETCHFLOW)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT count(*) as num_total FROM labeled_text")
     num_total = cursor.fetchone()['num_total']

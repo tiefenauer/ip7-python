@@ -19,11 +19,11 @@ _config = {
 _conn_fetchflow = None
 
 
-def connectTo(database):
-    return createConnection(_conn_fetchflow, _config[database])
+def connect_to(database):
+    return _create_connection(_conn_fetchflow, _config[database])
 
 
-def createConnection(conn, config):
+def _create_connection(conn, config):
     if conn is None:
         conn = mysql.connector.connect(user=config['user'], password=config['password'], host=config['host'], database=config['database'])
     return conn
