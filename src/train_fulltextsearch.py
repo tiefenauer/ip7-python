@@ -47,11 +47,11 @@ def print_stats(job_counts):
         print(pattern.format(job_name, count))
     print('------------------------------------')
     print(pattern.format('Total', num_classifications))
-    print(pattern.format('Jobs per vacancy', num_classifications/len(job_counts.keys())))
+    print(pattern.format('Jobs per vacancy', num_classifications/(len(job_counts.keys()) or 1)))
     print('====================================')
 
 
 if __name__ == '__main__':
-    matches_for_jobs = process_stream(match_with_whitelist)
+    matches_for_jobs = (match_with_whitelist(row) for row in process_stream())
     matches_by_job_name = count_jobs_by_name(matches_for_jobs)
     print_stats(matches_by_job_name)

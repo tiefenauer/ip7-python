@@ -57,7 +57,7 @@ class TestFullTextSearch(unittest.TestCase):
         str1_with_unescaped_chars = 'C++ Programmierer'
         str2 = 'blablablabla C++ Programmierer blabblablabl'
         result = src.train.util.find_str1_in_str2(str1_with_unescaped_chars, str2)
-        assert_that(len(result), is_(1))
+        assert_that(len(list(result)), is_(1))
 
     def test_create_contexts(self):
         # arrange/act
