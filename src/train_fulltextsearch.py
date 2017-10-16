@@ -23,8 +23,7 @@ def match_with_whitelist(row, job_names=_job_names):
         }
 
 
-if __name__ == '__main__':
-    matches_for_jobs = process_stream(match_with_whitelist)
+def count_jobs_by_name(matches_for_jobs):
     matches_by_job_name = {}
     for matches_for_job in matches_for_jobs:
         for match in list(matches_for_job):
@@ -33,6 +32,26 @@ if __name__ == '__main__':
             context = ', '.join(match['job_context'])
             if not name in matches_by_job_name:
                 matches_by_job_name[name] = 0
-            matches_by_job_name[name] = matches_by_job_name[name]+1
+            matches_by_job_name[name] = matches_by_job_name[name] + 1
             # logging.info('Match: job_id={}, job_name={}, job_context={}'.format(id, name, context))
-    logging.info("Found the following jobs: " + matches_by_job_name)
+    return matches_by_job_name
+
+
+def print_stats(job_counts):
+    logging.info("Found the following jobs: ")
+    num_classifications = sum(job_counts.values())
+    pattern = "{:<30} {:<4}"
+    print(pattern.format('Job Name', 'Count'))
+    print('------------------------------------')
+    for job_name, count in job_counts.items():
+        print(pattern.format(job_name, count))
+    print('------------------------------------')
+    print(pattern.format('Total', num_classifications))
+    print(pattern.format('Jobs per vacancy', num_classifications/len(job_counts.keys())))
+    print('====================================')
+
+
+if __name__ == '__main__':
+    matches_for_jobs = process_stream(match_with_whitelist)
+    matches_by_job_name = count_jobs_by_name(matches_for_jobs)
+    print_stats(matches_by_job_name)
