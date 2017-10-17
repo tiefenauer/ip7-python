@@ -4,7 +4,7 @@ import sys
 
 import pandas
 
-from src.job_importer import process_stream
+from src.job_importer import import_all
 from src.train.util import create_contexts
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -54,6 +54,6 @@ def print_stats(job_counts):
 
 
 if __name__ == '__main__':
-    matches_for_jobs = (match_with_whitelist(row) for row in process_stream())
+    matches_for_jobs = (match_with_whitelist(row) for row in import_all())
     matches_by_job_name = count_jobs_by_name(matches_for_jobs)
     print_stats(matches_by_job_name)

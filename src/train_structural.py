@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from src.job_importer import process_stream
+from src.job_importer import import_all
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -21,4 +21,4 @@ def tokenize_words(dom):
     pass
 
 
-process_stream(process_structure)
+import_all(process_structure)
