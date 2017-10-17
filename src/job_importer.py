@@ -17,7 +17,7 @@ def process_stream():
     num_total = cursor.fetchone()['num_total']
     logging.info('processing {} rows'.format(num_total))
 
-    chunksize = 100
+    chunksize = 1000
     sql = "SELECT id, title, contentbytes AS dom FROM labeled_text WHERE has_job_title = 0"
     chunks = pd.read_sql(sql=sql, con=conn, chunksize=chunksize)
     for chunk in tqdm(chunks, total=int(num_total/chunksize), unit_scale=chunksize, unit=' rows'):

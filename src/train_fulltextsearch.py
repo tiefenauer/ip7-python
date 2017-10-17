@@ -1,4 +1,5 @@
 import logging
+import operator
 import sys
 
 import pandas
@@ -40,14 +41,15 @@ def count_jobs_by_name(matches_for_jobs):
 def print_stats(job_counts):
     logging.info("Found the following jobs: ")
     num_classifications = sum(job_counts.values())
+    job_counts_sorted = sorted(job_counts.items(), key=lambda k: k[1], reverse=True)
     pattern = "{:<30} {:<4}"
     print(pattern.format('Job Name', 'Count'))
     print('------------------------------------')
-    for job_name, count in job_counts.items():
+    for job_name, count in job_counts_sorted:
         print(pattern.format(job_name, count))
     print('------------------------------------')
     print(pattern.format('Total', num_classifications))
-    print(pattern.format('Jobs per vacancy', num_classifications/(len(job_counts.keys()) or 1)))
+    print(pattern.format('Jobs per vacancy', num_classifications/(len(job_counts_sorted) or 1)))
     print('====================================')
 
 
