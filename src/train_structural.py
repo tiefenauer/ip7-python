@@ -2,9 +2,9 @@ import logging
 import sys
 
 from src.job_importer import import_all
+from src.stats import print_stats
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-
 
 
 def process_structure(row):
@@ -21,4 +21,6 @@ def tokenize_words(dom):
     pass
 
 
-import_all(process_structure)
+if __name__ == '__main__':
+    stats = (process_structure(row) for row in import_all())
+    print_stats(stats)

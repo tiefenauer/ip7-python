@@ -31,7 +31,7 @@ def result_item_with_job(job_name):
 
 
 class TestFullTextSearch(unittest.TestCase):
-    def test_match_with_whitelist(self):
+    def test_process_row(self):
         # arrange
         row = {
             'id': 123,
@@ -39,7 +39,7 @@ class TestFullTextSearch(unittest.TestCase):
         }
         job_names = ['Arzt', 'Lehrer', 'Bauer']
         # act
-        result = testee.match_with_whitelist(row, job_names)
+        result = testee.process_row(row, job_names)
         # assert
         assert_that(list(result), contains_inanyorder(
             result_item_with_job('Arzt'),

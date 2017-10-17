@@ -16,6 +16,6 @@ def import_all():
     num_total = cursor.fetchone()['num_total']
     logging.info('processing {} rows'.format(num_total))
 
-    cursor.execute("SELECT id, title, contentbytes AS dom FROM labeled_text WHERE has_job_title = 0")
+    cursor.execute("SELECT id, title, contentbytes AS dom FROM labeled_text WHERE has_job_title = 0 limit 100")
     for row in tqdm(cursor, total=num_total, unit=' rows'):
         yield row
