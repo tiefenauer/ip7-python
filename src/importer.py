@@ -2,6 +2,7 @@ import logging
 import sys
 
 import pandas
+import time
 from tqdm import tqdm
 
 from src import db
@@ -11,6 +12,8 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 
 class FetchflowImporter(object):
+    def __init__(self):
+        self.curr_datetime = time.strftime('%Y-%m-%d %H:%M:%S')
 
     def __enter__(self):
         self.conn_read = db.connect_to(Database.FETCHFLOW)
@@ -35,17 +38,17 @@ class FetchflowImporter(object):
             labeled_text_id = row['id']
             job_title = match['job_name']
             job_title_count = len(match['job_contexts'])
+            last_update = self.curr_datetime;
             cursor = self.conn_write.cursor()
-            sql = """INSERT INTO job_titles (labeled_text_id, job_title, job_title_count) 
-                        VALUES (%s, %s, %s) 
+            sql = """INSERT INTO job_titles (labeled_text_id, job_title, job_title_count, last_update) 
+                        VALUES (%s, %s, %s, %s) 
                         ON DUPLICATE KEY UPDATE 
                         job_title = VALUES(job_title),
-                        job_title_count = VALUES(job_title_count)
+                        job_title_count = VALUES(job_title_count),
+                        last_update = VALUES(last_update)
           """
-            cursor.execute(sql, (labeled_text_id, job_title, job_title_count))
+            cursor.execute(sql, (labeled_text_id, job_title, job_title_count, last_update))
             self.conn_write.commit()
-
-
 
 
 class JobNameImporter(object):

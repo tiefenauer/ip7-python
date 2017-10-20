@@ -35,8 +35,7 @@ if __name__ == '__main__':
     job_names = JobNameImporter()
     stats = {}
     with FetchflowImporter() as fetchflow:
-        for row in fetchflow:
-            match = process_row(row)
+        for row, match in ((row, process_row(row)) for row in fetchflow):
             fetchflow.update_job(row, match)
             update_stats(match, stats)
     print_stats(stats)
