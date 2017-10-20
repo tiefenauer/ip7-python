@@ -1,12 +1,45 @@
-from . import preproc
+import re
+
 import nltk
 
+from src.train.util import create_contexts
 
-def extractJobTitle(record):
-    print('Extracting job title for vacancy:', record['url'])
-    dom_elements = preproc.extract_dom_subtree(record['contentbytes'])
-    preproc.print_dom(dom_elements)
-    tokenize_dom(dom_elements)
+suffix_female = r"(\/-?in)|(\/-?euse)|(\/-?frau)"
+suffix_male = r"(\/-?er)|(\/-?eur)|(\/-?mann)"
+
+regex_gender = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
+
+
+def find_matches(str, job_name):
+    for match in re.finditer(job_name, str):
+        context_token = determine_context_token(str, match)
+        yield create_result_item(str, context_token)
+
+
+def determine_context_token(str, match_obj):
+    start = match_obj.start()
+    end = match_obj.end()
+    str_sub = str[start:]
+    exact_match = str[start:end]
+    # check if match can be expanded to include \-in, \-euse and \-frau
+    in_match = re.match(exact_match + regex_gender, str_sub)
+    if in_match and in_match.start() == 0:
+        return in_match.string[:in_match.end()]
+    # check if match can be expanded to include (m/w)
+    return exact_match
+
+
+def create_result_item(str, context_token):
+    return {
+        'job_name': context_token,
+        'job_contexts': create_contexts(str, context_token)
+    }
+
+
+def remove_gender(str):
+    stripped = re.sub(suffix_male, '', str)
+    stripped = re.sub(suffix_female, '', str)
+    return stripped
 
 
 def tokenize_dom(dom_elements):
