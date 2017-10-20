@@ -121,7 +121,6 @@ class TestJobTitleExtractor(unittest.TestCase):
         # assert
         assert_that(result, is_("Kaufmann/-frau"))
 
-    @unittest.skip('kommt als nächstes')
     def test_determine_context_token_mw_returns_token_including_mw(self):
         # arrange
         str = 'bla Sachbearbeiter (m/w) bla'

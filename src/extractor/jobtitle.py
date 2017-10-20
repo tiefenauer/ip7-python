@@ -7,7 +7,8 @@ from src.train.util import create_contexts
 suffix_female = r"(\/-?in)|(\/-?euse)|(\/-?frau)"
 suffix_male = r"(\/-?er)|(\/-?eur)|(\/-?mann)"
 
-regex_gender = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
+regex_fm = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
+regex_mw = r"\s*\(?m\/w\)?"
 
 
 def find_matches(str, job_name):
@@ -22,11 +23,21 @@ def determine_context_token(str, match_obj):
     str_sub = str[start:]
     exact_match = str[start:end]
     # check if match can be expanded to include \-in, \-euse and \-frau
-    in_match = re.match(exact_match + regex_gender, str_sub)
-    if in_match and in_match.start() == 0:
-        return in_match.string[:in_match.end()]
+    match_fm = check_if_exact_match_can_be_expanded_with_regex(exact_match, regex_fm, str_sub)
+    if match_fm:
+        return match_fm
     # check if match can be expanded to include (m/w)
+    match_mw = check_if_exact_match_can_be_expanded_with_regex(exact_match, regex_mw, str_sub)
+    if match_mw:
+        return match_mw
     return exact_match
+
+
+def check_if_exact_match_can_be_expanded_with_regex(exact_match, regex, str_sub):
+    expanded_match = re.match(exact_match + regex, str_sub)
+    if expanded_match and expanded_match.start() == 0:
+        return expanded_match.string[:expanded_match.end()]
+    return None
 
 
 def create_result_item(str, context_token):
