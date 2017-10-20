@@ -1,8 +1,8 @@
 import logging
 import sys
+import time
 
 import pandas
-import time
 from tqdm import tqdm
 
 from src import db
@@ -51,14 +51,17 @@ class FetchflowImporter(object):
 
             # insert contexts
             for job_context in match['job_contexts']:
-                cursor.execute("""INSERT INTO job_contexts (job_context, last_update) VALUES (%s, %s)""", (job_context, self.curr_datetime))
-                cursor.execute("""INSERT INTO job_title_contexts (fk_job_title, fk_job_context, last_update) VALUES (%s, %s, %s)""", (job_title_id, cursor.lastrowid, self.curr_datetime))
+                cursor.execute("""INSERT INTO job_contexts (job_context, last_update) VALUES (%s, %s)""",
+                               (job_context, self.curr_datetime))
+                cursor.execute(
+                    """INSERT INTO job_title_contexts (fk_job_title, fk_job_context, last_update) VALUES (%s, %s, %s)""",
+                    (job_title_id, cursor.lastrowid, self.curr_datetime))
             self.conn_write.commit()
 
 
 class JobNameImporter(object):
     def __init__(self):
-        self.job_names = pandas.read_csv('../resource/tbfulljob_DE.tsv', delimiter=';', names=['job_name'])
+        self.job_names = pandas.read_csv('../resource/job_titles.tsv', delimiter=';', names=['job_name'])
 
     def __iter__(self):
         for job_name in self.job_names['job_name']:

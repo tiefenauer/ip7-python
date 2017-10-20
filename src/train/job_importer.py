@@ -1,11 +1,12 @@
-from src import db
-from src.db import Database
 import csv
 import re
-import gensim
-from nltk.stem.snowball import SnowballStemmer
-from nltk.corpus import stopwords
 from difflib import SequenceMatcher
+
+from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
+
+from src import db
+from src.db import Database
 
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
 stopwords_de = stopwords.words('german')
@@ -21,11 +22,11 @@ def create_training_data():
     jobs = create_job_map()
     conn = db.connect_to(Database.FETCHFLOW)
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT count(*) as num_total FROM labeled_text")
+    cursor.execute("SELECT count(*) AS num_total FROM labeled_text")
     num_total = cursor.fetchone()['num_total']
-    cursor.execute("SELECT count(*) as num_trained FROM labeled_text WHERE has_job_title = 1")
+    cursor.execute("SELECT count(*) AS num_trained FROM labeled_text WHERE has_job_title = 1")
     num_trained = cursor.fetchone()['num_trained']
-    cursor.execute("SELECT count(*) as num_untrained FROM labeled_text WHERE has_job_title = 0")
+    cursor.execute("SELECT count(*) AS num_untrained FROM labeled_text WHERE has_job_title = 0")
     num_untrained = cursor.fetchone()['num_untrained']
     batchsize = 1000
     for i in range(0, num_untrained, batchsize):
@@ -45,8 +46,8 @@ def create_job_map():
 
 def find_matching_job_titles(titles, jobs):
     results = set()
-    a = [1,2,3,4,5]
-    b = [9,8,7,7,6]
+    a = [1, 2, 3, 4, 5]
+    b = [9, 8, 7, 7, 6]
     res = set(a) & set(b)
     titles = strip_clutter(titles)
     for job, job_uncluttered, stems in jobs:
@@ -54,11 +55,13 @@ def find_matching_job_titles(titles, jobs):
             for title in titles:
                 if similarity(title, stem) > 0.8:
                     results.add(job)
-        # results.update(set(titles) & set(stems.split(' ')))
+                    # results.update(set(titles) & set(stems.split(' ')))
     return results
 
-def similarity(a,b):
-    return SequenceMatcher(None,a,b).ratio()
+
+def similarity(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
 
 def strip_clutter(str):
     stripped = re.sub(brackets, '', str)
