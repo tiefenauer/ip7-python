@@ -37,17 +37,25 @@ class FetchflowImporter(object):
         if match is not None:
             labeled_text_id = row['id']
             job_title = match['job_name']
-            job_title_count = len(match['job_contexts'])
             last_update = self.curr_datetime;
+            data = (labeled_text_id, job_title, last_update)
             cursor = self.conn_write.cursor()
-            sql = """INSERT INTO job_titles (labeled_text_id, job_title, job_title_count, last_update) 
-                        VALUES (%s, %s, %s, %s) 
+            sql = """INSERT INTO job_titles (labeled_text_id, job_title, last_update) 
+                        VALUES (%s, %s, %s) 
                         ON DUPLICATE KEY UPDATE 
                         job_title = VALUES(job_title),
-                        job_title_count = VALUES(job_title_count),
                         last_update = VALUES(last_update)
-          """
-            cursor.execute(sql, (labeled_text_id, job_title, job_title_count, last_update))
+            """
+            cursor.execute(sql, data)
+            job_title_id = cursor.lastrowid
+
+            # insert contexts
+            sql = """INSERT INTO job_title_contexts (fk_job_title, job_context, last_update)
+                                VALUES (%s, %s, %s)
+                        """
+            for job_context in match['job_contexts']:
+                data = (job_title_id, job_context, self.curr_datetime)
+                cursor.execute(sql, data)
             self.conn_write.commit()
 
 
