@@ -3,14 +3,53 @@ import unittest
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
-import src.train.util
 from src import train_fulltextsearch as testee
 
-lorem_ipsum = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut ' \
-              'labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores ' \
-              'et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ' \
-              'ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et ' \
-              'dolore magna aliquyam erat, sed diam voluptua. '
+
+def create_row(dom_str, id=1):
+    return {
+        'id': id,
+        'dom': dom_str
+    }
+
+
+class TestFullTextSearch(unittest.TestCase):
+    def test_process_row_should_return_matches(self):
+        # arrange
+        row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
+        testee.job_names = ['Taxi', 'Bayern']
+        # act
+        result = testee.process_row(row)
+        # assert
+        assert_that(result, only_contains(
+            result_item_with_job('Taxi'),
+            result_item_with_job('Bayern')
+        ))
+
+    def test_process_row_should_not_return_empty_matches(self):
+        # arrance
+        row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
+        testee.job_names = ['Arzt']
+        # act
+        result = list(testee.process_row(row))
+        #
+        assert_that(result, is_(empty()))
+
+    def test_find_matches_should_only_return_matched_job_names(self):
+        # arrange
+        dom = 'Lorem Arzt ipsum dolor sit amet, Bauer consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.'
+        testee.job_names = ['Arzt', 'Lehrer', 'Bauer']
+        # act
+        result = list(testee.find_matches(dom))
+        # assert
+        assert_that(result, only_contains(
+            result_item_with_job('Arzt'),
+            result_item_with_job('Bauer'),
+        ))
+
+
+def result_item_with_job(job_name):
+    return IsResultMatchingJob(job_name)
 
 
 class IsResultMatchingJob(BaseMatcher):
@@ -21,59 +60,6 @@ class IsResultMatchingJob(BaseMatcher):
         return item['job_name'] == self.job_name
 
     def describe_to(self, description):
-        description.append_text('result item with item.job_name matching \'') \
+        description.append_text('result item with item[\'job_name\'] matching \'') \
             .append_text(self.job_name) \
             .append_text('\'')
-
-
-def result_item_with_job(job_name):
-    return IsResultMatchingJob(job_name)
-
-
-class TestFullTextSearch(unittest.TestCase):
-    def test_process_row(self):
-        # arrange
-        row = {
-            'id': 123,
-            'dom': 'Lorem Arzt ipsum dolor sit amet, Bauer consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.'
-        }
-        job_names = ['Arzt', 'Lehrer', 'Bauer']
-        # act
-        result = testee.process_row(row, job_names)
-        # assert
-        assert_that(list(result), contains_inanyorder(
-            result_item_with_job('Arzt'),
-            result_item_with_job('Bauer'),
-        ))
-
-    def test_find_string_occurences(self):
-        # arrange/act
-        result = src.train.util.find_str1_in_str2('sed', lorem_ipsum)
-        # assert
-        assert_that(result, contains_inanyorder(57, 137, 353, 433))
-
-    def test_find_string_occurences_with_escape_characters(self):
-        # arrange
-        str1_with_unescaped_chars = 'C++ Programmierer'
-        str2 = 'blablablabla C++ Programmierer blabblablabl'
-        result = src.train.util.find_str1_in_str2(str1_with_unescaped_chars, str2)
-        assert_that(len(list(result)), is_(1))
-
-    def test_create_contexts(self):
-        # arrange/act
-        result = src.train.util.create_contexts(lorem_ipsum, 'sed')
-        # assert
-        assert_that(result, contains_inanyorder(
-            '...ng elitr, sed diam nonu...',
-            '...yam erat, sed diam volu...',
-            '...ng elitr, sed diam nonu...',
-            '...yam erat, sed diam volu...'
-        ))
-
-    def test_create_contexts_with_whitespaces(self):
-        # arrange
-        text = "bli bla blu blö                   keyword                                 lorem ipsum dolor"
-        # act
-        result = src.train.util.create_contexts(text, 'keyword')
-        # assert
-        assert_that(result, contains_inanyorder('...a blu blö keyword lorem ips...'))

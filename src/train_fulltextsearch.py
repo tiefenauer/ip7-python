@@ -8,9 +8,6 @@ from src.train.util import create_contexts
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-def _by_number_of_contexts(match): return len(match['job_contexts'])
-
-
 def process_row(row):
     return (match for match in find_matches(str(row['dom'])) if match is not None)
 
