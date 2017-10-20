@@ -7,31 +7,36 @@ from src.train.util import create_contexts
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
+_no_match = {'job_name': 'not found', 'job_contexts': list()}
+_by_number_of_contexts = lambda match: len(match['job_contexts'])
+
 
 def process_row(row):
-    return find_matches_in_dom(str(row['dom']))
+    sorted_list = sorted(list(find_matches(str(row['dom']))), key=_by_number_of_contexts, reverse=True)
+    return next(iter(sorted_list), _no_match)
 
 
-def find_matches_in_dom(dom):
+def find_matches(dom):
     for job_name in (j for j in job_names if j in dom):
         yield {
             'job_name': job_name,
-            'job_context': create_contexts(dom, job_name)
+            'job_contexts': create_contexts(dom, job_name)
         }
 
 
-def count_jobs_by_name(matches, stat={}):
-    for match in matches:
-        name = match['job_name']
-        if not name in stat:
-            stat[name] = 0
-        stat[name] += 1
-    return stat
+def update_stats(matches, stats):
+    name = match['job_name']
+    if not name in stats:
+        stats[name] = 0
+    stats[name] += 1
 
 
 if __name__ == '__main__':
     job_names = JobNameImporter()
+    stats = {}
     with FetchflowImporter() as fetchflow:
-        for job_matches in (process_row(row) for row in fetchflow):
-            stats = count_jobs_by_name(job_matches)
+        for row in fetchflow:
+            match = process_row(row)
+            fetchflow.update_job(row, match)
+            update_stats(match, stats)
     print_stats(stats)
