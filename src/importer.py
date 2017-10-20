@@ -26,14 +26,24 @@ class FetchflowImporter(object):
         num_total = cursor.fetchone()['num_total']
         logging.info('processing {} rows'.format(num_total))
 
-        cursor.execute("SELECT id, title, contentbytes AS dom FROM labeled_text WHERE has_job_title = 0")
+        cursor.execute("SELECT id, title, contentbytes AS dom FROM labeled_text")
         for row in tqdm(cursor, total=num_total, unit=' rows'):
             yield row
 
     def update_job(self, row, match):
-        cursor = self.conn_write.cursor()
-        cursor.execute("""UPDATE labeled_text set has_job_title=1, job_title=%s where id=%s""", (match['job_name'], row['id']))
-        self.conn_write.commit()
+        if match is not None:
+            labeled_text_id = row['id']
+            job_title = match['job_name']
+            job_title_count = len(match['job_contexts'])
+            cursor = self.conn_write.cursor()
+            sql = """INSERT INTO job_titles (labeled_text_id, job_title, job_title_count) 
+                        VALUES (%s, %s, %s) 
+                        ON DUPLICATE KEY UPDATE 
+                        job_title = VALUES(job_title),
+                        job_title_count = VALUES(job_title_count)
+          """
+            cursor.execute(sql, (labeled_text_id, job_title, job_title_count))
+            self.conn_write.commit()
 
 
 

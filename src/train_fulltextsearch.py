@@ -7,13 +7,13 @@ from src.train.util import create_contexts
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-_no_match = {'job_name': 'not found', 'job_contexts': list()}
-_by_number_of_contexts = lambda match: len(match['job_contexts'])
+
+def _by_number_of_contexts(match): return len(match['job_contexts'])
 
 
 def process_row(row):
     sorted_list = sorted(list(find_matches(str(row['dom']))), key=_by_number_of_contexts, reverse=True)
-    return next(iter(sorted_list), _no_match)
+    return next(iter(sorted_list), None)
 
 
 def find_matches(dom):
@@ -24,8 +24,8 @@ def find_matches(dom):
         }
 
 
-def update_stats(matches, stats):
-    name = match['job_name']
+def update_stats(match, stats):
+    name = match['job_name'] if match is not None else 'unclassified'
     if not name in stats:
         stats[name] = 0
     stats[name] += 1
