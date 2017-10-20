@@ -12,30 +12,30 @@ def _by_number_of_contexts(match): return len(match['job_contexts'])
 
 
 def process_row(row):
-    sorted_list = sorted(list(find_matches(str(row['dom']))), key=_by_number_of_contexts, reverse=True)
-    return next(iter(sorted_list), None)
+    return (match for match in find_matches(str(row['dom'])) if match is not None)
 
 
 def find_matches(dom):
-    for job_name in (j for j in job_names if j in dom):
+    for job_name in (job_name for job_name in job_names if job_name in dom):
         yield {
             'job_name': job_name,
             'job_contexts': create_contexts(dom, job_name)
         }
 
 
-def update_stats(match, stats):
-    name = match['job_name'] if match is not None else 'unclassified'
-    if not name in stats:
-        stats[name] = 0
-    stats[name] += 1
+def update_stats(matches, stats):
+    for match in matches:
+        name = match['job_name']
+        if not name in stats:
+            stats[name] = 0
+        stats[name] += 1
 
 
 if __name__ == '__main__':
     job_names = JobNameImporter()
     stats = {}
     with FetchflowImporter() as fetchflow:
-        for row, match in ((row, process_row(row)) for row in fetchflow):
-            fetchflow.update_job(row, match)
-            update_stats(match, stats)
+        for row, matches in ((row, process_row(row)) for row in fetchflow):
+            fetchflow.update_job(row, matches)
+            update_stats(matches, stats)
     print_stats(stats)

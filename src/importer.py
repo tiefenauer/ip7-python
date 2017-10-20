@@ -33,8 +33,8 @@ class FetchflowImporter(object):
         for row in tqdm(cursor, total=num_total, unit=' rows'):
             yield row
 
-    def update_job(self, row, match):
-        if match is not None:
+    def update_job(self, row, matches):
+        for match in matches:
             labeled_text_id = row['id']
             job_title = match['job_name']
             last_update = self.curr_datetime;
