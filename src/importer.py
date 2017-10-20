@@ -50,12 +50,9 @@ class FetchflowImporter(object):
             job_title_id = cursor.lastrowid
 
             # insert contexts
-            sql = """INSERT INTO job_title_contexts (fk_job_title, job_context, last_update)
-                                VALUES (%s, %s, %s)
-                        """
             for job_context in match['job_contexts']:
-                data = (job_title_id, job_context, self.curr_datetime)
-                cursor.execute(sql, data)
+                cursor.execute("""INSERT INTO job_contexts (job_context, last_update) VALUES (%s, %s)""", (job_context, self.curr_datetime))
+                cursor.execute("""INSERT INTO job_title_contexts (fk_job_title, fk_job_context, last_update) VALUES (%s, %s, %s)""", (job_title_id, cursor.lastrowid, self.curr_datetime))
             self.conn_write.commit()
 
 
