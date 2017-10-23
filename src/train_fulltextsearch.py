@@ -5,6 +5,7 @@ import sys
 
 from src.importer import FetchflowImporter, JobNameImporter
 from src.jobtitle.jobtitle_extractor import find_all_matches
+from src.preprocessing import preprocess
 from src.stats import print_stats
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -33,15 +34,15 @@ args = parser.parse_args()
 _job_name_cached = JobNameImporter()
 
 
-def find_all(row, job_names=_job_name_cached):
-    for match in find_all_matches(str(row['dom']), job_names):
+def find_all(text, job_names=_job_name_cached):
+    for match in find_all_matches(text, job_names):
         yield match
 
 
-def find_best(row, job_names=_job_name_cached):
+def find_best(text, job_names=_job_name_cached):
     best_match = None
     best_count = 0
-    grouped = itertools.groupby(find_all(row, job_names), key=lambda m: m.group())
+    grouped = itertools.groupby(find_all(text, job_names), key=lambda m: m.group())
     for (k, g) in grouped:
         count = len(list(g))
         if count > best_count:
@@ -64,7 +65,8 @@ if __name__ == '__main__':
         if args.truncate:
             fetchflow.truncate_results()
         for row in fetchflow:
-            (job_title, job_count) = find_best(row)
+            text = preprocess(row['dom'])
+            (job_title, job_count) = find_best(text)
             if job_title is not None:
                 fetchflow.update_job_with_title(row, job_title, job_count)
     print_stats(stats)

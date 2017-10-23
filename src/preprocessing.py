@@ -8,6 +8,11 @@ stopwords_de = set(stopwords.words('german'))
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
 
 
+def preprocess(markup):
+    soup = parse(markup)
+    return ' '.join(tag.getText() for tag in remove_html_clutter(soup))
+
+
 def parse(markup):
     return BeautifulSoup(markup, 'html.parser')
 
