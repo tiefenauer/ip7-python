@@ -4,37 +4,57 @@ import nltk
 
 from src.train.util import create_contexts
 
-suffix_female = r"(\/-?in)|(\/-?euse)|(\/-?frau)"
-suffix_male = r"(\/-?er)|(\/-?eur)|(\/-?mann)"
-
-regex_fm = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
+regex_fm = r"(in)|(euse)|(frau)"
+regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 regex_mw = r"\s*\(?m\/w\)?"
 
 
-def find_matches(str, job_name):
-    for match in re.finditer(job_name, str):
-        context_token = determine_context_token(str, match)
-        yield create_result_item(str, context_token)
+def find_matches(string, job_names):
+    for job_name in job_names:
+        jn_m = to_male_form(job_name)
+        jn_f = to_female_form(job_name)
+        regex_jn_m_or_w = r"({})|({})".format(re.escape(jn_m), re.escape(jn_f))
+        for match in re.finditer(regex_jn_m_or_w, string):
+            context_token = determine_context_token(string, match)
+            yield create_result_item(string, context_token)
 
 
-def determine_context_token(str, match_obj):
-    start = match_obj.start()
-    end = match_obj.end()
+def determine_context_token(str, match):
+    start = match.start()
+    end = match.end()
     str_sub = str[start:]
     exact_match = str[start:end]
-    # check if match can be expanded to include \-in, \-euse and \-frau
-    match_fm = check_if_exact_match_can_be_expanded_with_regex(exact_match, regex_fm, str_sub)
-    if match_fm:
+    # check if match can be expanded to include in, euse and frau
+    match_fm = expand_match(exact_match, regex_fm, str_sub)
+    if (match_fm):
         return match_fm
+    # check if match can be expanded to include /-in, /-euse and /-frau
+    match_fm_slashed = expand_match(exact_match, regex_fm_slashed, str_sub)
+    if match_fm_slashed:
+        return match_fm_slashed
     # check if match can be expanded to include (m/w)
-    match_mw = check_if_exact_match_can_be_expanded_with_regex(exact_match, regex_mw, str_sub)
+    match_mw = expand_match(exact_match, regex_mw, str_sub)
     if match_mw:
         return match_mw
     return exact_match
 
 
-def check_if_exact_match_can_be_expanded_with_regex(exact_match, regex, str_sub):
-    expanded_match = re.match(exact_match + regex, str_sub)
+def to_male_form(job_name):
+    jn = re.sub('(euse)$', 'eur', job_name)
+    jn = re.sub('(frau)$', 'mann', jn)
+    jn = re.sub('(in)$', '', jn)
+    return jn
+
+
+def to_female_form(job_name):
+    jn = re.sub('(eur)$', 'euse', job_name)
+    jn = re.sub('(mann)$', 'frau', jn)
+    jn = re.sub('(er)$', 'erin', jn)
+    return jn
+
+
+def expand_match(exact_match, regex, string):
+    expanded_match = re.match(exact_match + regex, string)
     if expanded_match and expanded_match.start() == 0:
         return expanded_match.string[:expanded_match.end()]
     return None
@@ -45,12 +65,6 @@ def create_result_item(str, context_token):
         'job_name': context_token,
         'job_contexts': create_contexts(str, context_token)
     }
-
-
-def remove_gender(str):
-    stripped = re.sub(suffix_male, '', str)
-    stripped = re.sub(suffix_female, '', str)
-    return stripped
 
 
 def tokenize_dom(dom_elements):

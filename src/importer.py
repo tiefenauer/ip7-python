@@ -2,6 +2,7 @@ import logging
 import sys
 import time
 
+import itertools
 import pandas
 from tqdm import tqdm
 
