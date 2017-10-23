@@ -1,8 +1,7 @@
 import argparse
+import itertools
 import logging
 import sys
-
-import itertools
 
 from src.importer import FetchflowImporter, JobNameImporter
 from src.jobtitle.jobtitle_extractor import find_all_matches
@@ -24,10 +23,11 @@ string 'Software Engineer (m/w)' will be used as extracted job name, not just th
 """)
 parser.add_argument('-t', '--truncate', action='store_true',
                     help='truncate target tables before extraction (default=True)')
-parser.add_argument('-s', '--simple', action='store_true', help='enable simple processing. Simple processing means '
-                                                                'only the job name with the highest occurrence will be '
-                                                                'stored together with the number of occurrences. No '
-                                                                'context information or alternatives will be stored!')
+parser.add_argument('-c', '--save_contexts', action='store_true',
+                    help='enable simple processing. Simple processing means '
+                         'only the job name with the highest occurrence will be '
+                         'stored together with the number of occurrences. No '
+                         'context information or alternatives will be stored!')
 args = parser.parse_args()
 
 _job_name_cached = JobNameImporter()
@@ -39,8 +39,15 @@ def find_all(row, job_names=_job_name_cached):
 
 
 def find_best(row, job_names=_job_name_cached):
-    groups = ((len(list(g)), k) for k, g in itertools.groupby(find_all(row, job_names), key=lambda m: m.group()))
-    return next((b,a) for a ,b in reversed(sorted(groups)))
+    best_match = None
+    best_count = 0
+    grouped = itertools.groupby(find_all(row, job_names), key=lambda m: m.group())
+    for (k, g) in grouped:
+        count = len(list(g))
+        if count > best_count:
+            best_count = count
+            best_match = k
+    return (best_match, best_count)
 
 
 def update_stats(matches, stats):
@@ -51,30 +58,13 @@ def update_stats(matches, stats):
         stats[name] += 1
 
 
-def process_rows_simple(fetchflow):
-    stats = {}
-    for row, best_match in ((row, find_best(row)) for row in fetchflow):
-        fetchflow.update_job_with_title(row, best_match)
-        update_stats(best_match, stats)
-    return stats
-
-
-def process_rows_saving_context(fetchflow):
-    stats = {}
-    for row, matches in ((row, find_all(row)) for row in fetchflow):
-        job_title_id = fetchflow.update_job_with_title(row, '')
-        fetchflow.update_job_contexts(row, job_title_id, matches)
-        update_stats(matches, stats)
-    return stats
-
-
 if __name__ == '__main__':
     stats = {}
     with FetchflowImporter() as fetchflow:
         if args.truncate:
             fetchflow.truncate_results()
-        if args.simple:
-            stats = process_rows_simple(fetchflow)
-        else:
-            stats = process_rows_saving_context(fetchflow)
+        for row in fetchflow:
+            (job_title, job_count) = find_best(row)
+            if job_title is not None:
+                fetchflow.update_job_with_title(row, job_title, job_count)
     print_stats(stats)

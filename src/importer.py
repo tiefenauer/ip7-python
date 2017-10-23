@@ -34,17 +34,18 @@ class FetchflowImporter(object):
         for row in tqdm(cursor, total=num_total, unit=' rows'):
             yield row
 
-    def update_job_with_title(self, row, job_title):
+    def update_job_with_title(self, row, job_title, job_count):
         labeled_text_id = row['id']
         last_update = self.curr_datetime;
         cursor = self.conn_write.cursor()
-        sql = """INSERT INTO job_titles (labeled_text_id, job_title, last_update) 
-                    VALUES (%s, %s, %s) 
+        sql = """INSERT INTO job_titles (labeled_text_id, job_title, job_count, last_update) 
+                    VALUES (%s, %s, %s, %s) 
                     ON DUPLICATE KEY UPDATE 
+                    job_count = VALUES(job_count),
                     job_title = VALUES(job_title),
                     last_update = VALUES(last_update)
         """
-        cursor.execute(sql, (labeled_text_id, job_title, last_update))
+        cursor.execute(sql, (labeled_text_id, job_title, job_count, last_update))
         self.conn_write.commit()
         return cursor.lastrowid
 
