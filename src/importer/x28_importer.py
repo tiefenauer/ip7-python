@@ -42,8 +42,7 @@ class X28Importer(object):
                               url = excluded.url,
                               title = excluded.title
                               """
-        bla = cursor.mogrify(sql, (x28_id, html, plaintext, url, title))
-        cursor.execute(bla)
+        cursor.execute(sql, (x28_id, html, plaintext, url, title))
         self.conn.commit()
 
     def truncate_tables(self):

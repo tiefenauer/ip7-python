@@ -2,8 +2,6 @@ import logging
 import sys
 import time
 
-import itertools
-import pandas
 from tqdm import tqdm
 
 from src import db
@@ -27,11 +25,11 @@ class FetchflowImporter(object):
     def __iter__(self):
         cursor = self.conn_read.cursor(dictionary=True)
         cursor.execute("SELECT count(*) AS num_total FROM labeled_text")
-        num_total = cursor.fetchone()['num_total']
-        logging.info('processing {} rows'.format(num_total))
+        self.num_total = cursor.fetchone()['num_total']
+        logging.info('processing {} rows'.format(self.num_total))
 
         cursor.execute("SELECT id, title, contentbytes AS dom FROM labeled_text")
-        for row in tqdm(cursor, total=num_total, unit=' rows'):
+        for row in tqdm(cursor, total=self.num_total, unit=' rows'):
             yield row
 
     def update_job_with_title(self, row, job_title, job_count):
@@ -62,17 +60,9 @@ class FetchflowImporter(object):
         self.conn_write.commit()
 
     def truncate_results(self):
+        logging.info('Truncating target tables...')
         cursor = self.conn_write.cursor()
         cursor.execute("""TRUNCATE job_contexts""")
         cursor.execute("""TRUNCATE  job_title_contexts""")
         cursor.execute("""TRUNCATE job_titles""")
         self.conn_write.commit()
-
-
-class JobNameImporter(object):
-    def __init__(self):
-        self.job_names = pandas.read_csv('../resource/job_titles.tsv', delimiter=';', names=['job_name'])
-
-    def __iter__(self):
-        for job_name in self.job_names['job_name']:
-            yield job_name

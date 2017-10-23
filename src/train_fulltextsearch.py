@@ -3,9 +3,10 @@ import itertools
 import logging
 import sys
 
-from src.importer import FetchflowImporter, JobNameImporter
+from src.preproc import preprocess
+from src.importer.fetchflow_importer import FetchflowImporter
+from src.importer.job_name_importer import JobNameImporter
 from src.jobtitle.jobtitle_extractor import find_all_matches
-from src.preprocessing import preprocess
 from src.stats import print_stats
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -48,7 +49,7 @@ def find_best(text, job_names=_job_name_cached):
         if count > best_count:
             best_count = count
             best_match = k
-    return (best_match, best_count)
+    return best_match, best_count
 
 
 def update_stats(matches, stats):
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     with FetchflowImporter() as fetchflow:
         if args.truncate:
             fetchflow.truncate_results()
-        for row in fetchflow:
+        for row in (row for row in fetchflow if row['dom']):
             text = preprocess(row['dom'])
             (job_title, job_count) = find_best(text)
             if job_title is not None:

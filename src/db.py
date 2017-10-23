@@ -1,52 +1,56 @@
 from enum import Enum
+
 import mysql.connector
+import psycopg2
 
 
 class Database(Enum):
-    FETCHFLOW = 1
+    FETCHFLOW = 1,
+    X28 = 2
 
 
+# credentials
 _config = {
     Database.FETCHFLOW: {
-        'host': '127.0.0.1',
-        'user': 'root',
-        'password': 'NAdu6004',
-        'database': 'fetchflow'
+        'credentials': {
+            'host': '127.0.0.1',
+            'user': 'root',
+            'password': 'NAdu6004',
+            'database': 'fetchflow'
+        },
+        'initializer': lambda cred: _create_mysql_connection(cred),
+        'connection': None
+    },
+    Database.X28: {
+        'credentials': {
+            'host': '127.0.0.1',
+            'user': 'postgres',
+            'password': 'postgres',
+            'database': 'x28'
+        },
+        'initializer': lambda cred: _create_postgres_connection(cred),
+        'connection': None
     }
 }
-# credentials
-
-_conn_fetchflow = None
 
 
 def connect_to(database):
-    return _create_connection(_conn_fetchflow, _config[database])
+    if _config[database]:
+        credentials = _config[database]['credentials']
+        initializer = _config[database]['initializer']
+        return initializer(credentials)
 
 
-def _create_connection(conn, config):
-    if conn is None:
-        conn = mysql.connector.connect(user=config['user'], password=config['password'], host=config['host'], database=config['database'])
-    return conn
+def _create_mysql_connection(config):
+    return mysql.connector.connect(user=config['user'], password=config['password'], host=config['host'],
+                                   database=config['database'])
+
+
+def _create_postgres_connection(config):
+    return psycopg2.connect(host=config['host'], database=config['database'], user=config['user'],
+                            password=config['password'])
 
 
 def close(connection):
     if connection is not None:
         connection.close()
-
-# db_fetchflow = MySQLdb.connect(host=fetchflow['hostname'], user=fetchflow['username'], passwd=fetchflow['password'],
-#                               db=fetchflow['database'])
-
-# db_fetchflow.close()
-
-
-# print "Using pymysql…"
-# import pymysql
-# myConnection = pymysql.connect( host=hostname, user=username, passwd=password, db=database )
-# doQuery( myConnection )
-# myConnection.close()
-#
-# print "Using mysql.connector…"
-# import mysql.connector
-# myConnection = mysql.connector.connect( host=hostname, user=username, passwd=password, db=database )
-# doQuery( myConnection )
-# myConnection.close()
