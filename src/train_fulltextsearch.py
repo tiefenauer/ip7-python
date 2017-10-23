@@ -2,6 +2,8 @@ import argparse
 import logging
 import sys
 
+import itertools
+
 from src.importer import FetchflowImporter, JobNameImporter
 from src.jobtitle.jobtitle_extractor import find_all_matches
 from src.stats import print_stats
@@ -31,20 +33,14 @@ args = parser.parse_args()
 _job_name_cached = JobNameImporter()
 
 
-def find_all_job_matches(row, job_names=_job_name_cached):
+def find_all(row, job_names=_job_name_cached):
     for match in find_all_matches(str(row['dom']), job_names):
         yield match
 
 
-def find_best_job(row, job_names=_job_name_cached):
-    best_match = None
-    best_match_count = 0
-    for match in find_all_job_matches(str(row['dom']), job_names):
-        match_count = len(match['job_contexts'])
-        if match_count > best_match_count:
-            best_match = match
-            best_match_count = match_count
-    return best_match
+def find_best(row, job_names=_job_name_cached):
+    groups = ((len(list(g)), k) for k, g in itertools.groupby(find_all(row, job_names), key=lambda m: m.group()))
+    return next((b,a) for a ,b in reversed(sorted(groups)))
 
 
 def update_stats(matches, stats):
@@ -57,7 +53,7 @@ def update_stats(matches, stats):
 
 def process_rows_simple(fetchflow):
     stats = {}
-    for row, best_match in ((row, find_best_job(row)) for row in fetchflow):
+    for row, best_match in ((row, find_best(row)) for row in fetchflow):
         fetchflow.update_job_with_title(row, best_match)
         update_stats(best_match, stats)
     return stats
@@ -65,7 +61,7 @@ def process_rows_simple(fetchflow):
 
 def process_rows_saving_context(fetchflow):
     stats = {}
-    for row, matches in ((row, find_all_job_matches(row)) for row in fetchflow):
+    for row, matches in ((row, find_all(row)) for row in fetchflow):
         job_title_id = fetchflow.update_job_with_title(row, '')
         fetchflow.update_job_contexts(row, job_title_id, matches)
         update_stats(matches, stats)

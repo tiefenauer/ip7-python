@@ -16,24 +16,33 @@ def create_row(dom_str, id=1):
 
 
 class TestFullTextSearch(unittest.TestCase):
-    def test_find_all_job_matches_should_return_matches(self):
+    def test_find_all_should_return_matches(self):
         # arrange
         row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
         # act
-        result = testee.find_all_job_matches(row, ['Taxi', 'Bayern'])
+        result = testee.find_all(row, ['Taxi', 'Bayern'])
         # assert
         assert_that(result, only_contains(
             match_item_for_job_name('Taxi'),
             match_item_for_job_name('Bayern')
         ))
 
-    def test_find_all_job_matches_should_not_return_empty_matches(self):
+    def test_find_all_should_not_return_empty_matches(self):
         # arrance
         row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
         # act
-        result = testee.find_all_job_matches(row, ['Arzt'])
+        result = testee.find_all(row, ['Arzt'])
         #
         assert_that(list(result), is_(empty()))
+
+    def test_find_best_should_return_best_match(self):
+        # arrange
+        row = create_row('Schneider Schneider Schneider Koch Koch Koch Koch Sekretär')
+        # act
+        (result, count) = testee.find_best(row, ['Schneider', 'Koch', 'Sekretär'])
+        # assert
+        assert_that(result, is_('Koch'))
+        assert_that(count, is_(4))
 
 
 def result_item_with_job(job_name):
