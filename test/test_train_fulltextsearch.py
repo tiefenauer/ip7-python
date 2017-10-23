@@ -4,6 +4,8 @@ from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
 from src import train_fulltextsearch as testee
+from src.train.util import flatten
+from test.extractor.test_jobtitle_matcher import match_item_for_job_name
 
 
 def create_row(dom_str, id=1):
@@ -14,25 +16,24 @@ def create_row(dom_str, id=1):
 
 
 class TestFullTextSearch(unittest.TestCase):
-    def test_find_all_jobs_should_return_matches(self):
+    def test_find_all_job_matches_should_return_matches(self):
         # arrange
         row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
         # act
-        result = testee.find_all_jobs(row, ['Taxi', 'Bayern'])
+        result = testee.find_all_job_matches(row, ['Taxi', 'Bayern'])
         # assert
-        assert_that(result, only_contains(
-            result_item_with_job('Taxi'),
-            result_item_with_job('Bayern')
+        assert_that(flatten(result), only_contains(
+            match_item_for_job_name('Taxi'),
+            match_item_for_job_name('Bayern')
         ))
 
-    def test_find_all_jobs_should_not_return_empty_matches(self):
+    def test_find_all_job_matches_should_not_return_empty_matches(self):
         # arrance
         row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
-        testee.job_names = ['Arzt']
         # act
-        result = testee.find_all_jobs(row)
+        result = testee.find_all_job_matches(row, ['Arzt'])
         #
-        assert_that(list(result), is_(empty()))
+        assert_that(list(flatten(result)), is_(empty()))
 
 
 def result_item_with_job(job_name):

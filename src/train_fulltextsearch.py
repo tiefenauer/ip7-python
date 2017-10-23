@@ -2,8 +2,8 @@ import argparse
 import logging
 import sys
 
-from src.extractor.jobtitle_extractor import find_all_matches
 from src.importer import FetchflowImporter, JobNameImporter
+from src.jobtitle.jobtitle_extractor import find_all_matches
 from src.stats import print_stats
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -31,7 +31,7 @@ args = parser.parse_args()
 _job_name_cached = JobNameImporter()
 
 
-def find_all_jobs(row, job_names=_job_name_cached):
+def find_all_job_matches(row, job_names=_job_name_cached):
     for match in find_all_matches(str(row['dom']), job_names):
         yield match
 
@@ -39,7 +39,7 @@ def find_all_jobs(row, job_names=_job_name_cached):
 def find_best_job(row, job_names=_job_name_cached):
     best_match = None
     best_match_count = 0
-    for match in find_all_jobs(str(row['dom']), job_names):
+    for match in find_all_job_matches(str(row['dom']), job_names):
         match_count = len(match['job_contexts'])
         if match_count > best_match_count:
             best_match = match
@@ -65,7 +65,7 @@ def process_rows_simple(fetchflow):
 
 def process_rows_saving_context(fetchflow):
     stats = {}
-    for row, matches in ((row, find_all_jobs(row)) for row in fetchflow):
+    for row, matches in ((row, find_all_job_matches(row)) for row in fetchflow):
         job_title_id = fetchflow.update_job_with_title(row, '')
         fetchflow.update_job_contexts(row, job_title_id, matches)
         update_stats(matches, stats)

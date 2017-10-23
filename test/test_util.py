@@ -40,8 +40,8 @@ class TestUtil(unittest.TestCase):
 
     def test_create_contexts_should_trim_whitespace(self):
         # arrange
-        text = "bli bla blu blö                   keyword                                 lorem ipsum dolor"
+        text = "bli create_result_item_with_contexts blu blö                   keyword                                 lorem ipsum dolor"
         # act
         result = testee.create_contexts(text, 'keyword')
         # assert
-        assert_that(result, contains_inanyorder('...a blu blö keyword lorem ips...'))
+        assert_that(result, contains_inanyorder('...s blu blö keyword lorem ips...'))

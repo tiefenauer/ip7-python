@@ -1,8 +1,6 @@
-import mysql.connector
-
 from src import db
 from src.db import Database
-from src.extractor import jobtitle_extractor
+from src.jobtitle import jobtitle_extractor
 
 conn = db.connect_to(Database.FETCHFLOW)
 cursor = conn.cursor(dictionary=True)

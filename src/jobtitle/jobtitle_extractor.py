@@ -2,6 +2,7 @@ import re
 
 import nltk
 
+from src.jobtitle import jobtitle_matcher
 from src.train.util import create_contexts
 
 regex_fm = r"(in)|(euse)|(frau)"
@@ -11,12 +12,19 @@ regex_mw = r"\s*\(?m\/w\)?"
 
 def find_all_matches(string, job_names):
     for job_name in job_names:
-        jn_m = to_male_form(job_name)
-        jn_f = to_female_form(job_name)
-        regex_jn_m_or_w = r"({})|({})".format(re.escape(jn_m), re.escape(jn_f))
-        for match in re.finditer(regex_jn_m_or_w, string):
-            context_token = determine_context_token(string, match)
-            yield create_result_item(string, context_token)
+        yield jobtitle_matcher.find(string, job_name)
+
+
+def create_result_item_with_contexts(string, match):
+    context_token = determine_context_token(string, match)
+    yield create_result_item(string, context_token)
+
+
+def create_result_item(str, context_token):
+    return {
+        'job_name': context_token,
+        'job_contexts': create_contexts(str, context_token)
+    }
 
 
 def determine_context_token(str, match):
@@ -39,32 +47,11 @@ def determine_context_token(str, match):
     return exact_match
 
 
-def to_male_form(job_name):
-    jn = re.sub('(euse)$', 'eur', job_name)
-    jn = re.sub('(frau)$', 'mann', jn)
-    jn = re.sub('(in)$', '', jn)
-    return jn
-
-
-def to_female_form(job_name):
-    jn = re.sub('(eur)$', 'euse', job_name)
-    jn = re.sub('(mann)$', 'frau', jn)
-    jn = re.sub('(er)$', 'erin', jn)
-    return jn
-
-
 def expand_match(exact_match, regex, string):
     expanded_match = re.match(exact_match + regex, string)
     if expanded_match and expanded_match.start() == 0:
         return expanded_match.string[:expanded_match.end()]
     return None
-
-
-def create_result_item(str, context_token):
-    return {
-        'job_name': context_token,
-        'job_contexts': create_contexts(str, context_token)
-    }
 
 
 def find_job_name_with_highest_occurrence(matches):
