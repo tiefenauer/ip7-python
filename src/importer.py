@@ -34,22 +34,23 @@ class FetchflowImporter(object):
         for row in tqdm(cursor, total=num_total, unit=' rows'):
             yield row
 
-    def update_job(self, row, matches):
-        for match in matches:
-            labeled_text_id = row['id']
-            job_title = match['job_name']
-            last_update = self.curr_datetime;
-            data = (labeled_text_id, job_title, last_update)
-            cursor = self.conn_write.cursor()
-            sql = """INSERT INTO job_titles (labeled_text_id, job_title, last_update) 
-                        VALUES (%s, %s, %s) 
-                        ON DUPLICATE KEY UPDATE 
-                        job_title = VALUES(job_title),
-                        last_update = VALUES(last_update)
-            """
-            cursor.execute(sql, data)
-            job_title_id = cursor.lastrowid
+    def update_job_with_title(self, row, job_title):
+        labeled_text_id = row['id']
+        last_update = self.curr_datetime;
+        cursor = self.conn_write.cursor()
+        sql = """INSERT INTO job_titles (labeled_text_id, job_title, last_update) 
+                    VALUES (%s, %s, %s) 
+                    ON DUPLICATE KEY UPDATE 
+                    job_title = VALUES(job_title),
+                    last_update = VALUES(last_update)
+        """
+        cursor.execute(sql, (labeled_text_id, job_title, last_update))
+        self.conn_write.commit()
+        return cursor.lastrowid
 
+    def update_job_contexts(self, job_title_id, matches):
+        cursor = self.conn_write.cursor()
+        for match in matches:
             # insert contexts
             for job_context in match['job_contexts']:
                 cursor.execute("""INSERT INTO job_contexts (job_context, last_update) VALUES (%s, %s)""",
@@ -57,7 +58,14 @@ class FetchflowImporter(object):
                 cursor.execute(
                     """INSERT INTO job_title_contexts (fk_job_title, fk_job_context, last_update) VALUES (%s, %s, %s)""",
                     (job_title_id, cursor.lastrowid, self.curr_datetime))
-            self.conn_write.commit()
+        self.conn_write.commit()
+
+    def truncate_results(self):
+        cursor = self.conn_write.cursor()
+        cursor.execute("""TRUNCATE job_contexts""")
+        cursor.execute("""TRUNCATE  job_title_contexts""")
+        cursor.execute("""TRUNCATE job_titles""")
+        self.conn_write.commit()
 
 
 class JobNameImporter(object):

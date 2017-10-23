@@ -14,23 +14,23 @@ def create_row(dom_str, id=1):
 
 
 class TestFullTextSearch(unittest.TestCase):
-    def test_process_row_should_return_matches(self):
+    def test_find_all_jobs_should_return_matches(self):
         # arrange
         row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
         # act
-        result = testee.process_row(row, ['Taxi', 'Bayern'])
+        result = testee.find_all_jobs(row, ['Taxi', 'Bayern'])
         # assert
         assert_that(result, only_contains(
             result_item_with_job('Taxi'),
             result_item_with_job('Bayern')
         ))
 
-    def test_process_row_should_not_return_empty_matches(self):
+    def test_find_all_jobs_should_not_return_empty_matches(self):
         # arrance
         row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
         testee.job_names = ['Arzt']
         # act
-        result = testee.process_row(row)
+        result = testee.find_all_jobs(row)
         #
         assert_that(list(result), is_(empty()))
 

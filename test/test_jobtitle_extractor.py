@@ -8,29 +8,29 @@ from src.extractor import jobtitle_extractor as testee
 
 
 class TestJobTitleExtractor(unittest.TestCase):
-    def test_find_matches_should_only_return_matched_job_names(self):
+    def test_find_all_matches_should_only_return_matched_job_names(self):
         # arrange
         dom = 'Lorem Arzt ipsum dolor sit amet, Bauer consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.'
         # act
-        result = testee.find_matches(dom, ['Arzt', 'Lehrer', 'Bauer'])
+        result = testee.find_all_matches(dom, ['Arzt', 'Lehrer', 'Bauer'])
         # assert
         assert_that(len(list(result)), is_(2))
 
-    def test_find_matches_returns_single_match_with_context(self):
+    def test_find_all_matches_returns_single_match_with_context(self):
         # arrange
         str = 'Wir suchen einen 20-jährigen Schreiner mit 30 Jahren Erfahrung'
         # act
-        result = testee.find_matches(str, ['Schreiner'])
+        result = testee.find_all_matches(str, ['Schreiner'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Schreiner', {'...-jährigen Schreiner mit 30 Ja...'})
         ))
 
-    def test_find_matches_returns_multiple_matches_with_context(self):
+    def test_find_all_matches_returns_multiple_matches_with_context(self):
         # arrange
         string = "Wir suchen einen Schreiner und gleich nochmals einen Schreiner, der bei uns arbeitet"
         # act
-        result = testee.find_matches(string, ['Schreiner'])
+        result = testee.find_all_matches(string, ['Schreiner'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Schreiner', {
@@ -39,138 +39,138 @@ class TestJobTitleExtractor(unittest.TestCase):
             })
         ))
 
-    def test_find_matches_search_male_finds_female_forms_in(self):
+    def test_find_all_matches_search_male_finds_female_forms_in(self):
         # arrange
         string = "Wir suchen eine Schreinerin welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Schreiner'])
+        result = testee.find_all_matches(string, ['Schreiner'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Schreinerin', {'...chen eine Schreinerin welche ge...'})
         ))
 
-    def test_find_matches_search_male_finds_female_forms_euse(self):
+    def test_find_all_matches_search_male_finds_female_forms_euse(self):
         # arrange
         string = "Wir suchen eine Coiffeuse welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Coiffeur'])
+        result = testee.find_all_matches(string, ['Coiffeur'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Coiffeuse', {'...chen eine Coiffeuse welche ge...'})
         ))
 
-    def test_find_matches_search_male_finds_female_forms_frau(self):
+    def test_find_all_matches_search_male_finds_female_forms_frau(self):
         # arrange
         string = "Wir suchen eine Kauffrau welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Kaufmann'])
+        result = testee.find_all_matches(string, ['Kaufmann'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Kauffrau', {'...chen eine Kauffrau welche ge...'})
         ))
 
-    def test_find_matches_search_male_MANN_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_male_MANN_match_contains_male_slash_female(self):
         # Suche nach KaufMANN
         # arrange
         string = "Wir suchen eine(n) Kaufmann/-frau welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Kaufmann'])
+        result = testee.find_all_matches(string, ['Kaufmann'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Kaufmann/-frau', {'...n eine(n) Kaufmann/-frau welche ge...'})
         ))
 
-    def test_find_matches_search_FRAU_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_FRAU_match_contains_male_slash_female(self):
         # Suche nach KaufFRAU
         # arrange
         string = "Wir suchen eine(n) Kaufmann/-frau welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Kauffrau'])
+        result = testee.find_all_matches(string, ['Kauffrau'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Kaufmann/-frau', {'...n eine(n) Kaufmann/-frau welche ge...'})
         ))
 
-    def test_find_matches_search_male_EUR_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_male_EUR_match_contains_male_slash_female(self):
         # Suche nach CoiffEUR
         # arrange
         string = "Wir suchen eine(n) Coiffeur/-euse welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Coiffeur'])
+        result = testee.find_all_matches(string, ['Coiffeur'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Coiffeur/-euse', {'...n eine(n) Coiffeur/-euse welche ge...'})
         ))
 
-    def test_find_matches_search_male_EUSE_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_male_EUSE_match_contains_male_slash_female(self):
         # Suche nach CoiffEUSE
         # arrange
         string = "Wir suchen eine(n) Coiffeur/-euse welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Coiffeuse'])
+        result = testee.find_all_matches(string, ['Coiffeuse'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Coiffeur/-euse', {'...n eine(n) Coiffeur/-euse welche ge...'})
         ))
 
-    def test_find_matches_search_male_ER_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_male_ER_match_contains_male_slash_female(self):
         # Suche nach SchneidER
         # arrange
         string = "Wir suchen eine(n) Schreiner/-in welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Schreiner'])
+        result = testee.find_all_matches(string, ['Schreiner'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Schreiner/-in', {'...n eine(n) Schreiner/-in welche ge...'})
         ))
 
-    def test_find_matches_search_male_ERIN_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_male_ERIN_match_contains_male_slash_female(self):
         # Suche nach SchneidER
         # arrange
         string = "Wir suchen eine(n) Schreiner/-in welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Schreinerin'])
+        result = testee.find_all_matches(string, ['Schreinerin'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Schreiner/-in', {'...n eine(n) Schreiner/-in welche ge...'})
         ))
 
-    def test_find_matches_search_female_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_female_match_contains_male_slash_female(self):
         # Suche nach KaufFRAU, Coiffeur, Schreiner: Result Item enthält Kaufmann/-frau, Coiffeur/-euse, Schreiner/-in
         # arrange
         string = "Wir suchen eine(n) Kaufmann/-frau welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Kauffrau'])
+        result = testee.find_all_matches(string, ['Kauffrau'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Kaufmann/-frau', {'...n eine(n) Kaufmann/-frau welche ge...'})
         ))
 
-    def test_find_matches_search_male_match_contains_male_slash_female(self):
+    def test_find_all_matches_search_male_match_contains_male_slash_female(self):
         # Suche nach Kaufmann, Coiffeur, Schreiner: Result Item enthält Kaufmann/-frau, Coiffeur/-euse, Schreiner/-in
         # arrange
         string = "Wir suchen eine(n) Kaufmann/-frau welche gerne arbeitet"
         # act
-        result = testee.find_matches(string, ['Kauffrau'])
+        result = testee.find_all_matches(string, ['Kauffrau'])
         # assert
         assert_that(result, only_contains(
             result_item_with_name_and_context('Kaufmann/-frau', {'...n eine(n) Kaufmann/-frau welche ge...'})
         ))
 
     @unittest.skip("to do")
-    def test_find_matches_search_female_finds_male_forms(self):
+    def test_find_all_matches_search_female_finds_male_forms(self):
         pass
 
     @unittest.skip("to do")
-    def test_find_matches_finds_plurals(self):
+    def test_find_all_matches_finds_plurals(self):
         pass
 
     @unittest.skip("to do")
-    def test_find_matches_finds_hypenated(self):
+    def test_find_all_matches_finds_hypenated(self):
         pass
 
     @unittest.skip("to do")
-    def test_find_matches_includes_brackets_mw(self):
+    def test_find_all_matches_includes_brackets_mw(self):
         pass
 
     def test_determine_context_token_simple_returns_token(self):
@@ -254,6 +254,18 @@ class TestJobTitleExtractor(unittest.TestCase):
         assert_that(testee.to_female_form("Schreiner"), is_("Schreinerin"))
         assert_that(testee.to_female_form("Coiffeur"), is_("Coiffeuse"))
         assert_that(testee.to_female_form("Kaufmann"), is_("Kauffrau"))
+
+    def test_find_job_name_with_highest_occurrence_returns_highest_occurrence(self):
+        # arrange
+        matches = [
+            {'job_name': 'CEO', 'job_contexts': ['context 1', 'context 2', 'context 3']},
+            {'job_name': 'Schreiner', 'job_contexts': ['context 1', 'context 2', 'context 3', 'context 4']},
+            {'job_name': 'Sekretärin', 'job_contexts': ['context 1', 'context 2']},
+        ]
+        # act
+        result = testee.find_job_name_with_highest_occurrence(matches)
+        # assert
+        assert_that(result, is_('Schreiner'))
 
 
 def result_item_with_name_and_context(job_name, context):

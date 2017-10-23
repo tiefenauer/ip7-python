@@ -9,7 +9,7 @@ regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 regex_mw = r"\s*\(?m\/w\)?"
 
 
-def find_matches(string, job_names):
+def find_all_matches(string, job_names):
     for job_name in job_names:
         jn_m = to_male_form(job_name)
         jn_f = to_female_form(job_name)
@@ -65,6 +65,14 @@ def create_result_item(str, context_token):
         'job_name': context_token,
         'job_contexts': create_contexts(str, context_token)
     }
+
+
+def find_job_name_with_highest_occurrence(matches):
+    return next(
+        iter(
+            sorted(list(matches), key=lambda m: len(m['job_contexts']), reverse=True)
+        )
+    )['job_name']
 
 
 def tokenize_dom(dom_elements):
