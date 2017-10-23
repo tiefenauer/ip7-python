@@ -3,7 +3,7 @@ import re
 import nltk
 
 from src.jobtitle import jobtitle_matcher
-from src.train.util import create_contexts
+from src.train.util import create_contexts, flatten
 
 regex_fm = r"(in)|(euse)|(frau)"
 regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
@@ -12,7 +12,8 @@ regex_mw = r"\s*\(?m\/w\)?"
 
 def find_all_matches(string, job_names):
     for job_name in job_names:
-        yield jobtitle_matcher.find(string, job_name)
+        for match in jobtitle_matcher.find(string, job_name):
+            yield match
 
 
 def create_result_item_with_contexts(string, match):

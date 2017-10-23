@@ -22,7 +22,7 @@ class TestFullTextSearch(unittest.TestCase):
         # act
         result = testee.find_all_job_matches(row, ['Taxi', 'Bayern'])
         # assert
-        assert_that(flatten(result), only_contains(
+        assert_that(result, only_contains(
             match_item_for_job_name('Taxi'),
             match_item_for_job_name('Bayern')
         ))
@@ -33,7 +33,7 @@ class TestFullTextSearch(unittest.TestCase):
         # act
         result = testee.find_all_job_matches(row, ['Arzt'])
         #
-        assert_that(list(flatten(result)), is_(empty()))
+        assert_that(list(result), is_(empty()))
 
 
 def result_item_with_job(job_name):
