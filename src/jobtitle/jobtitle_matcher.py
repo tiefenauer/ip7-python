@@ -10,8 +10,8 @@ def find(string, job_name):
 
     pattern = pattern_suffix.format(jn_m)  # match suffix form: Schneiderin, Coiffeuse, Kauffrau
     pattern += '|' + pattern_slashed.format(jn_m)  # match slashed form: Schneider/-in, Coiffeur/-euse, Kaufmann/-frau
-    pattern += '|' + jn_f # match female form: Schneiderin, Coiffeuse, Kauffrau
-    pattern += '|' + jn_m # match male form: Schneider, Coiffeur, Kaufmann
+    pattern += '|' + jn_f  # match female form: Schneiderin, Coiffeuse, Kauffrau
+    pattern += '|' + jn_m  # match male form: Schneider, Coiffeur, Kaufmann
     return re.finditer(pattern, string)
 
 
@@ -27,3 +27,30 @@ def to_female_form(job_name):
     jn = re.sub('(mann)$', 'frau', jn)
     jn = re.sub('(er)$', 'erin', jn)
     return re.escape(jn)
+
+
+def to_slashed_form(job_name):
+    jn = re.sub('(eur)$', 'eur/euse', job_name)
+    jn = re.sub('(mann)$', 'mann/frau', jn)
+    jn = re.sub('(er)$', 'er/in', jn)
+    return jn
+
+
+def to_slashed_hyphen_form(job_name):
+    jn = re.sub('(eur)$', 'eur/-euse', job_name)
+    jn = re.sub('(mann)$', 'mann/-frau', jn)
+    jn = re.sub('(er)$', 'er/-in', jn)
+    return jn
+
+
+def to_mw_form(job_name):
+    return to_male_form(job_name) + ' (m/w)'
+
+
+def create_search_group(job_name):
+    return (to_male_form(job_name),
+            to_female_form(job_name),
+            to_slashed_form(job_name),
+            to_slashed_hyphen_form(job_name),
+            to_mw_form(job_name)
+            )

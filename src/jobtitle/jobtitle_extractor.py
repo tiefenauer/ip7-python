@@ -10,10 +10,11 @@ regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 regex_mw = r"\s*\(?m\/w\)?"
 
 
-def find_all_matches(string, job_names):
+def find_all_matches(tags, job_names):
+    html_text = "".join(str(tag) for tag in tags)
     for job_name in job_names:
-        for match in jobtitle_matcher.find(string, job_name):
-            yield match
+        if any(job_name_variant in html_text for job_name_variant in jobtitle_matcher.create_search_group(job_name)):
+            yield job_name
 
 
 def create_result_item_with_contexts(string, match):

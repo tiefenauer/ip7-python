@@ -1,12 +1,12 @@
 import argparse
-import itertools
 import logging
+import operator
 import sys
 
-from src.preproc import preprocess
 from src.importer.fetchflow_importer import FetchflowImporter
 from src.importer.job_name_importer import JobNameImporter
 from src.jobtitle.jobtitle_extractor import find_all_matches
+from src.preproc import preprocess
 from src.stats import print_stats
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -35,21 +35,19 @@ args = parser.parse_args()
 _job_name_cached = JobNameImporter()
 
 
-def find_all(text, job_names=_job_name_cached):
-    for match in find_all_matches(text, job_names):
+def find_all(tags, job_names=_job_name_cached):
+    for match in find_all_matches(tags, job_names):
         yield match
 
 
-def find_best(text, job_names=_job_name_cached):
-    best_match = None
-    best_count = 0
-    grouped = itertools.groupby(find_all(text, job_names), key=lambda m: m.group())
-    for (k, g) in grouped:
-        count = len(list(g))
-        if count > best_count:
-            best_count = count
-            best_match = k
-    return best_match, best_count
+def find_best(tags, job_names=_job_name_cached):
+    d = {}
+    matches = find_all(tags, job_names)
+    for job_name in matches:
+        if job_name not in d:
+            d[job_name] = 0
+        d[job_name] += 1
+    return next(iter(sorted(d.items(), reverse=True, key=operator.itemgetter(1))), (None, 0))
 
 
 def update_stats(matches, stats):
@@ -66,8 +64,8 @@ if __name__ == '__main__':
         if args.truncate:
             fetchflow.truncate_results()
         for row in (row for row in fetchflow if row['dom']):
-            text = "".join(str(tag) for tag in preprocess(row['dom']))
-            (job_title, job_count) = find_best(text)
+            relevant_tags = preprocess(row['dom'])
+            (job_title, job_count) = find_best(relevant_tags)
             if job_title is not None:
                 fetchflow.update_job_with_title(row, job_title, job_count)
     print_stats(stats)

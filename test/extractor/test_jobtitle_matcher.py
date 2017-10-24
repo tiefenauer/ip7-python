@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import assert_that, only_contains, is_
+from hamcrest import assert_that, only_contains, is_, contains_inanyorder
 from hamcrest.core.base_matcher import BaseMatcher
 
 from src.jobtitle import jobtitle_matcher as testee
@@ -16,6 +16,21 @@ class TestJobTitleMatcher(unittest.TestCase):
         assert_that(testee.to_female_form("Schreiner"), is_("Schreinerin"))
         assert_that(testee.to_female_form("Coiffeur"), is_("Coiffeuse"))
         assert_that(testee.to_female_form("Kaufmann"), is_("Kauffrau"))
+
+    def test_to_slashed_form_returns_hyphenated(self):
+        assert_that(testee.to_slashed_form('Schreiner'), is_('Schreiner/in'))
+        assert_that(testee.to_slashed_form('Coiffeur'), is_('Coiffeur/euse'))
+        assert_that(testee.to_slashed_form('Kaufmann'), is_('Kaufmann/frau'))
+
+    def test_to_slashed_hyphen_form_returns_slashed_hyphen(self):
+        assert_that(testee.to_slashed_hyphen_form('Schreiner'), is_('Schreiner/-in'))
+        assert_that(testee.to_slashed_hyphen_form('Coiffeur'), is_('Coiffeur/-euse'))
+        assert_that(testee.to_slashed_hyphen_form('Kaufmann'), is_('Kaufmann/-frau'))
+
+    def test_to_mw_form_returns_mw_form(self):
+        assert_that(testee.to_mw_form('Schreinerin'), is_('Schreiner (m/w)'))
+        assert_that(testee.to_mw_form('Coiffeuse'), is_('Coiffeur (m/w)'))
+        assert_that(testee.to_mw_form('Kauffrau'), is_('Kaufmann (m/w)'))
 
     def test_find_single_match(self):
         # arrange / act
@@ -75,6 +90,20 @@ class TestJobTitleMatcher(unittest.TestCase):
             match_item_for_job_name('Schreiner'),
             match_item_for_job_name('Schreinerin')
         ))
+
+    def test_create_search_group(self):
+        # arrange
+        job_name = 'Schreiner'
+        # act
+        result = testee.create_search_group(job_name)
+        # assert
+        assert_that(result, contains_inanyorder('Schreiner',
+                                                'Schreinerin',
+                                                'Schreiner/-in',
+                                                'Schreiner/in',
+                                                'Schreiner (m/w)'
+                                                )
+                    )
 
 
 def match_item_for_job_name(job_name):
