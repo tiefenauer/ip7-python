@@ -24,4 +24,4 @@ if __name__ == '__main__':
         if args.truncate:
             x28_importer.truncate_tables()
         for text in tqdm(x28_importer, total=x28_importer.num_files, unit=' files'):
-            x28_importer.insert(json.loads(text))
+            x28_importer.insert_x28(json.loads(text))

@@ -1,20 +1,29 @@
 from bs4 import BeautifulSoup
+from lxml import etree
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
 from src import html_extractor
+from src.html_extractor import remove_all_attrs, strip_content
 
 stopwords_de = set(stopwords.words('german'))
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
+xml_parser = etree.HTMLParser(strip_cdata=False)
 
 
 def preprocess(markup):
     soup = parse(markup)
-    return ' '.join(tag.getText() for tag in remove_html_clutter(soup))
+    return set(tag for tag in
+               (strip_content(tag) for tag in
+                (remove_all_attrs(tag) for tag in soup.findAll(html_extractor.RELEVANT_TAGS))
+                )
+               if len(tag.getText(strip=True)) > 2
+               )
 
 
 def parse(markup):
-    return BeautifulSoup(markup, 'html.parser')
+    # lxml parser removes the CDATA section!
+    return BeautifulSoup(markup, 'lxml')
 
 
 def remove_html_clutter(soup):

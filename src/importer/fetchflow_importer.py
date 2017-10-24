@@ -28,7 +28,7 @@ class FetchflowImporter(object):
         self.num_total = cursor.fetchone()['num_total']
         logging.info('processing {} rows'.format(self.num_total))
 
-        cursor.execute("SELECT id, title, contentbytes AS dom FROM labeled_text")
+        cursor.execute("SELECT id, title, CONVERT(contentbytes USING utf8) AS dom FROM labeled_text")
         for row in tqdm(cursor, total=self.num_total, unit=' rows'):
             yield row
 

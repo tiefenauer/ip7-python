@@ -66,7 +66,7 @@ if __name__ == '__main__':
         if args.truncate:
             fetchflow.truncate_results()
         for row in (row for row in fetchflow if row['dom']):
-            text = preprocess(row['dom'])
+            text = "".join(str(tag) for tag in preprocess(row['dom']))
             (job_title, job_count) = find_best(text)
             if job_title is not None:
                 fetchflow.update_job_with_title(row, job_title, job_count)

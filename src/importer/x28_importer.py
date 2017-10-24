@@ -15,11 +15,13 @@ class X28Importer(object):
         self.num_files = len([name for name in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, name))])
 
     def __enter__(self):
-        self.conn = db.connect_to(Database.X28)
+        self.conn_x28 = db.connect_to(Database.X28)
+        self.conn_fetchflow = db.connect_to(Database.X28_FETCHFLOW)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.conn.close()
+        self.conn_x28.close()
+        self.conn_fetchflow.close()
 
     def __iter__(self):
         logging.info('Processing {} files...'.format(self.num_files))
@@ -27,13 +29,13 @@ class X28Importer(object):
             with open(os.path.join(self.dirname, fname), encoding='utf-8') as file:
                 yield file.read()
 
-    def insert(self, jsonobj):
+    def insert_x28(self, jsonobj):
         x28_id = jsonobj['id']
         title = jsonobj['title']
         html = jsonobj['htmlcontent']
         plaintext = jsonobj['plaincontent']
         url = jsonobj['url']
-        cursor = self.conn.cursor()
+        cursor = self.conn_x28.cursor()
         sql = r"""INSERT INTO labeled_jobs(x28_id, html, plaintext, url, title) 
                           VALUES (%s,%s,%s,%s,%s)
                           ON CONFLICT(x28_id) DO UPDATE
@@ -43,9 +45,21 @@ class X28Importer(object):
                               title = excluded.title
                               """
         cursor.execute(sql, (x28_id, html, plaintext, url, title))
-        self.conn.commit()
+        self.conn_x28.commit()
+
+    def insert_fetchflow(self, fetchflow_id, data):
+        content = r"".join(str(tag) for tag in data)
+        cursor = self.conn_fetchflow.cursor()
+        cursor.execute("""INSERT into labeled_text(fetchflow_id, content) VALUES(%s, %s)""", (fetchflow_id, content))
+        self.conn_fetchflow.commit()
 
     def truncate_tables(self):
         logging.info('truncating target tables...')
-        cursor = self.conn.cursor()
+        cursor = self.conn_x28.cursor()
         cursor.execute("""TRUNCATE labeled_jobs""")
+
+    def truncate_fetchflow(self):
+        logging.info('truncating fetchflow tables...')
+        cursor = self.conn_fetchflow.cursor()
+        cursor.execute("""TRUNCATE labeled_text""")
+        self.conn_fetchflow.commit()

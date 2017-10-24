@@ -6,7 +6,8 @@ import psycopg2
 
 class Database(Enum):
     FETCHFLOW = 1,
-    X28 = 2
+    X28 = 2,
+    X28_FETCHFLOW = 3
 
 
 # credentials
@@ -27,6 +28,16 @@ _config = {
             'user': 'postgres',
             'password': 'postgres',
             'database': 'x28'
+        },
+        'initializer': lambda cred: _create_postgres_connection(cred),
+        'connection': None
+    },
+    Database.X28_FETCHFLOW: {
+        'credentials': {
+            'host': '127.0.0.1',
+            'user': 'postgres',
+            'password': 'postgres',
+            'database': 'fetchflow'
         },
         'initializer': lambda cred: _create_postgres_connection(cred),
         'connection': None
