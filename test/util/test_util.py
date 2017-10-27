@@ -2,7 +2,7 @@ import unittest
 
 from hamcrest import *
 
-from src.train import util as testee
+from src.util import util as testee
 
 lorem_ipsum = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut ' \
               'labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores ' \

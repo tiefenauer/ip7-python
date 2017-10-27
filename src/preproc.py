@@ -3,8 +3,8 @@ from lxml import etree
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
-from src import html_extractor
-from src.html_extractor import remove_all_attrs, strip_content
+from src.util import html_util
+from src.util.html_util import remove_all_attrs, strip_content
 
 stopwords_de = set(stopwords.words('german'))
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
@@ -15,7 +15,7 @@ def preprocess(markup):
     soup = parse(markup)
     return set(tag for tag in
                (strip_content(tag) for tag in
-                (remove_all_attrs(tag) for tag in soup.findAll(html_extractor.RELEVANT_TAGS))
+                (remove_all_attrs(tag) for tag in soup.findAll(html_util.RELEVANT_TAGS))
                 )
                if len(tag.getText(strip=True)) > 2
                )
@@ -28,7 +28,7 @@ def parse(markup):
 
 def remove_html_clutter(soup):
     tags = []
-    html_extractor.extract_tags(soup, tags)
+    html_util.extract_tags(soup, tags)
     return tags
 
 

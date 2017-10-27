@@ -3,11 +3,21 @@ import re
 import nltk
 
 from src.jobtitle import jobtitle_matcher
-from src.train.util import create_contexts
+from src.util.util import create_contexts
 
 regex_fm = r"(in)|(euse)|(frau)"
 regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 regex_mw = r"\s*\(?m\/w\)?"
+
+
+def extract_job_titles(tag_str, job_names):
+    for job_name in job_names:
+        variants = jobtitle_matcher.create_search_group(job_name)
+        if any(job_name_variant in tag_str for job_name_variant in variants):
+            count = 0
+            for variant in variants:
+                count += count_variant(variant, tag_str)
+            yield (job_name, count)
 
 
 def find_all_matches(tags, job_names):
@@ -28,51 +38,11 @@ def count_variant(variant, string):
     return len(matches)
 
 
-def create_result_item_with_contexts(string, match):
-    context_token = determine_context_token(string, match)
-    yield create_result_item(string, context_token)
-
-
 def create_result_item(str, context_token):
     return {
         'job_name': context_token,
         'job_contexts': create_contexts(str, context_token)
     }
-
-
-def determine_context_token(str, match):
-    start = match.start()
-    end = match.end()
-    str_sub = str[start:]
-    exact_match = str[start:end]
-    # check if match can be expanded to include in, euse and frau
-    match_fm = expand_match(exact_match, regex_fm, str_sub)
-    if (match_fm):
-        return match_fm
-    # check if match can be expanded to include /-in, /-euse and /-frau
-    match_fm_slashed = expand_match(exact_match, regex_fm_slashed, str_sub)
-    if match_fm_slashed:
-        return match_fm_slashed
-    # check if match can be expanded to include (m/w)
-    match_mw = expand_match(exact_match, regex_mw, str_sub)
-    if match_mw:
-        return match_mw
-    return exact_match
-
-
-def expand_match(exact_match, regex, string):
-    expanded_match = re.match(exact_match + regex, string)
-    if expanded_match and expanded_match.start() == 0:
-        return expanded_match.string[:expanded_match.end()]
-    return None
-
-
-def find_job_name_with_highest_occurrence(matches):
-    return next(
-        iter(
-            sorted(list(matches), key=lambda m: len(m['job_contexts']), reverse=True)
-        )
-    )['job_name']
 
 
 def tokenize_dom(dom_elements):

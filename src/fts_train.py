@@ -5,7 +5,7 @@ import sys
 from src.classifier import classifier_jobtitle
 from src.importer.data_fetchflow import FetchflowImporter
 from src.preproc import preprocess
-from src.stats import print_stats
+from src.util.stats import print_stats
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
