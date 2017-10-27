@@ -1,10 +1,10 @@
-from src.importer.fetchflow_importer import FetchflowImporter
-from src.importer.x28_importer import X28Importer
+from src.importer.data_preprocessed import PreprocessedData
+from src.importer.data_fetchflow import FetchflowImporter
 from src.preproc import preprocess
 
 if __name__ == '__main__':
-    with FetchflowImporter() as fetchflow, X28Importer() as x28_importer:
-        x28_importer.truncate_fetchflow()
+    with FetchflowImporter() as fetchflow, PreprocessedData() as preprocessed_data:
+        preprocessed_data.truncate_fetchflow()
         for (fetchflow_id, dom) in ((row['id'], row['dom']) for row in fetchflow if row['dom']):
             result = preprocess(dom)
-            x28_importer.insert_fetchflow(fetchflow_id, result)
+            preprocessed_data.insert(fetchflow_id, result)

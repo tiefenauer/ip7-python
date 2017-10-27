@@ -3,7 +3,7 @@ import re
 import nltk
 
 from src.jobtitle import jobtitle_matcher
-from src.train.util import create_contexts, flatten
+from src.train.util import create_contexts
 
 regex_fm = r"(in)|(euse)|(frau)"
 regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
@@ -13,8 +13,19 @@ regex_mw = r"\s*\(?m\/w\)?"
 def find_all_matches(tags, job_names):
     html_text = "".join(str(tag) for tag in tags)
     for job_name in job_names:
-        if any(job_name_variant in html_text for job_name_variant in jobtitle_matcher.create_search_group(job_name)):
-            yield job_name
+        variants = jobtitle_matcher.create_search_group(job_name)
+        if any(job_name_variant in html_text for job_name_variant in variants):
+            count = 0
+            for variant in variants:
+                count += count_variant(variant, html_text)
+            yield (count, job_name)
+
+
+def count_variant(variant, string):
+    # \b...\b(?![\/]) --> match on word boundary but do not consider '/' as a word boundary
+    pattern = re.compile(r'\b%s\b(?![\/])' % variant)
+    matches = re.findall(pattern, string)
+    return len(matches)
 
 
 def create_result_item_with_contexts(string, match):

@@ -91,7 +91,7 @@ class TestJobTitleMatcher(unittest.TestCase):
             match_item_for_job_name('Schreinerin')
         ))
 
-    def test_create_search_group(self):
+    def test_create_search_group_returns_search_group(self):
         # arrange
         job_name = 'Schreiner'
         # act
@@ -104,6 +104,13 @@ class TestJobTitleMatcher(unittest.TestCase):
                                                 'Schreiner (m/w)'
                                                 )
                     )
+
+    def test_create_search_group_does_not_contain_duplicates(self):
+        # arrange
+        job_name = "Koch"
+        # act
+        result = testee.create_search_group(job_name)
+        assert_that(result, contains_inanyorder('Koch', 'Koch (m/w)'), "For job names with no easy female form do not return duplicates")
 
 
 def match_item_for_job_name(job_name):

@@ -8,6 +8,54 @@ from src.jobtitle import jobtitle_extractor as testee
 
 
 class TestJobTitleExtractor(unittest.TestCase):
+    def test_count_variant_returns_correct_count(self):
+        # arrange
+        string = '<p>Schneider Schneiderin Schneider/-in Schneider/in</p>'
+        # act
+        result = testee.count_variant('Schneider', string)
+        # assert
+        assert_that(result, is_(1), "When counting a variant only count exact matches of that variant")
+
+    def test_find_all_returns_all_matches_with_count(self):
+        # arrange
+        tags = [
+            '<p>Assistent</p>',
+            '<p>Koch Koch</p>',
+            '<p>Schneider Schneider Schneider</p>'
+        ]
+        # act
+        result = testee.find_all_matches(tags, ['Koch', 'Schneider', 'Assistent'])
+        # assert
+        assert_that(result, contains_inanyorder(
+            (1, 'Assistent'),
+            (2, 'Koch'),
+            (3, 'Schneider')
+        ))
+
+    def test_find_all_returns_variants_as_one_suffix_er(self):
+        # arrange
+        tags = ['<p>Schneider Schneiderin Schneider/-in Schneider/in Schneider (m/w)</p>']
+        # act
+        result = testee.find_all_matches(tags, ['Schneider'])
+        # assert
+        assert_that(result, contains_inanyorder((5, 'Schneider')))
+
+    def test_find_all_returns_variants_as_one_suffix_eur(self):
+        # arrange
+        tags = ['<p>Coiffeur Coiffeuse Coiffeur/-euse Coiffeur/euse Coiffeur (m/w)</p>']
+        # act
+        result = testee.find_all_matches(tags, ['Coiffeur'])
+        # assert
+        assert_that(result, contains_inanyorder((5, 'Coiffeur')))
+
+    def test_find_all_returns_variants_as_one_suffix_mann(self):
+        # arrange
+        tags = ['<p>Kaufmann Kauffrau Kaufmann/-frau Kaufmann/frau Kaufmann (m/w)</p>']
+        # act
+        result = testee.find_all_matches(tags, ['Kaufmann'])
+        # assert
+        assert_that(result, contains_inanyorder((5, 'Kaufmann')))
+
     def test_determine_context_token_simple_returns_token(self):
         # act
         str = 'create_result_item_with_contexts Schreiner create_result_item_with_contexts'

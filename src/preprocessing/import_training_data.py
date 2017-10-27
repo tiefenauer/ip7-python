@@ -1,13 +1,11 @@
 import argparse
 import json
 import logging
-
 import sys
 
 from tqdm import tqdm
 
-from src.importer.x28_importer import X28Importer
-
+from src.importer.data_train_importer import X28ImporterJson
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -18,10 +16,9 @@ parser.add_argument('-t', '--truncate', action='store_true',
                     help='truncate target tables before extraction (default=True)')
 args = parser.parse_args()
 
-
 if __name__ == '__main__':
-    with X28Importer() as x28_importer:
+    with X28ImporterJson() as data_train_importer:
         if args.truncate:
-            x28_importer.truncate_tables()
-        for text in tqdm(x28_importer, total=x28_importer.num_files, unit=' files'):
-            x28_importer.insert_x28(json.loads(text))
+            data_train_importer.truncate_tables()
+        for text in tqdm(data_train_importer, total=data_train_importer.num_files, unit=' files'):
+            data_train_importer.insert(json.loads(text))

@@ -3,9 +3,7 @@ import unittest
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
-from src import train_fulltextsearch as testee
-from src.train.util import flatten
-from test.extractor.test_jobtitle_matcher import match_item_for_job_name
+import src.classifier.classifier_jobtitle as testee
 
 
 def create_row(dom_str, id=1):
@@ -15,31 +13,42 @@ def create_row(dom_str, id=1):
     }
 
 
-class TestFullTextSearch(unittest.TestCase):
+class TestJobTitleClassifier(unittest.TestCase):
     def test_find_all_should_return_matches(self):
         # arrange
-        row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
+        dom = '<p>Franz jagt im komplett verwahrlosten Taxi quer durch Bayern</p>'
         # act
-        result = testee.find_all(row, ['Taxi', 'Bayern'])
+        result = testee.find_all(dom, ['Taxi', 'Bayern'])
         # assert
-        assert_that(result, only_contains(
-            match_item_for_job_name('Taxi'),
-            match_item_for_job_name('Bayern')
+        assert_that(result, contains_inanyorder(
+            (1, 'Taxi'),
+            (1, 'Bayern')
+        ))
+
+    def test_find_all_multiple_should_return_all_matches(self):
+        # arrange
+        dom = '<p>Taxi Taxi Bayern Bayern Bayern</p>'
+        # act
+        result = testee.find_all(dom, ['Taxi', 'Bayern'])
+        # assert
+        assert_that(result, contains_inanyorder(
+            (2, 'Taxi'),
+            (3, 'Bayern')
         ))
 
     def test_find_all_should_not_return_empty_matches(self):
         # arrance
-        row = create_row('Franz jagt im komplett verwahrlosten Taxi quer durch Bayern')
+        dom = '<p>Franz jagt im komplett verwahrlosten Taxi quer durch Bayern</p>'
         # act
-        result = testee.find_all(row, ['Arzt'])
+        result = testee.find_all(dom, ['Arzt'])
         #
         assert_that(list(result), is_(empty()))
 
     def test_find_best_should_return_best_match(self):
         # arrange
-        row = create_row('Schneider Schneider Schneider Koch Koch Koch Koch Sekretär')
+        dom = '<p>Schneider Schneider Schneider Koch Koch Koch Koch Sekretär</p>'
         # act
-        (result, count) = testee.find_best(row, ['Schneider', 'Koch', 'Sekretär'])
+        (result, count) = testee.find_best(dom, ['Schneider', 'Koch', 'Sekretär'])
         # assert
         assert_that(result, is_('Koch'))
         assert_that(count, is_(4))

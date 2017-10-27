@@ -1,11 +1,9 @@
 import argparse
 import logging
-import operator
 import sys
 
-from src.importer.fetchflow_importer import FetchflowImporter
-from src.importer.job_name_importer import JobNameImporter
-from src.jobtitle.jobtitle_extractor import find_all_matches
+from src.classifier import classifier_jobtitle
+from src.importer.data_fetchflow import FetchflowImporter
 from src.preproc import preprocess
 from src.stats import print_stats
 
@@ -32,23 +30,6 @@ parser.add_argument('-c', '--save_contexts', action='store_true',
                          'context information or alternatives will be stored!')
 args = parser.parse_args()
 
-_job_name_cached = JobNameImporter()
-
-
-def find_all(tags, job_names=_job_name_cached):
-    for match in find_all_matches(tags, job_names):
-        yield match
-
-
-def find_best(tags, job_names=_job_name_cached):
-    d = {}
-    matches = find_all(tags, job_names)
-    for job_name in matches:
-        if job_name not in d:
-            d[job_name] = 0
-        d[job_name] += 1
-    return next(iter(sorted(d.items(), reverse=True, key=operator.itemgetter(1))), (None, 0))
-
 
 def update_stats(matches, stats):
     for match in matches:
@@ -65,7 +46,7 @@ if __name__ == '__main__':
             fetchflow.truncate_results()
         for row in (row for row in fetchflow if row['dom']):
             relevant_tags = preprocess(row['dom'])
-            (job_title, job_count) = find_best(relevant_tags)
+            (job_title, job_count) = classifier_jobtitle.find_best(relevant_tags)
             if job_title is not None:
                 fetchflow.update_job_with_title(row, job_title, job_count)
     print_stats(stats)

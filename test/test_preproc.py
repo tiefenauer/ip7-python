@@ -62,6 +62,7 @@ class TestPreprocessing(unittest.TestCase):
         assert_that(sentence_stemmed, is_('aufeinand kategori'))
         assert_that(list(words_stemmed), is_(['aufeinand', 'kategori']))
 
+    @unittest.skip("removing CDATA is performed automatically atm by using a lxml-parser")
     def test_remove_cdata_removes_cdata(self):
         # arrange
         soup = BeautifulSoup('<html><body><p><![CDATA[ Lorem ipsum ]]>This text should be preserved</p></body></html>', 'lxml')

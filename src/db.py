@@ -2,6 +2,7 @@ from enum import Enum
 
 import mysql.connector
 import psycopg2
+from psycopg2.extras import DictCursor
 
 
 class Database(Enum):
@@ -59,7 +60,7 @@ def _create_mysql_connection(config):
 
 def _create_postgres_connection(config):
     return psycopg2.connect(host=config['host'], database=config['database'], user=config['user'],
-                            password=config['password'])
+                            password=config['password'], cursor_factory=DictCursor)
 
 
 def close(connection):

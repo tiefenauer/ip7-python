@@ -1,6 +1,5 @@
 import logging
 import os
-
 import sys
 
 from src import db
@@ -9,7 +8,7 @@ from src.db import Database
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-class X28Importer(object):
+class X28ImporterJson(object):
     def __init__(self, dirname='D:/db/x28'):
         self.dirname = dirname
         self.num_files = len([name for name in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, name))])
@@ -29,7 +28,7 @@ class X28Importer(object):
             with open(os.path.join(self.dirname, fname), encoding='utf-8') as file:
                 yield file.read()
 
-    def insert_x28(self, jsonobj):
+    def insert(self, jsonobj):
         x28_id = jsonobj['id']
         title = jsonobj['title']
         html = jsonobj['htmlcontent']
@@ -47,19 +46,7 @@ class X28Importer(object):
         cursor.execute(sql, (x28_id, html, plaintext, url, title))
         self.conn_x28.commit()
 
-    def insert_fetchflow(self, fetchflow_id, data):
-        content = r"".join(str(tag) for tag in data)
-        cursor = self.conn_fetchflow.cursor()
-        cursor.execute("""INSERT into labeled_text(fetchflow_id, content) VALUES(%s, %s)""", (fetchflow_id, content))
-        self.conn_fetchflow.commit()
-
     def truncate_tables(self):
         logging.info('truncating target tables...')
         cursor = self.conn_x28.cursor()
         cursor.execute("""TRUNCATE labeled_jobs""")
-
-    def truncate_fetchflow(self):
-        logging.info('truncating fetchflow tables...')
-        cursor = self.conn_fetchflow.cursor()
-        cursor.execute("""TRUNCATE labeled_text""")
-        self.conn_fetchflow.commit()
