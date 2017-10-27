@@ -6,4 +6,11 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
                     class"""
 
     def features_match(self, actual_class, predicted_class):
-        pass
+        # TODO: implement linear evaluation
+        return True
+
+    def title(self):
+        """LINEAR EVALUATION"""
+
+    def description(self):
+        return self.DESCRIPTION

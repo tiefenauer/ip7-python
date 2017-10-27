@@ -1,5 +1,10 @@
 import collections
+import logging
 import re
+
+import sys
+
+logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 def find_str1_in_str2(str1, str2):

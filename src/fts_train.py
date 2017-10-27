@@ -2,10 +2,10 @@ import argparse
 import logging
 import sys
 
-from src.classifier import classifier_jobtitle
 from src.importer.data_fetchflow import FetchflowImporter
 from src.preproc import preprocess
 from src.util.stats import print_stats
+from src.util.boot_util import choose_evaluator, choose_strategy
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -39,6 +39,9 @@ def update_stats(matches, stats):
         stats[name] += 1
 
 
+evaluator = choose_evaluator()
+strategy = choose_strategy()
+
 if __name__ == '__main__':
     stats = {}
     with FetchflowImporter() as fetchflow:
@@ -46,7 +49,7 @@ if __name__ == '__main__':
             fetchflow.truncate_results()
         for row in (row for row in fetchflow if row['dom']):
             relevant_tags = preprocess(row['dom'])
-            (job_title, job_count) = classifier_jobtitle.find_best(relevant_tags)
+            (job_title, job_count) = strategy.classify(relevant_tags)
             if job_title is not None:
                 fetchflow.update_job_with_title(row, job_title, job_count)
     print_stats(stats)

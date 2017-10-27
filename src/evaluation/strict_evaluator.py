@@ -8,5 +8,8 @@ class StrictEvaluator(AbstractEvaluator):
     def features_match(self, actual_class, predicted_class):
         return actual_class == predicted_class
 
-    def describe_evaluation(self):
+    def title(self):
+        return "STRICT EVALUATION"
+
+    def description(self):
         return self.DESCRIPTION

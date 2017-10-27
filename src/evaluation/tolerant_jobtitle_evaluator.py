@@ -6,9 +6,12 @@ class TolerantJobtitleEvaluator(AbstractEvaluator):
                     of a single item is 1 if the prediction is within the tolerance or 0 if not."""
 
     def features_match(self, actual_class, predicted_class):
-        if predicted_class in actual_class:
-            return True
-        return False
+        if not predicted_class:
+            return False
+        return predicted_class in actual_class
 
-    def describe_evaluation(self):
+    def title(self):
+        return """TOLERANT EVALUATION"""
+
+    def description(self):
         return self.DESCRIPTION

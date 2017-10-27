@@ -15,7 +15,7 @@ class AbstractEvaluator(ABC):
             self.total_n += 1
         self.performance = self.total_p / (self.total_p + self.total_n)
 
-    def get_description(self):
+    def status(self):
         return self.desc_pattern.format(self.total_p, self.total_n, "{:1.4f}".format(self.performance))
 
     @abstractmethod
@@ -23,5 +23,9 @@ class AbstractEvaluator(ABC):
         """check if predicted class matches expected class"""
 
     @abstractmethod
-    def describe_evaluation(self):
+    def title(self):
+        """return a short title of the evaluator"""
+
+    @abstractmethod
+    def description(self):
         """describe method of evaluation"""
