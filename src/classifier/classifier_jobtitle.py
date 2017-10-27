@@ -9,7 +9,7 @@ def classify(tags):
     best_match = None
     num_occurrence = 0
     best_score = 0
-    for tag_features in (extract_features(tag) for tag in tags):
+    for tag_features in (tag_features for tag_features in (extract_features(tag) for tag in tags) if tag_features['matches']):
         score = ranking.calculate_score(tag_features)
         if score > best_score:
             best_score = score

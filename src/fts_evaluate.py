@@ -33,7 +33,8 @@ if __name__ == '__main__':
         tqdm_data = tqdm(data_train, total=data_train.num_rows, unit=' rows')
         for row in (row for row in tqdm_data if row['html']):
             relevant_tags = preproc.preprocess(row['html'])
-            (job_title, job_count) = classifier_jobtitle.find_best(relevant_tags)
+            # (job_title, job_count) = classifier_jobtitle.find_best(relevant_tags)
+            (job_title, job_count, job_score) = classifier_jobtitle.classify(relevant_tags)
             evaluator.evaluate(row['title'], job_title)
             if job_title is not None:
                 tqdm_data.set_description(evaluator.get_description())

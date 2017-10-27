@@ -27,3 +27,12 @@ class TestJobTitleScorer(unittest.TestCase):
         score2 = testee.calculate_score(features2)
         # assert
         assert_that(score2, is_(greater_than(score1)))
+
+
+    def test_calc_score_missing_key_calculates_default_score(self):
+        # arrange
+        features = {'tag': 'p', 'matches': [('Polymechaniker', 1)]}
+        # act
+        score = testee.calculate_score(features)
+        # assert
+        assert_that(score, is_(0.1))

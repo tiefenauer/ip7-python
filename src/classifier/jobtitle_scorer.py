@@ -2,7 +2,7 @@ tag_weight = {
     'h1': 0.6,
     'h2': 0.3,
     'h3': 0.1,
-    'default': 0
+    'default': 0.1
 }
 
 
@@ -14,7 +14,7 @@ def normalize(rank):
 
 def calculate_score(features):
     rank = 0
-    if features['tag']:
-        rank += tag_weight[features['tag']]
+    key = features['tag'] if features['tag'] in tag_weight else 'default'
+    rank += tag_weight[key]
     # todo: add more feature values here if available
     return normalize(rank)
