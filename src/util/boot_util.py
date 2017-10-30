@@ -3,6 +3,7 @@ import logging
 from src.classifier.jobtitle_count_based import CountBasedJobTitleClassification
 from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification
 from src.classifier.jobtitle_title_based import TitleBasedJobTitleClassifier
+from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 
@@ -11,6 +12,8 @@ def choose_evaluator(args):
     ev = TolerantJobtitleEvaluator()
     if args.evaluator == 'strict':
         ev = StrictEvaluator()
+    if args.evaluator == 'linear':
+        ev = LinearJobTitleEvaluator()
     logging.info('================================================')
     logging.info(ev.title())
     logging.info(ev.description())

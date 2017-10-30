@@ -8,6 +8,18 @@ testee = LinearJobTitleEvaluator(0.7)
 
 
 class TestLinearJobTitleEvaluator(unittest.TestCase):
+    def test_calculate_score_no_prediction_returns_zero(self):
+        # arrange/act
+        result = testee.calculate_score('Schichtleiter Maschinenbau', None)
+        # assert
+        assert_that(result, is_(0))
+
+    def test_calculate_score_empty_prediction_returns_zero(self):
+        # arrange/act
+        result = testee.calculate_score('Schichtleiter Maschinenbau', '')
+        # assert
+        assert_that(result, is_(0))
+
     def test_calculate_score_simple_returns_correct_score(self):
         # arrange/act
         result = testee.calculate_score('Schichtleiter Maschinenbau', 'Schichtleiter')

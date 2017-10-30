@@ -25,7 +25,8 @@ parser.add_argument('-e', '--evaluator', choices=['strict', 'tolerant', 'linear'
                     - 'strict': {}
                     - 'tolerant': {}
                     - 'linear': {}
-                    """.format(StrictEvaluator.DESCRIPTION, TolerantJobtitleEvaluator.DESCRIPTION,
+                    """.format(StrictEvaluator.DESCRIPTION,
+                               TolerantJobtitleEvaluator.DESCRIPTION,
                                LinearJobTitleEvaluator.DESCRIPTION))
 parser.add_argument('-s', '--strategy', choices=['count', 'feature-based', 'title-based'], default='feature-based',
                     help="""strategy used for classification:

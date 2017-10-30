@@ -7,7 +7,16 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
     DESCRIPTION = """the evaluation result is measured as a degree of similarity between predicted and actual
                     class"""
 
+    def update_accuracy(self, last_score):
+        self.accuracy += last_score / (self.total_p + self.total_n)
+
+    def status(self):
+        return 'average accuracy: {}'.format("{:1.4f}".format(self.accuracy))
+
     def calculate_score(self, actual_class, predicted_class):
+        if not predicted_class or len(predicted_class) == 0:
+            return 0
+
         actual_words = list(self.normalize(actual_class))
         predicted_words = self.normalize(predicted_class)
         count = 0
@@ -25,7 +34,7 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
         return (word for word in preproc.stem(no_gender))
 
     def title(self):
-        """LINEAR EVALUATION"""
+        return """LINEAR EVALUATION"""
 
     def description(self):
         return self.DESCRIPTION
