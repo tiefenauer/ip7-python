@@ -13,7 +13,7 @@ from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 from src.importer.data_train import TrainingData
-from src.util.boot_util import choose_classifier
+from src.util.boot_util import choose_classifier, choose_evaluation
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -47,7 +47,7 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 classifier = choose_classifier(args)
-evaluation = Evaluation()
+evaluation = choose_evaluation(args)
 
 if __name__ == '__main__':
     with TrainingData(args.id) as data_train:
@@ -60,6 +60,5 @@ if __name__ == '__main__':
             (job_title, job_count, job_score) = classifier.classify(relevant_tags)
             evaluation.update(row['title'], job_title)
             if job_title is not None:
-                #tqdm_data.set_description(evaluator.status())
                 if args.write:
                     data_train.classify_job(row['id'], job_title, job_count)

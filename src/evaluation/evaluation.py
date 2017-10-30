@@ -8,16 +8,8 @@ from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 
+colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 fig, ax = plt.subplots()
-ind = np.arange(1, 4)
-p1, p2, p3 = plt.bar(ind, (0, 0, 0))
-p1.set_facecolor('r')
-p2.set_facecolor('g')
-p3.set_facecolor('b')
-ax.set_xticks(ind)
-ax.set_ylim([0, 1])
-ax.set_ylabel('Accuracy')
-ax.set_title('Evaluation results')
 
 
 class Evaluation(object):
@@ -26,15 +18,26 @@ class Evaluation(object):
     def __init__(self, evaluators=None):
         if evaluators:
             self.evaluators = evaluators
+
+        num_plots = len(self.evaluators)
+        ind = np.arange(1, num_plots + 1)
+        self.plots = plt.bar(ind, [0] * num_plots)
         plt.show(block=False)
-        ax.set_xticklabels([evaluator.title() for evaluator in self.evaluators])
+
+        ax.set_xticks(ind)
+        ax.set_xticklabels([evaluator.label() for evaluator in self.evaluators])
+        ax.set_xlabel('Evaluation methods')
+        ax.set_ylim([0, 1])
+        ax.set_ylabel('Accuracy')
+        ax.set_title('Evaluation results')
+
+        for i, plot in enumerate(self.plots):
+            plot.set_facecolor(colors[i])
 
     def update(self, expected_class, predicted_class):
-        for evaluator in self.evaluators:
+        for i, evaluator in enumerate(self.evaluators):
             evaluator.evaluate(expected_class, predicted_class)
-        p1.set_height(self.evaluators[0].accuracy)
-        p2.set_height(self.evaluators[1].accuracy)
-        p3.set_height(self.evaluators[2].accuracy)
+            self.plots[i].set_height(evaluator.accuracy)
         fig.canvas.draw_idle()
         try:
             fig.canvas.flush_events()

@@ -4,6 +4,7 @@ from src.jobtitle import jobtitle_matcher
 
 
 class LinearJobTitleEvaluator(AbstractEvaluator):
+    TITLE = """linear Evaluation"""
     DESCRIPTION = """the evaluation result is measured as a degree of similarity between predicted and actual
                     class"""
 
@@ -34,7 +35,10 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
         return (word for word in preproc.stem(no_gender))
 
     def title(self):
-        return """LINEAR EVALUATION"""
+        return self.TITLE
 
     def description(self):
         return self.DESCRIPTION
+
+    def label(self):
+        return "linear"

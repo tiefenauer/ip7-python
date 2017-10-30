@@ -37,3 +37,7 @@ class AbstractEvaluator(ABC):
     @abstractmethod
     def description(self):
         """describe method of evaluation"""
+
+    @abstractmethod
+    def label(self):
+        """label for visualisaiton"""
