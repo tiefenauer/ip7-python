@@ -47,3 +47,16 @@ def to_mw_form(job_name):
     return to_male_form(job_name) + ' (m/w)'
 
 
+def create_variants(job_name):
+    return {to_male_form(job_name),
+            to_female_form(job_name),
+            to_slashed_form(job_name),
+            to_slashed_hyphen_form(job_name),
+            to_mw_form(job_name)}
+
+
+def count_variant(variant, string):
+    # \b...\b(?![\/]) --> match on word boundary but do not consider '/' as a word boundary
+    pattern = re.compile(r'\b%s\b(?![\/])' % variant)
+    matches = re.findall(pattern, string)
+    return len(matches)

@@ -3,6 +3,7 @@ import unittest
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
+import src.jobtitle.jobtitle_matcher
 from src.jobtitle import jobtitle_extractor as testee
 
 
@@ -109,14 +110,6 @@ class TestJobTitleExtractor(unittest.TestCase):
             ('Kaufmann', 1)
         ))
 
-    def test_count_variant_returns_correct_count(self):
-        # arrange
-        string = '<p>Schneider Schneiderin Schneider/-in Schneider/in</p>'
-        # act
-        result = testee.count_variant('Schneider', string)
-        # assert
-        assert_that(result, is_(1), "When counting a variant only count exact matches of that variant")
-
     def test_find_all_returns_all_matches_with_count(self):
         # arrange
         tags = [
@@ -156,28 +149,6 @@ class TestJobTitleExtractor(unittest.TestCase):
         result = testee.find_all_matches(tags, ['Kaufmann'])
         # assert
         assert_that(result, contains_inanyorder((5, 'Kaufmann')))
-
-    def test_create_variants_returns_variants(self):
-        # arrange
-        job_name = 'Schreiner'
-        # act
-        result = testee.create_variants(job_name)
-        # assert
-        assert_that(result, contains_inanyorder('Schreiner',
-                                                'Schreinerin',
-                                                'Schreiner/-in',
-                                                'Schreiner/in',
-                                                'Schreiner (m/w)'
-                                                )
-                    )
-
-    def test_create_variants_does_not_contain_duplicates(self):
-        # arrange
-        job_name = "Koch"
-        # act
-        result = testee.create_variants(job_name)
-        assert_that(result, contains_inanyorder('Koch', 'Koch (m/w)'),
-                    "For job names with no easy female form do not return duplicates")
 
 
 def result_item_with_name_and_context(job_name, context):

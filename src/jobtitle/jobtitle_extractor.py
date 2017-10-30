@@ -1,9 +1,6 @@
-import re
-
 import nltk
 
-from src.jobtitle.jobtitle_matcher import to_male_form, to_female_form, to_slashed_form, to_slashed_hyphen_form, \
-    to_mw_form
+from src.jobtitle.jobtitle_matcher import count_variant, create_variants
 from src.util.util import create_contexts
 
 regex_fm = r"(in)|(euse)|(frau)"
@@ -30,13 +27,6 @@ def find_all_matches(tags, job_names):
             for variant in variants:
                 count += count_variant(variant, html_text)
             yield (count, job_name)
-
-
-def count_variant(variant, string):
-    # \b...\b(?![\/]) --> match on word boundary but do not consider '/' as a word boundary
-    pattern = re.compile(r'\b%s\b(?![\/])' % variant)
-    matches = re.findall(pattern, string)
-    return len(matches)
 
 
 def create_result_item(str, context_token):
@@ -113,9 +103,3 @@ class ConsecutiveNPChunker(nltk.ChunkParserI):
         return nltk.chunk.conlltags2tree(conlltags)
 
 
-def create_variants(job_name):
-    return {to_male_form(job_name),
-            to_female_form(job_name),
-            to_slashed_form(job_name),
-            to_slashed_hyphen_form(job_name),
-            to_mw_form(job_name)}
