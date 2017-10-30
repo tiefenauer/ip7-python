@@ -1,7 +1,6 @@
 from src.classifier.classification_strategy import ClassificationStrategy
 from src.importer.job_name_importer import JobNameImporter
-from src.jobtitle import jobtitle_extractor as extractor
-from src.jobtitle.jobtitle_matcher import count_variant, create_variants
+from src.util.jobtitle_util import count_variant, create_variants
 
 job_names = JobNameImporter()
 tag_weight = {

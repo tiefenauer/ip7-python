@@ -1,7 +1,17 @@
 from src.classifier.classification_strategy import ClassificationStrategy
 from src.importer.job_name_importer import JobNameImporter
+from src.util.jobtitle_util import create_variants, count_variant
 
-from src.jobtitle import jobtitle_extractor as extractor
+
+def find_all_matches(tags, job_names):
+    html_text = "".join(str(tag) for tag in tags)
+    for job_name in job_names:
+        variants = create_variants(job_name)
+        if any(job_name_variant in html_text for job_name_variant in variants):
+            count = 0
+            for variant in variants:
+                count += count_variant(variant, html_text)
+            yield (count, job_name)
 
 
 class CountBasedJobTitleClassification(ClassificationStrategy):
@@ -25,7 +35,7 @@ class CountBasedJobTitleClassification(ClassificationStrategy):
     def find_all(self, tags, job_names=None):
         if job_names is None:
             job_names = self.job_names
-        for match in extractor.find_all_matches(tags, job_names):
+        for match in find_all_matches(tags, job_names):
             yield match
 
     def title(self):

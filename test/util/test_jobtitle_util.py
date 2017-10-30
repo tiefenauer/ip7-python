@@ -3,7 +3,7 @@ import unittest
 from hamcrest import assert_that, only_contains, is_, contains_inanyorder
 from hamcrest.core.base_matcher import BaseMatcher
 
-from src.jobtitle import jobtitle_matcher as testee
+from src.util import jobtitle_util as testee
 
 
 class TestJobTitleMatcher(unittest.TestCase):

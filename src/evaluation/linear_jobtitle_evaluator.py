@@ -1,6 +1,6 @@
 from src import preproc
 from src.evaluation.abstract_evaluator import AbstractEvaluator
-from src.jobtitle import jobtitle_matcher
+from src.util import jobtitle_util
 
 
 class LinearJobTitleEvaluator(AbstractEvaluator):
@@ -34,7 +34,7 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
         no_special_chars = preproc.remove_special_chars(text)
         words = preproc.to_words(no_special_chars)
         no_stopwords = (preproc.remove_stop_words(words))
-        no_gender = (jobtitle_matcher.to_male_form(word) for word in no_stopwords)
+        no_gender = (jobtitle_util.to_male_form(word) for word in no_stopwords)
         return (word for word in preproc.stem(no_gender))
 
     def title(self):

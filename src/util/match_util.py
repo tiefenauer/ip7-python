@@ -1,6 +1,8 @@
 import re
 
-from src.jobtitle.jobtitle_extractor import regex_fm, regex_fm_slashed, regex_mw
+regex_fm = r"(in)|(euse)|(frau)"
+regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
+regex_mw = r"\s*\(?m\/w\)?"
 
 
 def determine_context_token(str, match):
