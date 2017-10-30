@@ -57,19 +57,13 @@ def remove_stop_words(text):
 
 
 def stem(text):
-    fun = lambda word: stemmer.stem(word)
-    if isinstance(text, str):
-        # got text as sentence string
-        return ' '.join(word for word in _process_iterable(text.split(' '), fun))
-    # got text as iterable
-    return _process_iterable(text, fun)
+    if is_iterable_and_not_string(text):
+        return (stem_word(word) for word in text)
+    return ' '.join(stem_word(word) for word in text.split(' '))
 
 
-def _process_iterable(text, fun):
-    try:
-        return (fun(word) for word in text)
-    except TypeError:
-        return ()
+def stem_word(word):
+    return stemmer.stem(word)
 
 
 def is_iterable_and_not_string(text):

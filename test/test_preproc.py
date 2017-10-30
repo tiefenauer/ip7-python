@@ -37,19 +37,6 @@ class TestPreprocessing(unittest.TestCase):
         expected_tags = [child for child in soup_expected.children if type(child) is Tag]
         assert_that(extracted_tags, equal_to(expected_tags))
 
-    def test_remove_stopwords_from_string_should_remove_stopwords(self):
-        # arrange/act
-        result = testee.remove_stop_words("Man ist nur dann ein Superheld, wenn man sich selbst für super hält!")
-        # assert
-        assert_that(result, is_('Man Superheld, super hält!'))
-
-    def test_remove_stopwords_from_iterable_result_should_not_contain_stopwords(self):
-        # arrange/act
-        result = testee.remove_stop_words(
-            ['Man', 'ist', 'nur', 'dann', 'ein', 'Superheld', 'wenn', 'man', 'sich', 'selbst', 'für', 'super', 'hält'])
-        # assert
-        assert_that(list(result), is_(['Man', 'Superheld', 'super', 'hält']))
-
     def test_to_words_splits_into_nltk_words(self):
         # arrange
         text = 'Lehrstelle als Logistiker/in (Distribution) EFZ'
@@ -57,6 +44,10 @@ class TestPreprocessing(unittest.TestCase):
         result = testee.to_words(text)
         # assert
         assert_that(result, contains('Lehrstelle', 'als', 'Logistiker/in', '(', 'Distribution', ')', 'EFZ'))
+
+    def test_remove_special_chars_does_not_remove_forward_slash(self):
+        assert_that(testee.remove_special_chars('Logistiker/in'), is_('Logistiker/in'))
+        assert_that(testee.remove_special_chars('Logistiker/-in'), is_('Logistiker/-in'))
 
     def test_remove_special_chars_from_string_removes_special_chars(self):
         # arrange
@@ -81,6 +72,19 @@ class TestPreprocessing(unittest.TestCase):
         result = testee.remove_special_chars(text)
         # assert
         assert_that(result, is_('foo bar'))
+
+    def test_remove_stopwords_from_string_should_remove_stopwords(self):
+        # arrange/act
+        result = testee.remove_stop_words("Man ist nur dann ein Superheld, wenn man sich selbst für super hält!")
+        # assert
+        assert_that(result, is_('Man Superheld, super hält!'))
+
+    def test_remove_stopwords_from_iterable_result_should_not_contain_stopwords(self):
+        # arrange/act
+        result = testee.remove_stop_words(
+            ['Man', 'ist', 'nur', 'dann', 'ein', 'Superheld', 'wenn', 'man', 'sich', 'selbst', 'für', 'super', 'hält'])
+        # assert
+        assert_that(list(result), is_(['Man', 'Superheld', 'super', 'hält']))
 
     def test_stem_single_word_returns_stem(self):
         # arrange/act
