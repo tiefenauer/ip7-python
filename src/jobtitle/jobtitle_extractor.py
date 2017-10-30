@@ -8,16 +8,6 @@ regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 regex_mw = r"\s*\(?m\/w\)?"
 
 
-def extract_job_titles(string, job_names):
-    for job_name in job_names:
-        variants = create_variants(job_name)
-        if any(job_name_variant in string for job_name_variant in variants):
-            count = 0
-            for variant in variants:
-                count += count_variant(variant, string)
-            yield (job_name, count)
-
-
 def find_all_matches(tags, job_names):
     html_text = "".join(str(tag) for tag in tags)
     for job_name in job_names:
@@ -101,5 +91,3 @@ class ConsecutiveNPChunker(nltk.ChunkParserI):
         tagged_sents = self.tagger.tag(sentence)
         conlltags = [(word, tag, chunk) for ((word, tag), chunk) in tagged_sents]
         return nltk.chunk.conlltags2tree(conlltags)
-
-
