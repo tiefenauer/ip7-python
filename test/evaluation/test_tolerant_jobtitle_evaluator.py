@@ -8,11 +8,11 @@ testee = TolerantJobtitleEvaluator()
 
 
 class TestTolerantJobtitleEvaluator(unittest.TestCase):
-    def test_evaluate_with_predicted_None_returns_false(self):
-        assert_that(testee.features_match("foo bar", None), is_(False))
+    def test_prediction_matches_with_predicted_None_returns_false(self):
+        assert_that(testee.prediction_matches("foo bar", None), is_(False))
 
-    def test_evaluate_with_predicted_not_in_actual_returns_false(self):
-        assert_that(testee.features_match("foo bar", "baq"), is_(False))
+    def test_prediction_matches_with_predicted_not_in_actual_returns_false(self):
+        assert_that(testee.prediction_matches("foo bar", "baq"), is_(False))
 
-    def test_evaluate_with_predicted_in_actual_returns_false(self):
-        assert_that(testee.features_match("foo bar", "bar"), is_(True))
+    def test_prediction_matches_with_predicted_in_actual_returns_false(self):
+        assert_that(testee.prediction_matches("foo bar", "bar"), is_(True))

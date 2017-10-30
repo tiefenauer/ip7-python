@@ -5,7 +5,7 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
     DESCRIPTION = """the evaluation result is measured as a degree of similarity between predicted and actual
                     class"""
 
-    def features_match(self, actual_class, predicted_class):
+    def prediction_matches(self, actual_class, predicted_class):
         # TODO: implement linear evaluation
         return True
 

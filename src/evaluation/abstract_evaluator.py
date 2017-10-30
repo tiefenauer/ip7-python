@@ -9,7 +9,7 @@ class AbstractEvaluator(ABC):
         self.desc_pattern = "positives={}, negatives={}, performance={}"
 
     def evaluate(self, actual_class, predicted_class):
-        if self.features_match(actual_class, predicted_class):
+        if self.prediction_matches(actual_class, predicted_class):
             self.total_p += 1
         else:
             self.total_n += 1
@@ -19,7 +19,7 @@ class AbstractEvaluator(ABC):
         return self.desc_pattern.format(self.total_p, self.total_n, "{:1.4f}".format(self.performance))
 
     @abstractmethod
-    def features_match(self, actual_class, predicted_class):
+    def prediction_matches(self, actual_class, predicted_class):
         """check if predicted class matches expected class"""
 
     @abstractmethod

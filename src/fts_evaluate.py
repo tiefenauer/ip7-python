@@ -7,6 +7,7 @@ from tqdm import tqdm
 from src import preproc
 from src.classifier.jobtitle_count_based import CountBasedJobTitleClassification
 from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification
+from src.classifier.jobtitle_title_based import TitleBasedJobTitleClassifier
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
@@ -26,12 +27,15 @@ parser.add_argument('-e', '--evaluator', choices=['strict', 'tolerant', 'linear'
                     - 'linear': {}
                     """.format(StrictEvaluator.DESCRIPTION, TolerantJobtitleEvaluator.DESCRIPTION,
                                LinearJobTitleEvaluator.DESCRIPTION))
-parser.add_argument('-s', '--strategy', choices=['count', 'feature-based'], default='feature-based',
+parser.add_argument('-s', '--strategy', choices=['count', 'feature-based', 'title-based'], default='feature-based',
                     help="""strategy used for classification:
                     - 'count': {}
-                    - 'feature_based': {}
+                    - 'feature-based': {}
+                    - 'title-based': {}
                     """.format(CountBasedJobTitleClassification.DESCRIPTION,
-                               FeatureBasedJobTitleClassification.DESCRIPTION))
+                               FeatureBasedJobTitleClassification.DESCRIPTION,
+                               TitleBasedJobTitleClassifier.DESCRIPTION
+                               ))
 parser.add_argument('-t', '--truncate', action='store_true',
                     help='truncate target tables before extraction (default=True)')
 parser.add_argument('-w', '--write', action='store_true',

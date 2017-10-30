@@ -39,8 +39,8 @@ def update_stats(matches, stats):
         stats[name] += 1
 
 
-evaluator = choose_evaluator()
-strategy = choose_strategy()
+evaluator = choose_evaluator(args)
+strategy = choose_strategy(args)
 
 if __name__ == '__main__':
     stats = {}
