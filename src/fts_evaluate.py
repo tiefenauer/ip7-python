@@ -8,11 +8,12 @@ from src import preproc
 from src.classifier.jobtitle_count_based import CountBasedJobTitleClassification
 from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification
 from src.classifier.jobtitle_title_based import TitleBasedJobTitleClassifier
+from src.evaluation.evaluation import Evaluation
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 from src.importer.data_train import TrainingData
-from src.util.boot_util import choose_evaluator, choose_strategy
+from src.util.boot_util import choose_classifier
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -45,9 +46,8 @@ parser.add_argument('-w', '--write', action='store_true',
                     on the classifier's performance""")
 args = parser.parse_args()
 
-
-evaluator = choose_evaluator(args)
-strategy = choose_strategy(args)
+classifier = choose_classifier(args)
+evaluation = Evaluation()
 
 if __name__ == '__main__':
     with TrainingData(args.id) as data_train:
@@ -57,9 +57,9 @@ if __name__ == '__main__':
         tqdm_data = tqdm(data_train, total=data_train.num_rows, unit=' rows')
         for row in (row for row in tqdm_data if row['html']):
             relevant_tags = preproc.preprocess(row['html'])
-            (job_title, job_count, job_score) = strategy.classify(relevant_tags)
-            evaluator.evaluate(row['title'], job_title)
+            (job_title, job_count, job_score) = classifier.classify(relevant_tags)
+            evaluation.update(row['title'], job_title)
             if job_title is not None:
-                tqdm_data.set_description(evaluator.status())
+                #tqdm_data.set_description(evaluator.status())
                 if args.write:
                     data_train.classify_job(row['id'], job_title, job_count)

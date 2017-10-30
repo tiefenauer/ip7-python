@@ -5,7 +5,7 @@ import sys
 from src.importer.data_fetchflow import FetchflowImporter
 from src.preproc import preprocess
 from src.util.stats import print_stats
-from src.util.boot_util import choose_evaluator, choose_strategy
+from src.util.boot_util import choose_evaluator, choose_classifier
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -40,7 +40,7 @@ def update_stats(matches, stats):
 
 
 evaluator = choose_evaluator(args)
-strategy = choose_strategy(args)
+strategy = choose_classifier(args)
 
 if __name__ == '__main__':
     stats = {}

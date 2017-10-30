@@ -21,7 +21,7 @@ def choose_evaluator(args):
     return ev
 
 
-def choose_strategy(args):
+def choose_classifier(args):
     classifier = FeatureBasedJobTitleClassification()
     if args.strategy == 'count':
         classifier = CountBasedJobTitleClassification()
