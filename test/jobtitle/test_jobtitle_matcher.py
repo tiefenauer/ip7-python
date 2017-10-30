@@ -7,10 +7,23 @@ from src.jobtitle import jobtitle_matcher as testee
 
 
 class TestJobTitleMatcher(unittest.TestCase):
-    def test_to_male_form_returns_male_form(self):
+    def test_to_male_form_in_returns_male_form(self):
+        assert_that(testee.to_male_form("Schreiner"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreinerin"), is_("Schreiner"))
+        assert_that(testee.to_male_form('Schreiner/in'), is_('Schreiner'))
+        assert_that(testee.to_male_form('Schreiner/-in'), is_('Schreiner'))
+
+    def test_to_male_form_euse_returns_male_form(self):
+        assert_that(testee.to_male_form("Coiffeur"), is_("Coiffeur"))
         assert_that(testee.to_male_form("Coiffeuse"), is_("Coiffeur"))
+        assert_that(testee.to_male_form("Coiffeur/euse"), is_("Coiffeur"))
+        assert_that(testee.to_male_form("Coiffeur/-euse"), is_("Coiffeur"))
+
+    def test_to_male_form_frau_returns_male_form(self):
+        assert_that(testee.to_male_form("Kaufmann"), is_("Kaufmann"))
         assert_that(testee.to_male_form("Kauffrau"), is_("Kaufmann"))
+        assert_that(testee.to_male_form("Kaufmann/frau"), is_("Kaufmann"))
+        assert_that(testee.to_male_form("Kaufmann/-frau"), is_("Kaufmann"))
 
     def test_to_female_form_returns_female_form(self):
         assert_that(testee.to_female_form("Schreiner"), is_("Schreinerin"))

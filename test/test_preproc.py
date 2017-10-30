@@ -37,11 +37,50 @@ class TestPreprocessing(unittest.TestCase):
         expected_tags = [child for child in soup_expected.children if type(child) is Tag]
         assert_that(extracted_tags, equal_to(expected_tags))
 
-    def test_remove_stopwords_should_remove_stopwords(self):
+    def test_remove_stopwords_from_string_should_remove_stopwords(self):
         # arrange/act
         result = testee.remove_stop_words("Man ist nur dann ein Superheld, wenn man sich selbst für super hält!")
         # assert
         assert_that(result, is_('Man Superheld, super hält!'))
+
+    def test_remove_stopwords_from_iterable_result_should_not_contain_stopwords(self):
+        # arrange/act
+        result = testee.remove_stop_words(
+            ['Man', 'ist', 'nur', 'dann', 'ein', 'Superheld', 'wenn', 'man', 'sich', 'selbst', 'für', 'super', 'hält'])
+        # assert
+        assert_that(list(result), is_(['Man', 'Superheld', 'super', 'hält']))
+
+    def test_to_words_splits_into_nltk_words(self):
+        # arrange
+        text = 'Lehrstelle als Logistiker/in (Distribution) EFZ'
+        # act
+        result = testee.to_words(text)
+        # assert
+        assert_that(result, contains('Lehrstelle', 'als', 'Logistiker/in', '(', 'Distribution', ')', 'EFZ'))
+
+    def test_remove_special_chars_from_string_removes_special_chars(self):
+        # arrange
+        text = 'Lehrstelle als Logistiker/in (Distribution) EFZ'
+        # act
+        result = testee.remove_special_chars(text)
+        # assert
+        assert_that(result, is_('Lehrstelle als Logistiker/in Distribution EFZ'))
+
+    def test_remove_special_chars_from_iterable_removes_special_chars(self):
+        # arrange
+        text = ['Lehrstelle', 'als', 'Logistiker/in', '(Distribution)', 'EFZ']
+        # act
+        result = testee.remove_special_chars(text)
+        # assert
+        assert_that(result, contains('Lehrstelle', 'als', 'Logistiker/in', 'Distribution', 'EFZ'))
+
+    def test_remove_special_chars_from_string_with_only_special_chars(self):
+        # arrange
+        text = 'foo (!) bar'
+        # act
+        result = testee.remove_special_chars(text)
+        # assert
+        assert_that(result, is_('foo bar'))
 
     def test_stem_single_word_returns_stem(self):
         # arrange/act
@@ -62,10 +101,15 @@ class TestPreprocessing(unittest.TestCase):
         assert_that(sentence_stemmed, is_('aufeinand kategori'))
         assert_that(list(words_stemmed), is_(['aufeinand', 'kategori']))
 
+    def test_is_iterable_and_not_string(self):
+        assert_that(testee.is_iterable_and_not_string('foo bar'), is_(False))
+        assert_that(testee.is_iterable_and_not_string(['foo', 'bar']), is_(True))
+
     @unittest.skip("removing CDATA is performed automatically atm by using a lxml-parser")
     def test_remove_cdata_removes_cdata(self):
         # arrange
-        soup = BeautifulSoup('<html><body><p><![CDATA[ Lorem ipsum ]]>This text should be preserved</p></body></html>', 'lxml')
+        soup = BeautifulSoup('<html><body><p><![CDATA[ Lorem ipsum ]]>This text should be preserved</p></body></html>',
+                             'lxml')
         # act
         result = testee.remove_cdata(soup)
         # assert

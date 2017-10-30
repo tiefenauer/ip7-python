@@ -1,3 +1,7 @@
+import collections
+import re
+
+import nltk
 from bs4 import BeautifulSoup
 from lxml import etree
 from nltk.corpus import stopwords
@@ -32,20 +36,41 @@ def remove_html_clutter(soup):
     return tags
 
 
+def to_words(text):
+    return nltk.word_tokenize(text)
+
+
+def remove_special_chars(text):
+    if is_iterable_and_not_string(text):
+        return (remove_special_chars(word) for word in text if len(word) > 0)
+    return ' '.join(word for word in (_replace_special_chars(w) for w in text.split(' ')) if len(word) > 0)
+
+
+def _replace_special_chars(word):
+    return re.sub('[^a-zA-Z0-9\/ -]', '', word)
+
+
 def remove_stop_words(text):
-    return ' '.join([word for word in text.split(' ') if word not in stopwords_de])
+    if isinstance(text, str):
+        return ' '.join([word for word in text.split(' ') if word not in stopwords_de])
+    return (word for word in text if word not in stopwords_de)
 
 
 def stem(text):
+    fun = lambda word: stemmer.stem(word)
     if isinstance(text, str):
         # got text as sentence string
-        return ' '.join(word for word in _stem_iterable(text.split(' ')))
+        return ' '.join(word for word in _process_iterable(text.split(' '), fun))
     # got text as iterable
-    return _stem_iterable(text)
+    return _process_iterable(text, fun)
 
 
-def _stem_iterable(words):
+def _process_iterable(text, fun):
     try:
-        return (stemmer.stem(word) for word in words)
+        return (fun(word) for word in text)
     except TypeError:
         return ()
+
+
+def is_iterable_and_not_string(text):
+    return isinstance(text, collections.Iterable) and not isinstance(text, str)

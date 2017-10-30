@@ -16,9 +16,9 @@ def find(string, job_name):
 
 
 def to_male_form(job_name):
-    jn = re.sub('(euse)$', 'eur', job_name)
-    jn = re.sub('(frau)$', 'mann', jn)
-    jn = re.sub('(in)$', '', jn)
+    jn = re.sub('(eur)?\/?-?(euse)$', 'eur', job_name)
+    jn = re.sub('(mann)?\/?-?(frau)$', 'mann', jn)
+    jn = re.sub('\/?-?(in)$', '', jn)
     return re.escape(jn)
 
 
