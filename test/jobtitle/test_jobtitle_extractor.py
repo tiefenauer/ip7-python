@@ -157,6 +157,28 @@ class TestJobTitleExtractor(unittest.TestCase):
         # assert
         assert_that(result, contains_inanyorder((5, 'Kaufmann')))
 
+    def test_create_variants_returns_variants(self):
+        # arrange
+        job_name = 'Schreiner'
+        # act
+        result = testee.create_variants(job_name)
+        # assert
+        assert_that(result, contains_inanyorder('Schreiner',
+                                                'Schreinerin',
+                                                'Schreiner/-in',
+                                                'Schreiner/in',
+                                                'Schreiner (m/w)'
+                                                )
+                    )
+
+    def test_create_variants_does_not_contain_duplicates(self):
+        # arrange
+        job_name = "Koch"
+        # act
+        result = testee.create_variants(job_name)
+        assert_that(result, contains_inanyorder('Koch', 'Koch (m/w)'),
+                    "For job names with no easy female form do not return duplicates")
+
 
 def result_item_with_name_and_context(job_name, context):
     return IsResultMatchingJob(job_name, context)

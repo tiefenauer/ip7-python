@@ -47,10 +47,3 @@ def to_mw_form(job_name):
     return to_male_form(job_name) + ' (m/w)'
 
 
-def create_search_group(job_name):
-    return set((to_male_form(job_name),
-            to_female_form(job_name),
-            to_slashed_form(job_name),
-            to_slashed_hyphen_form(job_name),
-            to_mw_form(job_name)
-            ))

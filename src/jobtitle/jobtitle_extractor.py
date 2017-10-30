@@ -2,7 +2,8 @@ import re
 
 import nltk
 
-from src.jobtitle import jobtitle_matcher
+from src.jobtitle.jobtitle_matcher import to_male_form, to_female_form, to_slashed_form, to_slashed_hyphen_form, \
+    to_mw_form
 from src.util.util import create_contexts
 
 regex_fm = r"(in)|(euse)|(frau)"
@@ -10,20 +11,20 @@ regex_fm_slashed = r"((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 regex_mw = r"\s*\(?m\/w\)?"
 
 
-def extract_job_titles(tag_str, job_names):
+def extract_job_titles(string, job_names):
     for job_name in job_names:
-        variants = jobtitle_matcher.create_search_group(job_name)
-        if any(job_name_variant in tag_str for job_name_variant in variants):
+        variants = create_variants(job_name)
+        if any(job_name_variant in string for job_name_variant in variants):
             count = 0
             for variant in variants:
-                count += count_variant(variant, tag_str)
+                count += count_variant(variant, string)
             yield (job_name, count)
 
 
 def find_all_matches(tags, job_names):
     html_text = "".join(str(tag) for tag in tags)
     for job_name in job_names:
-        variants = jobtitle_matcher.create_search_group(job_name)
+        variants = create_variants(job_name)
         if any(job_name_variant in html_text for job_name_variant in variants):
             count = 0
             for variant in variants:
@@ -110,3 +111,11 @@ class ConsecutiveNPChunker(nltk.ChunkParserI):
         tagged_sents = self.tagger.tag(sentence)
         conlltags = [(word, tag, chunk) for ((word, tag), chunk) in tagged_sents]
         return nltk.chunk.conlltags2tree(conlltags)
+
+
+def create_variants(job_name):
+    return {to_male_form(job_name),
+            to_female_form(job_name),
+            to_slashed_form(job_name),
+            to_slashed_hyphen_form(job_name),
+            to_mw_form(job_name)}

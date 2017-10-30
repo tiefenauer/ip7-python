@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import assert_that, only_contains, is_, contains_inanyorder
+from hamcrest import assert_that, only_contains, is_
 from hamcrest.core.base_matcher import BaseMatcher
 
 from src.jobtitle import jobtitle_matcher as testee
@@ -103,27 +103,6 @@ class TestJobTitleMatcher(unittest.TestCase):
             match_item_for_job_name('Schreiner'),
             match_item_for_job_name('Schreinerin')
         ))
-
-    def test_create_search_group_returns_search_group(self):
-        # arrange
-        job_name = 'Schreiner'
-        # act
-        result = testee.create_search_group(job_name)
-        # assert
-        assert_that(result, contains_inanyorder('Schreiner',
-                                                'Schreinerin',
-                                                'Schreiner/-in',
-                                                'Schreiner/in',
-                                                'Schreiner (m/w)'
-                                                )
-                    )
-
-    def test_create_search_group_does_not_contain_duplicates(self):
-        # arrange
-        job_name = "Koch"
-        # act
-        result = testee.create_search_group(job_name)
-        assert_that(result, contains_inanyorder('Koch', 'Koch (m/w)'), "For job names with no easy female form do not return duplicates")
 
 
 def match_item_for_job_name(job_name):
