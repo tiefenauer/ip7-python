@@ -5,6 +5,7 @@ from src.jobtitle import jobtitle_extractor as extractor
 
 
 class FeatureBasedJobTitleClassification(ClassificationStrategy):
+    TITLE = """"Feature based classification"""
     DESCRIPTION = """Feature-Based classification: classifies a vacancy according to the features of the
         individual tags. Each tag is analyzed in isolation. Only tags which contain known job names (from a whitelist)
         or variants of them are considered. A tag can contain several job names or variants.
@@ -40,7 +41,10 @@ class FeatureBasedJobTitleClassification(ClassificationStrategy):
         }
 
     def title(self):
-        return "FEATURE BASED CLASSIFICATION"
+        return self.TITLE
 
     def description(self):
         return self.DESCRIPTION
+
+    def label(self):
+        return 'feature-based'

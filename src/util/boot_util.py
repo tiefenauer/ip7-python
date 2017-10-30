@@ -9,9 +9,8 @@ from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 
 
-def choose_evaluation(args):
+def choose_evaluation(args, classifier):
     evaluators = []
-    ev = TolerantJobtitleEvaluator()
     if args.evaluator == 'strict':
         evaluators.append(StrictEvaluator())
     if args.evaluator == 'linear':
@@ -19,7 +18,7 @@ def choose_evaluation(args):
     logging.info('================================================')
     logging.info('Evaluation method(s): ' + ', '.join(e.title() for e in evaluators))
     logging.info('================================================')
-    return Evaluation(evaluators)
+    return Evaluation(classifier, evaluators)
 
 
 def choose_classifier(args):

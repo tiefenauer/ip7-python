@@ -5,6 +5,7 @@ from src.jobtitle import jobtitle_extractor as extractor
 
 
 class CountBasedJobTitleClassification(ClassificationStrategy):
+    TITLE = """Count-based classification"""
     DESCRIPTION = """Classify a vacancy based on the number of occurrences of a certain word. The words are jobs
     taken from a whitelist of known job names. The occurrence of each job name is counted and the vacancy is then
     classified as the job name with the highest occurrence."""
@@ -28,7 +29,10 @@ class CountBasedJobTitleClassification(ClassificationStrategy):
             yield match
 
     def title(self):
-        return """COUNT BASED CLASSIFICATION"""
+        return self.TITLE
 
     def description(self):
         return self.DESCRIPTION
+
+    def label(self):
+        return 'count-based'

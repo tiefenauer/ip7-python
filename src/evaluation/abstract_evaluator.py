@@ -16,6 +16,7 @@ class AbstractEvaluator(ABC):
         else:
             self.total_n += 1
         self.update_accuracy(score)
+        return self.accuracy
 
     def update_accuracy(self, last_score):
         self.accuracy = self.total_p / (self.total_p + self.total_n)

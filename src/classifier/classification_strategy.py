@@ -13,3 +13,7 @@ class ClassificationStrategy(ABC):
     @abstractmethod
     def description(self):
         """describe how the classification is done"""
+
+    @abstractmethod
+    def label(self):
+        """short label for visualisation"""

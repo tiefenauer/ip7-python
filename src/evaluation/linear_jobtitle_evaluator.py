@@ -7,9 +7,12 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
     TITLE = """linear Evaluation"""
     DESCRIPTION = """the evaluation result is measured as a degree of similarity between predicted and actual
                     class"""
+    scores = 0
 
     def update_accuracy(self, last_score):
-        self.accuracy += last_score / (self.total_p + self.total_n)
+        self.scores += last_score
+        self.accuracy = self.scores / (self.total_p + self.total_n)
+        return self.accuracy
 
     def status(self):
         return 'average accuracy: {}'.format("{:1.4f}".format(self.accuracy))

@@ -17,3 +17,6 @@ class TitleBasedJobTitleClassifier(ClassificationStrategy):
 
     def description(self):
         return self.DESCRIPTION
+
+    def label(self):
+        return 'title-based'
