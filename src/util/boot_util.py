@@ -1,7 +1,7 @@
 import logging
 
-from src.classifier.jobtitle_strategy_count import CountBasedJobTitleClassification
-from src.classifier.jobtitle_strategy_feature_based import FeatureBasedJobTitleClassification
+from src.classifier.jobtitle_count_based import CountBasedJobTitleClassification
+from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 

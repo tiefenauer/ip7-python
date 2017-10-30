@@ -4,7 +4,7 @@ import unittest
 import bs4
 from hamcrest import *
 
-from src.classifier.jobtitle_strategy_feature_based import FeatureBasedJobTitleClassification
+from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification
 
 testee = FeatureBasedJobTitleClassification()
 
