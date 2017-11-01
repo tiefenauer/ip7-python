@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(description="""
 Reads training data and classifies it using full text search.
 """)
 parser.add_argument('id', nargs='?', type=int, help='(optional) single id to process')
-parser.add_argument('-e', '--evaluator', choices=['strict', 'tolerant', 'linear'], default='tolerant',
+parser.add_argument('-e', '--evaluator', choices=['strict', 'tolerant', 'linear'],
                     help="""method to use to evaluate the predicted class. 
                     - 'strict': {}
                     - 'tolerant': {}

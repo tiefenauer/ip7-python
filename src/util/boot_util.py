@@ -10,6 +10,8 @@ from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 
 
 def choose_evaluation(args, classifier):
+    if not args.evaluator:
+        return Evaluation(classifier)
     evaluators = []
     if args.evaluator == 'strict':
         evaluators.append(StrictEvaluator())
