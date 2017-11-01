@@ -53,37 +53,39 @@ class FeatureBasedJobTitleClassification(ClassificationStrategy):
 
     def classify(self, tags):
         features = extract_features(tags, job_name_variants)
-        best_variant_score = 0
-        best_variant = None
-        best_job_count = 0
-        best_job_variants = None
+        best_match = None
+        best_job_score = 0
         best_job_diversity = 0
         for job_name, job_stats in features.items():
-            job_count = 0
+            job_score = 0
             job_diversity = len(job_stats.items())
+
+            best_variant = None
+            best_variant_score = 0
+            best_variant_length = 0
             for variant_name, variant_stats in job_stats.items():
                 for tag_name, tag_count in variant_stats.items():
-                    job_count += tag_count
+                    variant_score = self.calculate_score(tag_name, tag_count)
+                    if variant_score > best_variant_score \
+                            or variant_score == best_variant_score and len(variant_name) > best_variant_length:
+                        best_variant_score = variant_score
+                        best_variant = variant_name
+                    if len(variant_name) > best_variant_length:
+                        best_variant_length = len(variant_name)
 
-            if job_count > best_job_count or job_count == best_job_count and job_diversity > best_job_diversity:
-                best_job_count = job_count
-                best_job_variants = job_stats
-            if job_diversity > best_job_diversity:
-                best_job_diversity = job_diversity
-        best_score = 0
-        best_match = None
-        for variant_name, variant_stats in best_job_variants.items():
-            for tag, count in variant_stats.items():
-                score = self.calculate_score(tag, count)
-                if score > best_score:
-                    best_score = score
-                    best_match = variant_name
+                    job_score += variant_score
+                    if job_score > best_job_score \
+                            or job_score == best_job_score and job_diversity > best_job_diversity:
+                        best_job_score = job_score
+                        best_match = best_variant
+                        if job_diversity > best_job_diversity:
+                            best_job_diversity = job_diversity
         return best_match
 
     def calculate_score(self, tag, count):
         score = 0
         key = tag if tag in tag_weight else 'default'
-        score += count * tag_weight[key]
+        score += tag_weight[key] * count
         # todo: add more feature values here if available
         return score
         # return self.normalize(score)

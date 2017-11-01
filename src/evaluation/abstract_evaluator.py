@@ -10,7 +10,7 @@ class AbstractEvaluator(ABC):
         self.desc_pattern = "positives={}, negatives={}, performance={}"
 
     def evaluate(self, actual_class, predicted_class):
-        score = self.calculate_score(actual_class, predicted_class)
+        score = self.calculate_similarity(actual_class, predicted_class)
         if score > self.threshold:
             self.total_p += 1
         else:
@@ -28,8 +28,8 @@ class AbstractEvaluator(ABC):
         return self.accuracy
 
     @abstractmethod
-    def calculate_score(self, actual_class, predicted_class):
-        """check if predicted class matches expected class"""
+    def calculate_similarity(self, actual_class, predicted_class):
+        """calculate how closely the predicted class matches the expected class"""
 
     @abstractmethod
     def title(self):

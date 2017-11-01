@@ -17,7 +17,7 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
     def status(self):
         return 'average accuracy: {}'.format("{:1.4f}".format(self.accuracy))
 
-    def calculate_score(self, actual_class, predicted_class):
+    def calculate_similarity(self, actual_class, predicted_class):
         if not predicted_class or len(predicted_class) == 0:
             return 0
 
