@@ -6,7 +6,7 @@ from hamcrest.core.base_matcher import BaseMatcher
 from src.util import jobtitle_util as testee
 
 
-class TestJobTitleMatcher(unittest.TestCase):
+class TestJobTitleUtil(unittest.TestCase):
     def test_to_male_form_in_returns_male_form(self):
         assert_that(testee.to_male_form("Schreiner"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreinerin"), is_("Schreiner"))
@@ -126,13 +126,37 @@ class TestJobTitleMatcher(unittest.TestCase):
         assert_that(result, contains_inanyorder('Koch', 'Koch (m/w)'),
                     "For job names with no easy female form do not return duplicates")
 
-    def test_count_variant_returns_correct_count(self):
+    def test_count_variant_in_returns_correct_count(self):
         # arrange
-        string = '<p>Schneider Schneiderin Schneider/-in Schneider/in</p>'
+        string = 'Schneider Schneiderin Schneider/-in Schneider/in Schneider (m/w)'
         # act
-        result = testee.count_variant('Schneider', string)
+        result1 = testee.count_variant('Schneider', string)
+        result2 = testee.count_variant('Schneiderin', string)
+        result3 = testee.count_variant('Schneider/in', string)
+        result4 = testee.count_variant('Schneider/-in', string)
+        result5 = testee.count_variant('Schneider (m/w)', string)
         # assert
-        assert_that(result, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result1, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result2, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result3, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result4, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result5, is_(1), "When counting a variant only count exact matches of that variant")
+
+    def test_count_variant_euse_returns_correct_count(self):
+        # arrange
+        string = 'Coiffeur Coiffeuse Coiffeur/euse Coiffeur/-euse Coiffeur (m/w)'
+        # act
+        result1 = testee.count_variant('Coiffeur', string)
+        result2 = testee.count_variant('Coiffeuse', string)
+        result3 = testee.count_variant('Coiffeur/euse', string)
+        result4 = testee.count_variant('Coiffeur/-euse', string)
+        result5 = testee.count_variant('Coiffeur (m/w)', string)
+        # assert
+        assert_that(result1, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result2, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result3, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result4, is_(1), "When counting a variant only count exact matches of that variant")
+        assert_that(result5, is_(1), "When counting a variant only count exact matches of that variant")
 
 
 def match_item_for_job_name(job_name):

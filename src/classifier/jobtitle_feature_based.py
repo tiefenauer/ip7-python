@@ -2,7 +2,7 @@ from src.classifier.classification_strategy import ClassificationStrategy
 from src.importer.job_name_importer import JobNameImporter
 from src.util.jobtitle_util import count_variant, create_variants
 
-job_names = JobNameImporter()
+job_name_variants = list((job_name, create_variants(job_name)) for job_name in JobNameImporter())
 tag_weight = {
     'h1': 0.6,
     'h2': 0.3,
@@ -11,23 +11,33 @@ tag_weight = {
 }
 
 
-def extract_features(tag, job_names=job_names):
-    job_titles = extract_job_titles(str(tag), job_names)
-    return {
-        'tag': tag.name if tag.name else None,
-        'matches': sorted(list(job_titles), key=lambda match: (match[1], match[0]),
-                          reverse=True) if job_titles else []
-    }
+# {
+#   'job_1': [
+#       'job_variant_1': {'h1': 10, 'h2': 5}
+#       'job_variant_2': {'h2': 6}
+#    ]
+# }
+def extract_features(tags, job_name_variants=job_name_variants):
+    features = {}
+    for job_name, variants in job_name_variants:
+        for tag in tags:
+            tag_name = tag.name if tag.name else 'default'
+            for variant, count in extract_variants(tag.getText(), variants):
+                if job_name not in features:
+                    features[job_name] = {}
+                if variant not in features[job_name]:
+                    features[job_name][variant] = {}
+                if tag_name not in features[job_name][variant]:
+                    features[job_name][variant][tag_name] = 0
+                features[job_name][variant][tag_name] += count
+    return features
 
 
-def extract_job_titles(string, job_names):
-    for job_name in job_names:
-        variants = create_variants(job_name)
-        if any(job_name_variant in string for job_name_variant in variants):
-            count = 0
-            for variant in variants:
-                count += count_variant(variant, string)
-            yield (job_name, count)
+def extract_variants(string, variants):
+    for variant in (variant for variant in variants if variant in string):
+        count = count_variant(variant, string)
+        if count > 0:
+            yield (variant, count)
 
 
 class FeatureBasedJobTitleClassification(ClassificationStrategy):
@@ -41,28 +51,42 @@ class FeatureBasedJobTitleClassification(ClassificationStrategy):
         Classification is then made by calculating a score based on the extracted features. The vacancy is classified
         as the job name with the highest occurrence from the tag with the highest score."""
 
-    def __init__(self, job_names=job_names):
-        self.job_names = job_names
-
     def classify(self, tags):
-        best_match = None
-        num_occurrence = 0
-        best_score = 0
-        for tag_features in (tag_features for tag_features in
-                             (extract_features(tag) for tag in tags)
-                             if tag_features['matches']):
-            score = self.calculate_score(tag_features)
-            if score > best_score:
-                best_score = score
-                best_match, num_occurrence = next(iter(tag_features['matches']), (None, None))
-        return best_match, num_occurrence, best_score
+        features = extract_features(tags, job_name_variants)
+        best_variant_score = 0
+        best_variant = None
+        best_job_count = 0
+        best_job_variants = None
+        best_job_diversity = 0
+        for job_name, job_stats in features.items():
+            job_count = 0
+            job_diversity = len(job_stats.items())
+            for variant_name, variant_stats in job_stats.items():
+                for tag_name, tag_count in variant_stats.items():
+                    job_count += tag_count
 
-    def calculate_score(self, features):
-        rank = 0
-        key = features['tag'] if features['tag'] in tag_weight else 'default'
-        rank += tag_weight[key]
+            if job_count > best_job_count or job_count == best_job_count and job_diversity > best_job_diversity:
+                best_job_count = job_count
+                best_job_variants = job_stats
+            if job_diversity > best_job_diversity:
+                best_job_diversity = job_diversity
+        best_score = 0
+        best_match = None
+        for variant_name, variant_stats in best_job_variants.items():
+            for tag, count in variant_stats.items():
+                score = self.calculate_score(tag, count)
+                if score > best_score:
+                    best_score = score
+                    best_match = variant_name
+        return best_match
+
+    def calculate_score(self, tag, count):
+        score = 0
+        key = tag if tag in tag_weight else 'default'
+        score += count * tag_weight[key]
         # todo: add more feature values here if available
-        return self.normalize(rank)
+        return score
+        # return self.normalize(score)
 
     def normalize(self, score):
         if score < 1:

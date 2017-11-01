@@ -56,7 +56,6 @@ def create_variants(job_name):
 
 
 def count_variant(variant, string):
-    # \b...\b(?![\/]) --> match on word boundary but do not consider '/' as a word boundary
-    pattern = re.compile(r'\b%s\b(?![\/])' % variant)
+    pattern = r'(?<!\w){}(?![\w/]|\s\(m/w\))'.format(re.escape(variant))
     matches = re.findall(pattern, string)
     return len(matches)
