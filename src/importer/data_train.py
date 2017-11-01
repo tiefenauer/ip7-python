@@ -39,11 +39,11 @@ class TrainingData(object):
         for row in cursor:
             yield row
 
-    def classify_job(self, job_id, job_name, job_count):
+    def classify_job(self, job_id, job_name):
         cursor = self.conn_write.cursor()
-        cursor.execute("""INSERT INTO job_name_fts (job_id, job_name, job_count) 
-                          VALUES(%s, %s, %s)""",
-                       (job_id, job_name, job_count))
+        cursor.execute("""INSERT INTO job_name_fts (job_id, job_name) 
+                          VALUES(%s, %s)""",
+                       (job_id, job_name))
         self.conn_write.commit()
 
     def truncate_classification_tables(self):

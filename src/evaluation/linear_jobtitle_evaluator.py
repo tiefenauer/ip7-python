@@ -22,6 +22,8 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
             return 0
 
         actual_words = list(self.normalize(actual_class))
+        if len(actual_words) == 0:
+            return 0
         predicted_words = self.normalize(predicted_class)
         count = 0
 

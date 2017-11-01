@@ -57,8 +57,8 @@ if __name__ == '__main__':
         for row in (row for row in tqdm(data_train, total=data_train.num_rows, unit=' rows') if row['html']):
             i += 1
             relevant_tags = preproc.preprocess(row['html'])
-            (job_title, job_count, job_score) = classifier.classify(relevant_tags)
+            job_title = classifier.classify(relevant_tags)
             evaluation.update(row['title'], job_title, i, data_train.num_rows)
             if job_title is not None:
                 if args.write:
-                    data_train.classify_job(row['id'], job_title, job_count)
+                    data_train.classify_job(row['id'], job_title)
