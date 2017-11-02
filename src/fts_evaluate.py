@@ -62,3 +62,4 @@ if __name__ == '__main__':
             if job_title is not None:
                 if args.write:
                     data_train.classify_job(row['id'], job_title)
+        evaluation.stop()

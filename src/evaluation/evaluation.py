@@ -1,6 +1,7 @@
 """
 A simple example of an animated plot
 """
+import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -11,13 +12,12 @@ from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 all_evaluators = [StrictEvaluator(), TolerantJobtitleEvaluator(), LinearJobTitleEvaluator()]
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(8,8))
 
 
 def create_figure(classifier):
     fig.suptitle('Classification: ' + classifier.label())
     plt.show(block=False)
-    return fig, ax
 
 
 def create_plots(evaluators):
@@ -53,6 +53,7 @@ class Evaluation(object):
     num_classified = 0
 
     def __init__(self, classifier, evaluators=all_evaluators):
+        self.start_time = datetime.datetime.today()
         create_figure(classifier)
         self.evaluators = evaluators
         self.plots, self.labels = create_plots(evaluators)
@@ -79,3 +80,7 @@ class Evaluation(object):
         if self.labels[i]:
             self.labels[i].remove()
         self.labels[i] = ax.text(i + .75, acc + 0.01, str("{:1.4f}".format(acc)), color='black', fontsize=10)
+
+    def stop(self):
+        filename = self.start_time.strftime('%Y-%m-%d-%H-%M-%S')
+        plt.savefig(filename)
