@@ -7,6 +7,7 @@ import sys
 import nltk
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 
 from src import preproc
@@ -22,12 +23,13 @@ args = parser.parse_args()
 
 sentence_detector = nltk.data.load('tokenizers/punkt/german.pickle')
 
-file_vectorizer = os.path.join('D:/code/ip7-python/resource/semantic', 'train_vectorizer_semantic.pkl')
-
-file_train_features = os.path.join('D:/code/ip7-python/resource/semantic', 'train_features_semantic.pkl')
-file_train_labels = os.path.join('D:/code/ip7-python/resource/semantic', 'train_labels_semantic.pkl')
-
-file_test_features = os.path.join('D:/code/ip7-python/resource/semantic', 'test_features_semantic.pkl')
+data_dir = 'D:/code/ip7-python/resource/semantic'
+file_vectorizer = os.path.join(data_dir, 'vectorizer.pkl')
+file_train_features = os.path.join(data_dir, 'train_features.pkl')
+file_test_features = os.path.join(data_dir, 'test_features.pkl')
+file_train_labels = os.path.join(data_dir, 'train_labels.pkl')
+file_test_labels = os.path.join(data_dir, 'test_labels.pkl')
+file_clf_random_forest = os.path.join(data_dir, 'clf_random_forest.pkl')
 
 
 def preprocess(labeled_data):
@@ -40,31 +42,26 @@ def preprocess(labeled_data):
                 yield words, row['title']
 
 
-data_train = LabeledData(split_from=0, split_to=0.1)
-data_test = LabeledData(split_from=0.1, split_to=1)
-
-
-def generate_clean_train_data():
-    return preprocess(data_train)
-
-
-def generate_clean_test_data():
-    return preprocess(data_test)
+max_features = 500
+train_size = 0.01
+test_size = 0.1
+data_train = LabeledData(split_from=0, split_to=train_size)
+data_test = LabeledData(split_from=train_size, split_to=train_size + test_size)
 
 
 def create_train_data(vectorizer):
     if args.rebuild or not os.path.isfile(file_train_features):
         logging.info('loading/cleaning training data from DB...')
-        training_tuples = generate_clean_train_data()
         train_data = []
         train_labels = []
-        for data, label in training_tuples:
+        for data, label in preprocess(data_train):
             train_data.append(data)
             train_labels.append(label)
 
         logging.info('created {} training elements with {} labels'.format(len(train_data), len(train_labels)))
         logging.info('creating training features from cleaned training data...')
         train_features = vectorizer.fit_transform(train_data)
+        train_features = train_features.toarray()
 
         logging.info('saving {}x{} features and vectorizer to file'.format(train_features.shape[0],
                                                                            train_features.shape[1]))
@@ -82,16 +79,26 @@ def create_train_data(vectorizer):
 def create_test_data(vectorizer):
     if args.rebuild or not os.path.isfile(file_test_features):
         logging.info('loading/cleaning test data from DB...')
-        test_data = (data for (data, label) in generate_clean_test_data())
+        test_data = []
+        test_labels = []
+        for data, label in preprocess(data_test):
+            test_data.append(data)
+            test_labels.append(label)
+
+        logging.info('created {} test elements with {} labels'.format(len(test_data), len(test_labels)))
+        logging.info('creating test features from cleaned training data...')
         test_features = vectorizer.transform(test_data)
 
-        logging.info('saving {}x{} features to file'.format(train_features.shape[0],
-                                                            train_features.shape[1]))
+        logging.info('saving {}x{} features and vectorizer to file'.format(test_features.shape[0],
+                                                                           test_features.shape[1]))
         pickle.dump(test_features, open(file_test_features, 'wb'))
-        return test_features
+        pickle.dump(test_labels, open(file_test_labels, 'wb'))
+        return test_features, test_labels
     else:
         logging.info('Loading test features from file...')
-        return pickle.load(open(file_test_features, 'rb'))
+        test_features = pickle.load(open(file_test_features, 'rb'))
+        test_labels = pickle.load(open(file_test_labels, 'rb'))
+        return test_features, test_labels
 
 
 def create_vectorizer(args):
@@ -101,22 +108,40 @@ def create_vectorizer(args):
                                tokenizer=None,
                                preprocessor=None,
                                stop_words=None,
-                               max_features=5000
+                               max_features=max_features
                                )
     else:
         logging.info('loading vectorizer from file...')
         return pickle.load(open(file_vectorizer, 'rb'))
 
 
+def train_random_forest():
+    if os.path.exists(file_clf_random_forest):
+        logging.info('Loading RandomForestClassifier from file')
+        return pickle.load(open(file_clf_random_forest, 'rb'))
+
+    logging.info('Training new RandomForestClassifier')
+    clf = RandomForestClassifier(n_estimators=10)
+    clf.fit(train_features, train_labels)
+    pickle.dump(clf, open(file_clf_random_forest, 'wb'))
+    return clf
+
+
 if __name__ == '__main__':
-    # create training data with labels
+    # create test/training data
     logging.info('Creating training data')
     vectorizer = create_vectorizer(args)
     train_features, train_labels = create_train_data(vectorizer)
+
     # train classifier
-    forest = RandomForestClassifier(n_estimators=10)
-    logging.info('Training RandomForestClassifier')
-    forest.fit(train_features, train_labels)
-    # evaluate classifier
+    forest = train_random_forest()
+
+    # make predictions
+    test_features, test_labels = create_test_data(vectorizer)
     logging.info('using trained RandomForestClassifier to predict test features')
-    test_features = create_test_data(vectorizer)
+    predictions = forest.predict(test_features)
+
+    # evaluate predictions
+    logging.info('measuring accuracy of predictions')
+    accuracy = accuracy_score(test_labels, predictions)
+    logging.info(accuracy)
