@@ -8,10 +8,10 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 
 class LabeledData(object):
-    def __init__(self, id=None, offset=0, limit=1):
+    def __init__(self, id=None, split_from=0, split_to=1):
         self.id = id
-        self.offset = offset
-        self.limit = limit
+        self.split_from = split_from
+        self.split_to = split_to
         if self.id is None:
             self.id = -1000
 
@@ -26,7 +26,10 @@ class LabeledData(object):
         cursor = self.conn_read.cursor()
         cursor.execute(sql, parms)
         self.num_total = cursor.fetchone()['num_rows']
-        self.num_rows = int(self.num_total * (1 - self.offset))
+        self.offset = int(self.num_total * self.split_from)
+        self.limit = int(self.num_total * self.split_to)
+
+        self.num_rows = self.limit - self.offset
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -46,12 +49,12 @@ class LabeledData(object):
             yield row
 
     def limit_offset(self, sql, parms):
-        if self.offset < 1:
+        if self.split_from < 1:
             sql += ' OFFSET %(offset)s'
-            parms['offset'] = int(self.num_total * self.offset)
-        if self.limit < 1:
+            parms['offset'] = self.offset  # 97204
+        if self.split_to < 1:
             sql += ' LIMIT %(limit)s'
-            parms['limit'] = int(self.num_total * self.limit)
+            parms['limit'] = self.limit # 100
         return sql, parms
 
     def update_job_class(self, job_id, job_name):
