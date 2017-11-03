@@ -7,10 +7,12 @@ import sys
 import nltk
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 
 from src import preproc
+from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
+from src.evaluation.strict_evaluator import StrictEvaluator
+from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 from src.importer.data_labeled import LabeledData
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -142,5 +144,13 @@ if __name__ == '__main__':
 
     # evaluate predictions
     logging.info('measuring accuracy of predictions')
-    accuracy = accuracy_score(test_labels, predictions)
-    logging.info(accuracy)
+    e_strict = StrictEvaluator()
+    e_tolerant = TolerantJobtitleEvaluator()
+    e_linear = LinearJobTitleEvaluator()
+    acc_strict = e_strict.evaluate_all(test_labels, predictions)
+    acc_tolerant = e_tolerant.evaluate_all(test_labels, predictions)
+    acc_linear = e_linear.evaluate_all(test_labels, predictions)
+
+    logging.info('accuracy (strict): {}'.format("{:1.4f}".format(acc_strict)))
+    logging.info('accuracy (tolerant): {}'.format("{:1.4f}".format(acc_tolerant)))
+    logging.info('accuracy (linear): {}'.format("{:1.4f}".format(acc_linear)))

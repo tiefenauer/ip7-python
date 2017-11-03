@@ -9,6 +9,11 @@ class AbstractEvaluator(ABC):
         self.accuracy = 0
         self.desc_pattern = "positives={}, negatives={}, performance={}"
 
+    def evaluate_all(self, ground_truth, predictions):
+        for expected_class, predicted_class in zip(ground_truth, predictions):
+            self.evaluate(expected_class, predicted_class)
+        return self.accuracy
+
     def evaluate(self, actual_class, predicted_class):
         score = self.calculate_similarity(actual_class, predicted_class)
         if score > self.threshold:
