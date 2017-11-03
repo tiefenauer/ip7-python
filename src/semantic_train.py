@@ -49,56 +49,55 @@ data_train = LabeledData(split_from=0, split_to=train_size)
 data_test = LabeledData(split_from=train_size, split_to=train_size + test_size)
 
 
-def create_train_data(vectorizer):
-    if args.rebuild or not os.path.isfile(file_train_features):
-        logging.info('loading/cleaning training data from DB...')
-        train_data = []
-        train_labels = []
-        for data, label in preprocess(data_train):
-            train_data.append(data)
-            train_labels.append(label)
+def create_data_labels(dataset):
+    data = []
+    labels = []
+    for raw_data, label in dataset:
+        data.append(raw_data)
+        labels.append(label)
+    return data, labels
 
-        logging.info('created {} training elements with {} labels'.format(len(train_data), len(train_labels)))
-        logging.info('creating training features from cleaned training data...')
-        train_features = vectorizer.fit_transform(train_data)
-        train_features = train_features.toarray()
 
-        logging.info('saving {}x{} features and vectorizer to file'.format(train_features.shape[0],
-                                                                           train_features.shape[1]))
-        pickle.dump(vectorizer, open(file_vectorizer, 'wb'))
-        pickle.dump(train_labels, open(file_train_labels, 'wb'))
-        pickle.dump(train_features, open(file_train_features, 'wb'))
-        return train_features, train_labels
+def load_data(name, dataset, transform_fun, file_features, file_labels):
+    if args.rebuild or not os.path.isfile(file_features):
+        logging.info('loading/cleaning {} data from DB...'.format(name))
+        data, labels = create_data_labels(dataset)
+        logging.info('created {} elements with {} labels'.format(len(data), len(labels)))
+
+        logging.info('creating features from {} data...'.format(name))
+        features = transform_fun(data)
+        features = features.toarray()
+
+        logging.info('saving {}x{} features to file'.format(features.shape[0], features.shape[1]))
+        pickle.dump(labels, open(file_labels, 'wb'))
+        pickle.dump(features, open(file_features, 'wb'))
+        return features, labels
     else:
-        logging.info('Loading training features and labels from file...')
-        train_data = pickle.load(open(file_train_features, 'rb'))
-        train_labels = pickle.load(open(file_train_labels, 'rb'))
-        return train_data, train_labels
+        logging.info('Loading {} data and labels from file...'.format(name))
+        data = pickle.load(open(file_features, 'rb'))
+        labels = pickle.load(open(file_labels, 'rb'))
+        return data, labels
+
+
+def create_train_data(vectorizer):
+    features, labels = load_data(name='train',
+                                 dataset=preprocess(data_train),
+                                 transform_fun=vectorizer.fit_transform,
+                                 file_features=file_train_features,
+                                 file_labels=file_train_labels
+                                 )
+    logging.info('saving vectorizer to file')
+    pickle.dump(vectorizer, open(file_vectorizer, 'wb'))
+    return features, labels
 
 
 def create_test_data(vectorizer):
-    if args.rebuild or not os.path.isfile(file_test_features):
-        logging.info('loading/cleaning test data from DB...')
-        test_data = []
-        test_labels = []
-        for data, label in preprocess(data_test):
-            test_data.append(data)
-            test_labels.append(label)
-
-        logging.info('created {} test elements with {} labels'.format(len(test_data), len(test_labels)))
-        logging.info('creating test features from cleaned training data...')
-        test_features = vectorizer.transform(test_data)
-
-        logging.info('saving {}x{} features and vectorizer to file'.format(test_features.shape[0],
-                                                                           test_features.shape[1]))
-        pickle.dump(test_features, open(file_test_features, 'wb'))
-        pickle.dump(test_labels, open(file_test_labels, 'wb'))
-        return test_features, test_labels
-    else:
-        logging.info('Loading test features from file...')
-        test_features = pickle.load(open(file_test_features, 'rb'))
-        test_labels = pickle.load(open(file_test_labels, 'rb'))
-        return test_features, test_labels
+    return load_data(name='test',
+                     dataset=preprocess(data_test),
+                     transform_fun=vectorizer.transform,
+                     file_features=file_test_features,
+                     file_labels=file_test_labels
+                     )
 
 
 def create_vectorizer(args):
