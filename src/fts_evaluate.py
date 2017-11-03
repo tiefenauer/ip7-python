@@ -11,7 +11,7 @@ from src.classifier.jobtitle_title_based import TitleBasedJobTitleClassifier
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
-from src.importer.data_train import TrainingData
+from src.importer.data_labeled import LabeledData
 from src.util.boot_util import choose_classifier, choose_evaluation
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -49,17 +49,17 @@ classifier = choose_classifier(args)
 evaluation = choose_evaluation(args, classifier)
 
 if __name__ == '__main__':
-    with TrainingData(args.id) as data_train:
+    with LabeledData(args.id) as data_train:
         if args.write and args.truncate:
-            data_train.truncate_classification_tables()
+            data_train.truncate_target()
         logging.info("Processing {} rows...".format(data_train.num_rows))
         i = 0
         for row in (row for row in tqdm(data_train, total=data_train.num_rows, unit=' rows') if row['html']):
             i += 1
             relevant_tags = preproc.preprocess(row['html'])
             job_title = classifier.classify(relevant_tags)
-            evaluation.update(row['title'], job_title, i, data_train.num_rows)
+            evaluation.update(row['title'], job_title, i, data_train.num_total)
             if job_title is not None:
                 if args.write:
-                    data_train.classify_job(row['id'], job_title)
+                    data_train.update_job_class(row['id'], job_title)
         evaluation.stop()
