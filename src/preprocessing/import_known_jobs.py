@@ -56,14 +56,14 @@ def merge(actual, prediction):
 
 def write_job_name_to_db(name, origin):
     cursor = conn.cursor()
-    cursor.execute("""INSERT INTO job_names (job_name, origin) VALUES (%s, %s)""", (name, origin))
+    cursor.execute("""INSERT INTO known_jobs (job_name, origin) VALUES (%s, %s)""", (name, origin))
     conn.commit()
 
 
 def truncate_target_table():
     logging.info('truncating target tables')
     cursor = conn.cursor()
-    cursor.execute("""TRUNCATE TABLE job_names""")
+    cursor.execute("""TRUNCATE TABLE known_jobs""")
     conn.commit()
 
 

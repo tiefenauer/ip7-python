@@ -3,7 +3,7 @@ import unittest
 
 from hamcrest import is_, assert_that
 
-from src.preprocessing import import_job_names as testee
+from src.preprocessing import import_known_jobs as testee
 from src.util import jobtitle_util
 
 
@@ -21,6 +21,10 @@ class TestImportJobNames(unittest.TestCase):
         for actual, prediction in itertools.combinations(jobtitle_util.create_variants(job_name), 2):
             message = '{} / {} should be merged to {}'.format(actual, prediction, job_name)
             assert_that(testee.merge(actual, prediction), is_((job_name, 'predicted')), message)
+
+    @unittest.skip('kann ev. noch implementiert werden')
+    def test_merge_slashed_form_returns_male_form(self):
+        assert_that(testee.merge('Maurer/Maurerin', 'Maurer'), is_(('Maurer', 'predicted')))
 
     def test_merge_partial_match_returns_full(self):
         assert_that(testee.merge('Möbelschreiner', 'Schreiner'), is_(('Möbelschreiner', 'compound')))
@@ -43,4 +47,4 @@ class TestImportJobNames(unittest.TestCase):
         assert_that(testee.merge('Kupfer-Spleisser', 'Monteur'), is_(('Kupfer-Spleisser', 'guessed')))
 
     def test_merge_no_match_unmergeable_returns_None(self):
-        assert_that(testee.merge('Projektleiter Sanitär', 'Techniker'), is_(None))
+        assert_that(testee.merge('Projektleiter Sanitär', 'Techniker'), is_((None, None)))

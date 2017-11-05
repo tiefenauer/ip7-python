@@ -14,6 +14,9 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_male_form('Schreiner/in'), is_('Schreiner'))
         assert_that(testee.to_male_form('Schreiner/-in'), is_('Schreiner'))
 
+    def test_to_male_form_in_does_with_non_er_male_form(self):
+        assert_that(testee.to_male_form('Getränketechnologin'), is_('Getränketechnolog'))
+
     def test_to_male_form_euse_returns_male_form(self):
         assert_that(testee.to_male_form("Coiffeur"), is_("Coiffeur"))
         assert_that(testee.to_male_form("Coiffeuse"), is_("Coiffeur"))
