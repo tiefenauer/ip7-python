@@ -14,8 +14,8 @@ class TrainingData(object):
             self.id = -1000
 
     def __enter__(self):
-        self.conn_read = db.connect_to(Database.X28)
-        self.conn_write = db.connect_to(Database.X28)
+        self.conn_read = db.connect_to(Database.X28_PG)
+        self.conn_write = db.connect_to(Database.X28_PG)
         cursor = self.conn_read.cursor()
         cursor.execute("""SELECT count(*) AS num_rows 
                           FROM labeled_jobs 

@@ -14,8 +14,8 @@ class X28ImporterJson(object):
         self.num_files = len([name for name in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, name))])
 
     def __enter__(self):
-        self.conn_x28 = db.connect_to(Database.X28)
-        self.conn_fetchflow = db.connect_to(Database.X28_FETCHFLOW)
+        self.conn_x28 = db.connect_to(Database.X28_PG)
+        self.conn_fetchflow = db.connect_to(Database.FETCHFLOW_PG)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

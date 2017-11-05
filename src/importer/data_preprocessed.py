@@ -9,7 +9,7 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 class PreprocessedData(object):
     def __enter__(self):
-        self.db_fetchflow = db.connect_to(Database.X28_FETCHFLOW)
+        self.db_fetchflow = db.connect_to(Database.FETCHFLOW_PG)
         cursor = self.db_fetchflow.cursor(dictionary=True)
         cursor.execute("SELECT count(*) AS num_rows FROM labeled_text")
         self.num_rows = cursor.fetchone()['num_rows']

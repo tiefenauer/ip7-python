@@ -6,14 +6,14 @@ from psycopg2.extras import DictCursor
 
 
 class Database(Enum):
-    FETCHFLOW = 1,
-    X28 = 2,
-    X28_FETCHFLOW = 3
+    FETCHFLOW_MYSQL = 1,
+    X28_PG = 2,
+    FETCHFLOW_PG = 3
 
 
 # credentials
 _config = {
-    Database.FETCHFLOW: {
+    Database.FETCHFLOW_MYSQL: {
         'credentials': {
             'host': '127.0.0.1',
             'user': 'root',
@@ -23,7 +23,7 @@ _config = {
         'initializer': lambda cred: _create_mysql_connection(cred),
         'connection': None
     },
-    Database.X28: {
+    Database.X28_PG: {
         'credentials': {
             'host': '127.0.0.1',
             'user': 'postgres',
@@ -33,7 +33,7 @@ _config = {
         'initializer': lambda cred: _create_postgres_connection(cred),
         'connection': None
     },
-    Database.X28_FETCHFLOW: {
+    Database.FETCHFLOW_PG: {
         'credentials': {
             'host': '127.0.0.1',
             'user': 'postgres',
