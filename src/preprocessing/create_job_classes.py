@@ -55,8 +55,8 @@ def create_write_variants(job_name):
     if is_hyphenated(job_name):
         job_name_parts = re.findall('([a-zA-Z]+)', job_name)
         part1 = job_name_parts[0]
-        part2 = job_name_parts[1].lower()
-        job_concatenated = create_job_name_concatenated(part1, part2)
+        part2 = job_name_parts[1]
+        job_concatenated = create_job_name_concatenated(part1, part2.lower())
         job_spaced = create_job_name_spaced(part1, part2)
         write_variants.add(job_concatenated)
         write_variants.add(job_spaced)
