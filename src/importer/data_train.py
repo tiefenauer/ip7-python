@@ -18,7 +18,7 @@ class TrainingData(object):
         self.conn_write = db.connect_to(Database.X28_PG)
         cursor = self.conn_read.cursor()
         cursor.execute("""SELECT count(*) AS num_rows 
-                          FROM labeled_jobs 
+                          FROM data_train 
                           WHERE %(id)s < 0 OR id = %(id)s""",
                        {'id': self.id})
         self.num_rows = cursor.fetchone()['num_rows']
@@ -31,7 +31,7 @@ class TrainingData(object):
     def __iter__(self):
         cursor = self.conn_read.cursor()
         cursor.execute("""SELECT id, html, plaintext, url, title, x28_id 
-                          FROM labeled_jobs
+                          FROM data_train
                           WHERE %(id)s < 0 OR id = %(id)s
                           """,
                        {'id': self.id}
@@ -41,7 +41,7 @@ class TrainingData(object):
 
     def classify_job(self, job_id, job_name):
         cursor = self.conn_write.cursor()
-        cursor.execute("""INSERT INTO job_name_fts (job_id, job_name) 
+        cursor.execute("""INSERT INTO classification_result_fts (job_id, job_name) 
                           VALUES(%s, %s)""",
                        (job_id, job_name))
         self.conn_write.commit()
@@ -49,5 +49,5 @@ class TrainingData(object):
     def truncate_classification_tables(self):
         logging.info('truncating target tables...')
         cursor = self.conn_read.cursor()
-        cursor.execute("""TRUNCATE job_name_fts""")
+        cursor.execute("""TRUNCATE classification_result_fts""")
         self.conn_read.commit()

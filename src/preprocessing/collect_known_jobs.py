@@ -33,8 +33,8 @@ def import_job_name_from_fts():
     logging.info('importing job names from Full Text Search results')
     cursor = conn.cursor()
     sql = """SELECT a.title actual, p.job_name AS prediction
-            FROM job_name_fts p
-            LEFT OUTER JOIN labeled_jobs a ON a.id = p.job_id"""
+            FROM classification_result_fts p
+            LEFT OUTER JOIN data_train a ON a.id = p.job_id"""
     cursor.execute(sql)
     for row in cursor:
         for job_name in merge(row['actual'], row['prediction']):
