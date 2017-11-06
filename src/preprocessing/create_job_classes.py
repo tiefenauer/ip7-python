@@ -30,6 +30,16 @@ def import_job_names_from_file():
     return df['job_name']
 
 
+def write_job_classes_from_db_to_file():
+    logging.info('writing classes back to file: {}'.format(known_jobs_tsv))
+    cursor = conn.cursor()
+    cursor.execute("""SELECT DISTINCT job_class as job_class from job_classes ORDER BY job_class ASC""")
+    with open(known_jobs_tsv, mode='w+', encoding='utf-8') as file:
+        file.truncate()
+        for row in cursor:
+            file.write(row['job_class'] + '\n')
+
+
 def create_gender_variants(job_name):
     job_variants = jobtitle_util.create_variants(job_name)
     return job_variants
@@ -118,5 +128,7 @@ if __name__ == '__main__':
         for job_variant in variants:
             if job_id > 0:
                 add_job_variant(job_id, job_variant)
+
+    write_job_classes_from_db_to_file()
 
 conn.close()
