@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import sys
 
 import pandas
@@ -29,17 +30,62 @@ def import_job_names_from_file():
     return df['job_name']
 
 
-def create_job_variants(job_name):
+def create_gender_variants(job_name):
     job_variants = jobtitle_util.create_variants(job_name)
     return job_variants
 
 
-def add_job_class(job_name):
-    job_name_stem = preproc.stem(job_name)
+def create_write_variants(job_name):
+    write_variants = set()
+    write_variants.add(job_name)
+    if is_hyphenated(job_name):
+        job_name_parts = re.findall('([a-zA-Z]+)', job_name)
+        part1 = job_name_parts[0]
+        part2 = job_name_parts[1].lower()
+        job_concatenated = create_job_name_concatenated(part1, part2)
+        job_spaced = create_job_name_spaced(part1, part2)
+        write_variants.add(job_concatenated)
+        write_variants.add(job_spaced)
+    else:
+        for known_job in known_jobs:
+            if known_job.lower() in job_name:
+                part1 = job_name.split(known_job.lower())[0].strip()
+                job_concatenated = create_job_name_concatenated(part1, known_job.lower())
+                job_spaced = create_job_name_spaced(part1, known_job)
+                job_hyphenated = create_job_name_hyphenated(part1, known_job)
+                write_variants.add(job_concatenated)
+                write_variants.add(job_spaced)
+                write_variants.add(job_hyphenated)
+
+    return write_variants
+
+
+def create_job_name_spaced(job_name_1, job_name_2):
+    return job_name_1 + ' ' + job_name_2
+
+
+def create_job_name_concatenated(job_name_1, job_name_2):
+    return job_name_1 + job_name_2
+
+
+def create_job_name_hyphenated(job_name_1, job_name_2):
+    return job_name_1 + '-' + job_name_2
+
+
+hyphenated_pattern = re.compile('(?=\S*[-])([a-zA-Z-]+)')
+
+
+def is_hyphenated(job_name):
+    return hyphenated_pattern.match(job_name)
+
+
+def add_job_class(job_class):
+    job_name_stem = preproc.stem(job_class)
     cursor = conn.cursor()
-    cursor.execute("""SELECT count(*) as cnt from job_classes where job_name = %s""", [job_name])
+    cursor.execute("""SELECT count(*) AS cnt FROM job_classes WHERE job_class = %s""", [job_class])
     if cursor.fetchone()['cnt'] == 0:
-        cursor.execute("""INSERT INTO job_classes (job_name, job_name_stem) VALUES (%s, %s) RETURNING id""", (job_name, job_name_stem))
+        cursor.execute("""INSERT INTO job_classes (job_class, job_name_stem) VALUES (%s, %s) RETURNING id""",
+                       (job_class, job_name_stem))
         conn.commit()
         return cursor.fetchone()[0]
     return -1
@@ -47,28 +93,30 @@ def add_job_class(job_name):
 
 def add_job_variant(job_id, job_variant):
     cursor = conn.cursor()
-    cursor.execute("""INSERT INTO job_classes_variants (job_class_id, job_name_variant) 
+    cursor.execute("""INSERT INTO job_classes_variants (job_class_id, job_class_variant) 
                       VALUES(%s, %s)""",
                    (job_id, job_variant))
     conn.commit()
 
 
+known_jobs = import_job_names_from_file()
+
 conn = db.connect_to(Database.X28_PG)
-
-
-def normalize_job_name(job_name):
-    pass
-
 
 if __name__ == '__main__':
     truncate_target_tables()
-    job_names = import_job_names_from_file()
-    for job_name in tqdm(job_names):
-        job_name_normalized = normalize_job_name(job_name)
+
+    for job_name in tqdm(known_jobs):
         job_id = add_job_class(job_name)
-        if job_id > 0:
-            job_variants = create_job_variants(job_name)
-            for job_variant in job_variants:
+        variants = set()
+        write_variants = create_write_variants(job_name)
+        variants.update(write_variants)
+        for write_variant in write_variants:
+            gender_variants = create_gender_variants(write_variant)
+            variants.update(gender_variants)
+
+        for job_variant in variants:
+            if job_id > 0:
                 add_job_variant(job_id, job_variant)
 
 conn.close()
