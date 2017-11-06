@@ -33,9 +33,9 @@ def import_job_name_from_fts():
             LEFT OUTER JOIN labeled_jobs a ON a.id = p.job_id"""
     cursor.execute(sql)
     for row in cursor:
-        job_name, origin = merge(row['actual'], row['prediction'])
+        job_name = merge(row['actual'], row['prediction'])
         if job_name is not None:
-            yield job_name, origin
+            yield job_name
 
 
 def merge(actual, prediction):
@@ -43,17 +43,17 @@ def merge(actual, prediction):
     prediction_n = jobtitle_util.to_male_form(prediction)
     # full match
     if actual_n == prediction_n:
-        return actual_n, 'predicted'
+        return actual_n
     # partial match / compound word
     words_actual = nltk.word_tokenize(re.escape(actual_n), language='german')
     words_prediction = nltk.word_tokenize(prediction_n, language='german')
     if prediction_n.lower() in actual_n.lower():
         if len(words_actual) == len(words_prediction):
-            return actual_n, 'compound'
+            return actual_n
     # no match
     if len(words_actual) == 1:
-        return actual_n, 'guessed'
-    return None, None
+        return actual_n
+    return None
 
 
 def write_job_name_to_db(name, origin):
@@ -96,9 +96,9 @@ if __name__ == '__main__':
         write_job_name_to_db(job_name, 'job_titles.tsv')
         new_jobs.add(job_name.lower())
     fts_jobs = import_job_name_from_fts()
-    for job_name, origin in tqdm(fts_jobs):
+    for job_name in tqdm(fts_jobs):
         if job_name.lower() not in new_jobs:
-            write_job_name_to_db(job_name, 'fts ' + origin)
+            write_job_name_to_db(job_name, 'fts')
             new_jobs.add(job_name.lower())
 
     write_known_jobs_to_file()
