@@ -4,8 +4,8 @@ import re
 import sys
 
 import nltk
-import pandas
 import numpy as np
+import pandas
 from tqdm import tqdm
 
 from src import db
@@ -33,27 +33,41 @@ def import_job_name_from_fts():
             LEFT OUTER JOIN labeled_jobs a ON a.id = p.job_id"""
     cursor.execute(sql)
     for row in cursor:
-        job_name = merge(row['actual'], row['prediction'])
-        if job_name is not None:
+        for job_name in merge(row['actual'], row['prediction']):
             yield job_name
 
 
 def merge(actual, prediction):
-    actual_n = jobtitle_util.to_male_form(actual)
-    prediction_n = jobtitle_util.to_male_form(prediction)
-    # full match
-    if actual_n == prediction_n:
-        return actual_n
-    # partial match / compound word
-    words_actual = nltk.word_tokenize(re.escape(actual_n), language='german')
-    words_prediction = nltk.word_tokenize(prediction_n, language='german')
-    if prediction_n.lower() in actual_n.lower():
-        if len(words_actual) == len(words_prediction):
-            return actual_n
-    # no match
-    if len(words_actual) == 1:
-        return actual_n
-    return None
+    merged_job_names = set()
+    # split on slashes but not if slash denotss a male/female form
+    actual_job_names = re.split('(?<=[a-z])\/(?=[A-Z])', actual)
+    for actual_job_name in actual_job_names:
+        actual_n = jobtitle_util.to_male_form(actual_job_name)
+        actual_n = trim_and_remove_special_chars(actual_n)
+        prediction_n = jobtitle_util.to_male_form(prediction)
+        prediction_n = trim_and_remove_special_chars(prediction_n)
+        # full match
+        if actual_n == prediction_n:
+            merged_job_names.add(actual_n)
+            continue
+        # partial match / compound word
+        words_actual = nltk.word_tokenize(re.escape(actual_n), language='german')
+        words_prediction = nltk.word_tokenize(prediction_n, language='german')
+        if prediction_n.lower() in actual_n.lower():
+            if len(words_actual) == len(words_prediction):
+                merged_job_names.add(actual_n)
+        # no match
+        if len(words_actual) == 1:
+            merged_job_names.add(actual_n)
+    return merged_job_names
+
+
+def trim_and_remove_special_chars(str):
+    # remove trailing special chars
+    str = re.sub(r'[\s\/\-_]+$', '', str)
+    # remove leading special chars
+    str = re.sub(r'^[\s\/\-_]', '', str)
+    return str
 
 
 def write_job_name_to_db(name, origin):
