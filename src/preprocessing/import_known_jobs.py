@@ -16,7 +16,7 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 resource_dir = 'D:/code/ip7-python/resource'
 job_titles_tsv = os.path.join(resource_dir, 'job_titles.tsv')
-known_jobs_tsv = os.path.join(resource_dir, 'known_jobs.tsv')
+known_jobs_dirty = os.path.join(resource_dir, 'known_jobs_dirty.tsv')
 
 
 def import_job_names_from_file():
@@ -84,10 +84,10 @@ def truncate_target_table():
 
 
 def write_known_jobs_to_file():
-    logging.info('writing entries of table known_jobs to file {}'.format(known_jobs_tsv))
+    logging.info('writing entries of table known_jobs to file {}'.format(known_jobs_dirty))
 
-    df = pandas.read_csv(known_jobs_tsv, delimiter='\t', names=['job_name'])
-    logging.info('entries in {} before: {}'.format(known_jobs_tsv, df.shape[0]))
+    df = pandas.read_csv(known_jobs_dirty, delimiter='\t', names=['job_name'])
+    logging.info('entries in {} before: {}'.format(known_jobs_dirty, df.shape[0]))
 
     sql = """SELECT DISTINCT job_name FROM known_jobs ORDER BY job_name ASC"""
     conn = db.connect_to(Database.X28_PG)
@@ -96,8 +96,8 @@ def write_known_jobs_to_file():
     data = cursor.fetchall()
     all_jobs = pandas.DataFrame(np.array(data))
 
-    logging.info('entries in {} after: {}'.format(known_jobs_tsv, all_jobs.shape[0]))
-    all_jobs[0].to_csv(known_jobs_tsv, encoding='utf-8', index=False)
+    logging.info('entries in {} after: {}'.format(known_jobs_dirty, all_jobs.shape[0]))
+    all_jobs[0].to_csv(known_jobs_dirty, encoding='utf-8', index=False)
 
 
 conn = db.connect_to(Database.X28_PG)
