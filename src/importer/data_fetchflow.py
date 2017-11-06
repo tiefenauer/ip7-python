@@ -15,8 +15,8 @@ class FetchflowImporter(object):
         self.curr_datetime = time.strftime('%Y-%m-%d %H:%M:%S')
 
     def __enter__(self):
-        self.conn_read = db.connect_to(Database.FETCHFLOW)
-        self.conn_write = db.connect_to(Database.FETCHFLOW)
+        self.conn_read = db.connect_to(Database.FETCHFLOW_MYSQL)
+        self.conn_write = db.connect_to(Database.FETCHFLOW_MYSQL)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
