@@ -1,3 +1,7 @@
+# collects all known jobs by reading from job_titles.csv and evaluating the results from full text search (FTS)
+# Results are written to known_jobs_dirty.tsv
+# Because the X28-Target classes are not really clean (not real job names, duplicates, spelling errors, overlapping
+# classes), the results in known_jobs_dirty.tsv must be postprocessed by hand!
 import logging
 import os
 import re

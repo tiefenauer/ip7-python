@@ -1,3 +1,7 @@
+# Fills tables job_classes and job_classes_variants on DB by reading from known_jobs.tsv
+# Each row in known_jobs.tsv will be a class in job_classes
+# For each class the different writing and gender variants are created
+# Each created variant will be a row in job_classes_variants
 import logging
 import os
 import re
