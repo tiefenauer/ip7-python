@@ -1,8 +1,72 @@
+import re
+
 from src.classifier.classification_strategy import ClassificationStrategy
 from src.importer.job_name_importer import JobNameImporter
-from src.util.jobtitle_util import count_variant, create_variants
+from src.util import jobtitle_util
+from src.util.jobtitle_util import count_variant
 
-job_name_variants = list((job_name, create_variants(job_name)) for job_name in JobNameImporter())
+
+def create_job_name_spaced(job_name_1, job_name_2):
+    return job_name_1 + ' ' + job_name_2
+
+
+def create_job_name_concatenated(job_name_1, job_name_2):
+    return job_name_1 + job_name_2
+
+
+def create_job_name_hyphenated(job_name_1, job_name_2):
+    return job_name_1 + '-' + job_name_2
+
+
+hyphenated_pattern = re.compile('(?=\S*[-])([a-zA-Z-]+)')
+
+
+def is_hyphenated(job_name):
+    return hyphenated_pattern.match(job_name)
+
+
+def create_write_variants(job_name):
+    write_variants = set()
+    write_variants.add(job_name)
+    if is_hyphenated(job_name):
+        job_name_parts = re.findall('([a-zA-Z]+)', job_name)
+        part1 = job_name_parts[0]
+        part2 = job_name_parts[1]
+        job_concatenated = create_job_name_concatenated(part1, part2.lower())
+        job_spaced = create_job_name_spaced(part1, part2)
+        write_variants.add(job_concatenated)
+        write_variants.add(job_spaced)
+    else:
+        for known_job in JobNameImporter():
+            if known_job.lower() in job_name:
+                part1 = job_name.split(known_job.lower())[0].strip()
+                job_concatenated = create_job_name_concatenated(part1, known_job.lower())
+                job_spaced = create_job_name_spaced(part1, known_job)
+                job_hyphenated = create_job_name_hyphenated(part1, known_job)
+                write_variants.add(job_concatenated)
+                write_variants.add(job_spaced)
+                write_variants.add(job_hyphenated)
+
+    return write_variants
+
+
+def create_gender_variants(job_name):
+    job_variants = jobtitle_util.create_variants(job_name)
+    return job_variants
+
+
+def create_writing_and_gender_variants(job_name):
+    variants = set()
+    write_variants = create_write_variants(job_name)
+    variants.update(write_variants)
+    for write_variant in write_variants:
+        gender_variants = create_gender_variants(write_variant)
+        variants.update(gender_variants)
+
+    return variants
+
+
+job_name_variants = list((job_name, create_writing_and_gender_variants(job_name)) for job_name in JobNameImporter())
 tag_weight = {
     'h1': 0.6,
     'h2': 0.3,
