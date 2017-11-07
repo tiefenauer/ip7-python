@@ -47,7 +47,7 @@ def remove_special_chars(text):
 
 
 def _replace_special_chars(word):
-    return re.sub('[^a-zA-Z0-9\/ -]', '', word)
+    return re.sub('([^A-Za-zäöüéèà\/\- ]*)', '', word)
 
 
 def remove_stop_words(text):

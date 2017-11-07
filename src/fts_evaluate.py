@@ -58,8 +58,8 @@ if __name__ == '__main__':
             i += 1
             relevant_tags = preproc.preprocess(row['html'])
             job_title = classifier.classify(relevant_tags)
-            evaluation.update(row['title'], job_title, i, data_train.num_rows)
+            score_strict, score_tolerant, score_linear = evaluation.update(row['title'], job_title, i, data_train.num_rows)
             if job_title is not None:
                 if args.write:
-                    data_train.classify_job(row['id'], job_title)
+                    data_train.classify_job(row['id'], job_title, score_strict, score_tolerant, score_linear)
         evaluation.stop()

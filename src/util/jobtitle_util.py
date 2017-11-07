@@ -20,7 +20,7 @@ def find(string, job_name):
 def to_male_form(job_name):
     jn = re.sub('(eur)?\/?-?(euse)$', 'eur', job_name)
     jn = re.sub('(mann)?\/?-?(frau)$', 'mann', jn)
-    jn = re.sub('\/?-?([iI]n)$', '', jn)
+    jn = re.sub('\/?-?(\(?[iI]n\)?)$', '', jn)
     jn = re.sub('\s?(\(?m\/?w\)?)', '', jn)
     jn = re.sub('\s?(\(?w\/?m\)?)', '', jn)
     return jn
@@ -35,6 +35,11 @@ def to_female_form(job_name):
 
 def to_female_form_camel_cased(job_name):
     jn = re.sub('(er)$', 'erIn', job_name)
+    return jn
+
+
+def to_female_form_brackets(job_name):
+    jn = re.sub('(er)$', 'er(in)', job_name)
     return jn
 
 
@@ -80,6 +85,7 @@ def create_variants(job_name):
     return {to_male_form(job_name),
             to_female_form(job_name),
             to_female_form_camel_cased(job_name),
+            to_female_form_brackets(job_name),
             to_slashed_form(job_name),
             to_slashed_hyphen_form(job_name),
             to_mw_form(job_name),

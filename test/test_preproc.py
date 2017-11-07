@@ -45,9 +45,17 @@ class TestPreprocessing(unittest.TestCase):
         # assert
         assert_that(result, contains('Lehrstelle', 'als', 'Logistiker/in', '(', 'Distribution', ')', 'EFZ'))
 
-    def test_remove_special_chars_does_not_remove_forward_slash(self):
+    def test_remove_special_chars_does_not_remove_forward_slash_or_hyphen(self):
         assert_that(testee.remove_special_chars('Logistiker/in'), is_('Logistiker/in'))
         assert_that(testee.remove_special_chars('Logistiker/-in'), is_('Logistiker/-in'))
+
+    def test_remove_special_chars_removes_numeric_chars(self):
+        # arrange
+        text = 'Auftragsleiter/-in (w/m) 80% Heizung für die Nordwestschweiz'
+        # act
+        result = testee.remove_special_chars(text)
+        # assert
+        assert_that(result, is_('Auftragsleiter/-in w/m Heizung für die Nordwestschweiz'))
 
     def test_remove_special_chars_from_string_removes_special_chars(self):
         # arrange
