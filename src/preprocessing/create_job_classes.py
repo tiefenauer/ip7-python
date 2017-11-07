@@ -94,12 +94,12 @@ def is_hyphenated(job_name):
 
 
 def add_job_class(job_class):
-    job_name_stem = preproc.stem(job_class)
+    job_class_stemmed = preproc.stem(job_class)
     cursor = conn.cursor()
     cursor.execute("""SELECT count(*) AS cnt FROM job_classes WHERE job_class = %s""", [job_class])
     if cursor.fetchone()['cnt'] == 0:
-        cursor.execute("""INSERT INTO job_classes (job_class, job_name_stem) VALUES (%s, %s) RETURNING id""",
-                       (job_class, job_name_stem))
+        cursor.execute("""INSERT INTO job_classes (job_class, job_class_stem) VALUES (%s, %s) RETURNING id""",
+                       (job_class, job_class_stemmed))
         conn.commit()
         return cursor.fetchone()[0]
     return -1
