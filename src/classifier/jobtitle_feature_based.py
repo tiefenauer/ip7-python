@@ -66,7 +66,8 @@ def create_writing_and_gender_variants(job_name):
     return variants
 
 
-job_name_variants = list((job_name, create_writing_and_gender_variants(job_name)) for job_name in JobNameImporter())
+job_name_variants = list((job_name, create_writing_and_gender_variants(job_name))
+                     for job_name in JobNameImporter())
 tag_weight = {
     'h1': 0.6,
     'h2': 0.3,
