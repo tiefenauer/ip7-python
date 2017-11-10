@@ -52,11 +52,7 @@ evaluation = choose_evaluation(args, classifier)
 
 if __name__ == '__main__':
     with TrainingData(args) as data_train:
-        i = 0
-        for row_id, expected_class, relevant_tags in preprocessor.preprocess(data_train):
-            i += 1
+        for i, (row_id, expected_class, relevant_tags) in enumerate(preprocessor.preprocess(data_train), 1):
             predicted_class = classifier.classify(relevant_tags)
-            score_strict, score_tolerant, score_linear = evaluation.update(expected_class, predicted_class, i, data_train.num_rows)
-            if predicted_class is not None:
-                if args.write:
-                    data_train.classify_job(row_id, predicted_class, score_strict, score_tolerant, score_linear)
+            sc_str, sc_tol, sc_lin = evaluation.update(expected_class, predicted_class, i, data_train.num_rows)
+            data_train.classify_job(row_id, predicted_class, sc_str, sc_tol, sc_lin)

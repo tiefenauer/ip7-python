@@ -10,6 +10,7 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 class TrainingData(object):
     def __init__(self, args):
         self.id = args.id if args.id is not None else -1000
+        self.write = args.write if hasattr(args, 'write') else False
         self.truncate = args.truncate if hasattr(args, 'truncate') else False
         self.split_from = args.offset if hasattr(args, 'offset') else 0
         self.split_to = args.limit if hasattr(args, 'limit') else 1
@@ -58,11 +59,15 @@ class TrainingData(object):
             parms['limit'] = self.limit  # 100
         return sql, parms
 
-    def classify_job(self, job_id, job_name, score_strict, score_tolerant, score_linear):
+    def classify_job(self, id, predicted_class, sc_str, sc_tol, sc_lin):
+        if not (self.write and predicted_class):
+            # do not write classification if only dry run or no predicted class
+            return
         cursor = self.conn_write.cursor()
-        cursor.execute("""INSERT INTO classification_result_fts (job_id, job_name, score_strict, score_tolerant, score_linear) 
+        cursor.execute("""INSERT INTO classification_result_fts 
+                                (job_id, job_name, score_strict, score_tolerant, score_linear) 
                           VALUES(%s, %s, %s, %s, %s)""",
-                       (job_id, job_name, score_strict, score_tolerant, score_linear))
+                       (id, predicted_class, sc_str, sc_tol, sc_lin))
         self.conn_write.commit()
 
     def truncate_classification_tables(self):
