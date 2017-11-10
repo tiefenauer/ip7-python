@@ -25,7 +25,7 @@ args = parser.parse_args()
 
 sentence_detector = nltk.data.load('tokenizers/punkt/german.pickle')
 
-data_dir = 'D:/code/ip7-python/resource/models/semantic'
+data_dir = 'D:/code/ip7-python/resource/models/randomforest'
 file_vectorizer = os.path.join(data_dir, 'vectorizer.pkl')
 file_train_features = os.path.join(data_dir, 'train_features.pkl')
 file_test_features = os.path.join(data_dir, 'test_features.pkl')

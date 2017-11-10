@@ -8,14 +8,22 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 
 class Preprocessor(ABC):
+    def __init__(self, data=None):
+        self.data = data
+
     def __iter__(self):
+        if not self.data:
+            return
         for row in (row for row in tqdm(self.data, total=self.data.num_rows, unit=' rows') if row['html']):
             yield self.preprocess_single(row['html'])
 
     def preprocess(self, data):
         logging.info('Preprocessing data...')
-        self.data = data
-        return self
+        processed_data = []
+        for row in (row for row in tqdm(data, total=data.num_rows, unit=' rows') if row['html']):
+            processed_data += self.preprocess_single(row['html'])
+        logging.info('...done! Got {} processed items'.format(len(processed_data)))
+        return processed_data
 
     @abstractmethod
     def preprocess_single(self, markup):

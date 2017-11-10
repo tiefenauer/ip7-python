@@ -8,8 +8,10 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 
 class TrainingData(object):
-    def __init__(self, id):
+    def __init__(self, id=None, limit=1, offset=0):
         self.id = id
+        self.split_from = offset
+        self.split_to = limit
         if self.id is None:
             self.id = -1000
 
@@ -21,7 +23,10 @@ class TrainingData(object):
                           FROM data_train 
                           WHERE %(id)s < 0 OR id = %(id)s""",
                        {'id': self.id})
-        self.num_rows = cursor.fetchone()['num_rows']
+        self.num_total = cursor.fetchone()['num_rows']
+        self.offset = int(self.num_total * self.split_from)
+        self.limit = int(self.num_total * self.split_to)
+        self.num_rows = self.limit - self.offset
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -29,15 +34,26 @@ class TrainingData(object):
         self.conn_write.close()
 
     def __iter__(self):
-        cursor = self.conn_read.cursor()
-        cursor.execute("""SELECT id, html, plaintext, url, title, x28_id 
+        sql = """SELECT id, html, plaintext, url, title, x28_id 
                           FROM data_train
                           WHERE %(id)s < 0 OR id = %(id)s
-                          """,
-                       {'id': self.id}
-                       )
+                          """
+        parms = {'id': self.id}
+        sql, parms = self.limit_offset(sql, parms)
+
+        cursor = self.conn_read.cursor()
+        cursor.execute(sql, parms)
         for row in cursor:
             yield row
+
+    def limit_offset(self, sql, parms):
+        if self.split_from < 1:
+            sql += ' OFFSET %(offset)s'
+            parms['offset'] = self.offset  # 97204
+        if self.split_to < 1:
+            sql += ' LIMIT %(limit)s'
+            parms['limit'] = self.limit  # 100
+        return sql, parms
 
     def classify_job(self, job_id, job_name, score_strict, score_tolerant, score_linear):
         cursor = self.conn_write.cursor()

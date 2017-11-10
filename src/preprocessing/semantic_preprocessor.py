@@ -1,4 +1,6 @@
+import logging
 import re
+import sys
 
 import nltk
 from nltk.corpus import stopwords
@@ -6,18 +8,9 @@ from nltk.corpus import stopwords
 from src import preproc
 from src.preprocessing.preprocessor import Preprocessor
 
+logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 stops = set(stopwords.words('german'))
 tokenizer = nltk.data.load('tokenizers/punkt/german.pickle')
-
-
-def to_sentence(markup, tokenizer, remove_stopwords=False):
-    raw_sentences = tokenizer.tokenize(markup.strip())
-    sentences = []
-    for raw_sentence in raw_sentences:
-        if len(raw_sentence) > 0:
-            sentences += to_wordlist(raw_sentence, remove_stopwords)
-
-    return sentences
 
 
 def to_wordlist(markup, remove_stopwords=False):
@@ -31,4 +24,10 @@ def to_wordlist(markup, remove_stopwords=False):
 
 class SemanticPreprocessor(Preprocessor):
     def preprocess_single(self, markup):
-        return to_sentence(markup, tokenizer)
+        raw_sentences = tokenizer.tokenize(markup.strip())
+        sentences = []
+        for raw_sentence in raw_sentences:
+            if len(raw_sentence) > 0:
+                sentences += to_wordlist(raw_sentence, False)
+
+        return sentences
