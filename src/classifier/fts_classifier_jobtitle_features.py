@@ -1,4 +1,5 @@
 from src.classifier.classification_strategy import ClassificationStrategy
+from src.classifier.fts_classifier import FullTextSearchClassifier
 from src.importer.job_name_importer import JobNameImporter
 from src.util.jobtitle_util import count_variant, create_variants
 
@@ -40,7 +41,7 @@ def count_variants(string, variants):
             yield (variant, count)
 
 
-class FeatureBasedJobTitleClassification(ClassificationStrategy):
+class FeatureBasedJobTitleClassifier(FullTextSearchClassifier):
     TITLE = """"Feature based classification"""
     DESCRIPTION = """Feature-Based classification: classifies a vacancy according to the features of the
         individual tags. Each tag is analyzed in isolation. Only tags which contain known job names (from a whitelist)

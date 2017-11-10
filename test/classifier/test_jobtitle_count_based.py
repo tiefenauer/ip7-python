@@ -2,7 +2,7 @@ import unittest
 
 from hamcrest import *
 
-from src.classifier.jobtitle_count_based import CountBasedJobTitleClassification, find_all_matches
+from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification, find_all_matches
 
 testee = CountBasedJobTitleClassification()
 

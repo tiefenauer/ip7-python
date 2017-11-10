@@ -1,8 +1,8 @@
 import logging
 
-from src.classifier.jobtitle_count_based import CountBasedJobTitleClassification
-from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification
-from src.classifier.jobtitle_title_based import TitleBasedJobTitleClassifier
+from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification
+from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
+from src.classifier.fts_classifier_jobtitle_title import TitleBasedJobTitleClassifier
 from src.evaluation.evaluation import Evaluation
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
@@ -24,7 +24,7 @@ def choose_evaluation(args, classifier):
 
 
 def choose_classifier(args):
-    classifier = FeatureBasedJobTitleClassification()
+    classifier = FeatureBasedJobTitleClassifier()
     if args.strategy == 'count':
         classifier = CountBasedJobTitleClassification()
     if args.strategy == 'title-based':

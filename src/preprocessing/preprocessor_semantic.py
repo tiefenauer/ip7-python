@@ -6,7 +6,7 @@ import nltk
 from nltk.corpus import stopwords
 
 from src import preproc
-from src.preprocessing.preprocessor import Preprocessor
+from src.preprocessing.x28_preprocessor import X28Preprocessor
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 stops = set(stopwords.words('german'))
@@ -22,7 +22,7 @@ def to_wordlist(markup, remove_stopwords=False):
     return words
 
 
-class SemanticPreprocessor(Preprocessor):
+class SemanticX28Preprocessor(X28Preprocessor):
     def preprocess_single(self, markup):
         raw_sentences = tokenizer.tokenize(markup.strip())
         sentences = []

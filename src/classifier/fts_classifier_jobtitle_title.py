@@ -1,7 +1,7 @@
-from src.classifier.classification_strategy import ClassificationStrategy
+from src.classifier.fts_classifier import FullTextSearchClassifier
 
 
-class TitleBasedJobTitleClassifier(ClassificationStrategy):
+class TitleBasedJobTitleClassifier(FullTextSearchClassifier):
     TITLE = """TITLE BASED CLASSIFICATION"""
     DESCRIPTION = """Classifies jobs according to the job name found in the title tag. The title tag is used without
     changes as the class label."""

@@ -5,13 +5,14 @@ import sys
 from tqdm import tqdm
 
 from src import preproc
-from src.classifier.jobtitle_count_based import CountBasedJobTitleClassification
-from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification
-from src.classifier.jobtitle_title_based import TitleBasedJobTitleClassifier
+from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification
+from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
+from src.classifier.fts_classifier_jobtitle_title import TitleBasedJobTitleClassifier
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 from src.importer.data_train import TrainingData
+from src.preprocessing.preprocessor_fts import FtsX28Preprocessor
 from src.util.boot_util import choose_classifier, choose_evaluation
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -34,7 +35,7 @@ parser.add_argument('-s', '--strategy', choices=['count', 'feature-based', 'titl
                     - 'feature-based': {}
                     - 'title-based': {}
                     """.format(CountBasedJobTitleClassification.DESCRIPTION,
-                               FeatureBasedJobTitleClassification.DESCRIPTION,
+                               FeatureBasedJobTitleClassifier.DESCRIPTION,
                                TitleBasedJobTitleClassifier.DESCRIPTION
                                ))
 parser.add_argument('-t', '--truncate', action='store_true',
@@ -45,6 +46,7 @@ parser.add_argument('-w', '--write', action='store_true',
                     on the classifier's performance""")
 args = parser.parse_args()
 
+preprocessor = FtsX28Preprocessor()
 classifier = choose_classifier(args)
 evaluation = choose_evaluation(args, classifier)
 
@@ -52,13 +54,11 @@ if __name__ == '__main__':
     with TrainingData(args.id) as data_train:
         if args.write and args.truncate:
             data_train.truncate_target()
-        logging.info("Processing {} rows...".format(data_train.num_rows))
         i = 0
-        for row in (row for row in tqdm(data_train, total=data_train.num_rows, unit=' rows') if row['html']):
+        for row_id, expected_class, relevant_tags in preprocessor.preprocess(data_train):
             i += 1
-            relevant_tags = preproc.preprocess(row['html'])
-            job_title = classifier.classify(relevant_tags)
-            score_strict, score_tolerant, score_linear = evaluation.update(row['title'], job_title, i, data_train.num_rows)
-            if job_title is not None:
+            predicted_class = classifier.classify(relevant_tags)
+            score_strict, score_tolerant, score_linear = evaluation.update(expected_class, predicted_class, i, data_train.num_rows)
+            if predicted_class is not None:
                 if args.write:
-                    data_train.classify_job(row['id'], job_title, score_strict, score_tolerant, score_linear)
+                    data_train.classify_job(row_id, predicted_class, score_strict, score_tolerant, score_linear)

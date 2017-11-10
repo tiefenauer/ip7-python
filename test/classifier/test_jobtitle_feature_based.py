@@ -4,11 +4,11 @@ import bs4
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
-from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification, count_variants, \
+from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier, count_variants, \
     extract_features
 from src.util.jobtitle_util import create_variants
 
-testee = FeatureBasedJobTitleClassification()
+testee = FeatureBasedJobTitleClassifier()
 
 
 def create_tag(tag_name, tag_content):
