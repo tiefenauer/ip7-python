@@ -51,9 +51,7 @@ classifier = choose_classifier(args)
 evaluation = choose_evaluation(args, classifier)
 
 if __name__ == '__main__':
-    with TrainingData(args.id) as data_train:
-        if args.write and args.truncate:
-            data_train.truncate_target()
+    with TrainingData(args) as data_train:
         i = 0
         for row_id, expected_class, relevant_tags in preprocessor.preprocess(data_train):
             i += 1

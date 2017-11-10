@@ -22,6 +22,6 @@ preprocessor = SemanticX28Preprocessor()
 classifier = SemanticClassifier(args.model)
 
 if __name__ == '__main__':
-    with TrainingData(args.id, args.limit, args.offset) as data_train:
+    with TrainingData(args) as data_train:
         sentences = list(sentence for (row_id, target_class, sentence) in preprocessor.preprocess(data_train))
         classifier.train_model(sentences)

@@ -8,16 +8,19 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 
 class TrainingData(object):
-    def __init__(self, id=None, limit=1, offset=0):
-        self.id = id
-        self.split_from = offset
-        self.split_to = limit
-        if self.id is None:
-            self.id = -1000
+    def __init__(self, args):
+        self.id = args.id if args.id is not None else -1000
+        self.truncate = args.truncate if hasattr(args, 'truncate') else False
+        self.split_from = args.offset if hasattr(args, 'offset') else 0
+        self.split_to = args.limit if hasattr(args, 'limit') else 1
 
     def __enter__(self):
         self.conn_read = db.connect_to(Database.X28_PG)
         self.conn_write = db.connect_to(Database.X28_PG)
+        #
+        if self.truncate:
+            self.truncate_classification_tables()
+        #
         cursor = self.conn_read.cursor()
         cursor.execute("""SELECT count(*) AS num_rows 
                           FROM data_train 
