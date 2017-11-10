@@ -11,6 +11,7 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_male_form("Schreiner"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreinerin"), is_("Schreiner"))
         assert_that(testee.to_male_form("SchreinerIn"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner(in)"), is_("Schreiner"))
         assert_that(testee.to_male_form('Schreiner/in'), is_('Schreiner'))
         assert_that(testee.to_male_form('Schreiner/-in'), is_('Schreiner'))
 
@@ -50,11 +51,29 @@ class TestJobTitleUtil(unittest.TestCase):
     def test_to_female_form_camel_cased_returns_female_form(self):
         assert_that(testee.to_female_form_camel_cased("Schreiner"), is_("SchreinerIn"))
 
+    def test_to_female_form_brackets_returns_female_form(self):
+        assert_that(testee.to_female_form_brackets("Schreiner"), is_("Schreiner(in)"))
+
+    def test_to_female_form_irregular_form_returns_male_form(self):
+        assert_that(testee.to_female_form('Koch'), is_('Koch'))
+        assert_that(testee.to_female_form('Arzt'), is_('Arzt'))
+
+    def test_to_female_form_camel_cased_irregular_form_returns_male_form(self):
+        assert_that(testee.to_female_form_camel_cased('Koch'), is_('Koch'))
+        assert_that(testee.to_female_form_camel_cased('Arzt'), is_('Arzt'))
+
+    def test_to_female_form_brackets_form_returns_male_form(self):
+        assert_that(testee.to_female_form_brackets('Koch'), is_('Koch'))
+        assert_that(testee.to_female_form_brackets('Arzt'), is_('Arzt'))
+
     def test_to_female_form_hyphenated_job_name_is_unchanged(self):
         assert_that(testee.to_female_form('Kupfer-Spleisser'), is_('Kupfer-Spleisserin'))
 
     def test_to_female_form_camel_cased_hyphenated_job_name_is_unchanged(self):
         assert_that(testee.to_female_form_camel_cased('Kupfer-Spleisser'), is_('Kupfer-SpleisserIn'))
+
+    def test_to_female_form_brackets_hyphenated_job_name_is_unchanged(self):
+        assert_that(testee.to_female_form_brackets('Kupfer-Spleisser'), is_('Kupfer-Spleisser(in)'))
 
     def test_to_slashed_form_returns_hyphenated(self):
         assert_that(testee.to_slashed_form('Schreiner'), is_('Schreiner/in'))
@@ -164,6 +183,7 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(result, contains_inanyorder('Schreiner',
                                                 'Schreinerin',
                                                 'SchreinerIn',
+                                                'Schreiner(in)',
                                                 'Schreiner/-in',
                                                 'Schreiner/in',
                                                 'Schreiner (m/w)',

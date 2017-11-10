@@ -4,7 +4,7 @@ import bs4
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
-from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification, extract_variants, \
+from src.classifier.jobtitle_feature_based import FeatureBasedJobTitleClassification, count_variants, \
     extract_features
 from src.util.jobtitle_util import create_variants
 
@@ -288,105 +288,105 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         assert_that(testee.normalize(0.6), is_(0.6))
         assert_that(testee.normalize(1.2), is_(1 / 1.2))
 
-    def test_extract_variants_returns_correct_job(self):
+    def test_count_variants_returns_correct_job(self):
         # arrange
         tag = 'Polymechaniker'
         # act
-        result = extract_variants(tag, create_variants('Polymechaniker'))
+        result = count_variants(tag, create_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker', 1)
         ))
 
-    def test_extract_variants_with_variant_slash_hyphen_in_returns_correct_job_title(self):
+    def test_count_variants_with_variant_slash_hyphen_in_returns_correct_job_title(self):
         # arrange
         tag = 'Polymechaniker/-in'
         # act
-        result = extract_variants(tag, create_variants('Polymechaniker'))
+        result = count_variants(tag, create_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/-in', 1)
         ))
 
-    def test_extract_variants_with_variant_slash_hyphen_euse_returns_correct_job_title(self):
+    def test_count_variants_with_variant_slash_hyphen_euse_returns_correct_job_title(self):
         # arrange
         tag = 'Coiffeur/-euse'
         # act
-        result = extract_variants(tag, create_variants('Coiffeur'))
+        result = count_variants(tag, create_variants('Coiffeur'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Coiffeur/-euse', 1)
         ))
 
-    def test_extract_variants_with_variant_slash_hyphen_frau_returns_correct_job_title(self):
+    def test_count_variants_with_variant_slash_hyphen_frau_returns_correct_job_title(self):
         # arrange
         tag = 'Kaufmann/-frau'
         # act
-        result = extract_variants(tag, create_variants('Kaufmann'))
+        result = count_variants(tag, create_variants('Kaufmann'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Kaufmann/-frau', 1)
         ))
 
-    def test_extract_variants_with_variant_slash_in_returns_correct_job_title(self):
+    def test_count_variants_with_variant_slash_in_returns_correct_job_title(self):
         # arrange
         tag = 'Polymechaniker/in'
         # act
-        result = extract_variants(tag, create_variants('Polymechaniker'))
+        result = count_variants(tag, create_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/in', 1)
         ))
 
-    def test_extract_variants_with_variant_slash_euse_returns_correct_job_title(self):
+    def test_count_variants_with_variant_slash_euse_returns_correct_job_title(self):
         # arrange
         tag = 'Coiffeur/euse'
         # act
-        result = extract_variants(tag, create_variants('Coiffeur'))
+        result = count_variants(tag, create_variants('Coiffeur'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Coiffeur/euse', 1)
         ))
 
-    def test_extract_variants_with_variant_slash_frau_returns_correct_job_title(self):
+    def test_count_variants_with_variant_slash_frau_returns_correct_job_title(self):
         # arrange
         tag = 'Kaufmann/frau'
         # act
-        result = extract_variants(tag, create_variants('Kaufmann'))
+        result = count_variants(tag, create_variants('Kaufmann'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Kaufmann/frau', 1)
         ))
 
-    def test_extract_variants_with_variant_mw_returns_correct_job_title(self):
+    def test_count_variants_with_variant_mw_returns_correct_job_title(self):
         # arrange
         string = 'Polymechaniker (m/w)'
         # act
-        result = extract_variants(string, create_variants('Polymechaniker'))
+        result = count_variants(string, create_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker (m/w)', 1)
         ))
 
-    def test_extract_variants_multi_returns_correct_job_count(self):
+    def test_count_variants_multi_returns_correct_job_count(self):
         # arrange
         string = '<h2>Polymechaniker oder Polymechanikerin</h2>'
         # act
-        result = extract_variants(string, create_variants('Polymechaniker'))
+        result = count_variants(string, create_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker', 1),
             ('Polymechanikerin', 1)
         ))
 
-    def test_extract_variants_multi_variants_returns_correct_job_count(self):
+    def test_count_variants_multi_variants_returns_correct_job_count(self):
         # arrange
         tag = 'Coiffeur/-euse, Polymechaniker/in, Kaufmann (m/w)'
         variants = create_variants('Polymechaniker') \
             .union(create_variants('Coiffeur')) \
             .union(create_variants('Kaufmann'))
         # act
-        result = extract_variants(tag, variants)
+        result = count_variants(tag, variants)
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/in', 1),

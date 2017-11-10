@@ -7,9 +7,10 @@ class TolerantJobtitleEvaluator(AbstractEvaluator):
                     of a single item is 1 if the prediction is within the tolerance or 0 if not."""
 
     def calculate_similarity(self, actual_class, predicted_class):
-        if not predicted_class:
-            return False
-        return predicted_class in actual_class
+        similarity = 0
+        if predicted_class and predicted_class in actual_class:
+            similarity = 1
+        return similarity
 
     def title(self):
         return self.TITLE

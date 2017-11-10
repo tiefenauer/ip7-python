@@ -11,7 +11,7 @@ from src.classifier.jobtitle_title_based import TitleBasedJobTitleClassifier
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
-from src.importer.data_labeled import LabeledData
+from src.importer.data_train import TrainingData
 from src.util.boot_util import choose_classifier, choose_evaluation
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -49,7 +49,7 @@ classifier = choose_classifier(args)
 evaluation = choose_evaluation(args, classifier)
 
 if __name__ == '__main__':
-    with LabeledData(args.id) as data_train:
+    with TrainingData(args.id) as data_train:
         if args.write and args.truncate:
             data_train.truncate_target()
         logging.info("Processing {} rows...".format(data_train.num_rows))
@@ -58,8 +58,8 @@ if __name__ == '__main__':
             i += 1
             relevant_tags = preproc.preprocess(row['html'])
             job_title = classifier.classify(relevant_tags)
-            evaluation.update(row['title'], job_title, i, data_train.num_total)
+            score_strict, score_tolerant, score_linear = evaluation.update(row['title'], job_title, i, data_train.num_rows)
             if job_title is not None:
                 if args.write:
-                    data_train.update_job_class(row['id'], job_title)
+                    data_train.classify_job(row['id'], job_title, score_strict, score_tolerant, score_linear)
         evaluation.stop()

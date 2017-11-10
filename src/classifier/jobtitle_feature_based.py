@@ -22,7 +22,7 @@ def extract_features(tags, job_name_variants=job_name_variants):
     for job_name, variants in job_name_variants:
         for tag in tags:
             tag_name = tag.name if tag.name else 'default'
-            for variant, count in extract_variants(tag.getText(), variants):
+            for variant, count in count_variants(tag.getText(), variants):
                 if job_name not in features:
                     features[job_name] = {}
                 if variant not in features[job_name]:
@@ -33,7 +33,7 @@ def extract_features(tags, job_name_variants=job_name_variants):
     return features
 
 
-def extract_variants(string, variants):
+def count_variants(string, variants):
     for variant in (variant for variant in variants if variant in string):
         count = count_variant(variant, string)
         if count > 0:

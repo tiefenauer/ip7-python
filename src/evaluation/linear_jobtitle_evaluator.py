@@ -11,13 +11,16 @@ class LinearJobTitleEvaluator(AbstractEvaluator):
 
     def update_accuracy(self, last_score):
         self.scores += last_score
-        self.accuracy = self.scores / (self.total_p + self.total_n)
+        if self.total_classified > 0:
+            self.accuracy = self.scores / self.total_classified
+        self.overall_accuracy = self.scores / (self.total_classified + self.total_unclassified)
         return self.accuracy
 
     def status(self):
         return 'average accuracy: {}'.format("{:1.4f}".format(self.accuracy))
 
     def calculate_similarity(self, actual_class, predicted_class):
+        """calculates similarity as number of words in predicted class that also appear in actual class"""
         if not predicted_class or len(predicted_class) == 0:
             return 0
 

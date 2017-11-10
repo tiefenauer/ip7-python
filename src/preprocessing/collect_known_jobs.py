@@ -1,3 +1,7 @@
+# collects all known jobs by reading from job_titles.csv and evaluating the results from full text search (FTS)
+# Results are written to known_jobs_dirty.tsv
+# Because the X28-Target classes are not really clean (not real job names, duplicates, spelling errors, overlapping
+# classes), the results in known_jobs_dirty.tsv must be postprocessed by hand!
 import logging
 import os
 import re
@@ -16,7 +20,7 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 resource_dir = 'D:/code/ip7-python/resource'
 job_titles_tsv = os.path.join(resource_dir, 'job_titles.tsv')
-known_jobs_tsv = os.path.join(resource_dir, 'known_jobs.tsv')
+known_jobs_dirty = os.path.join(resource_dir, 'known_jobs_dirty.tsv')
 
 
 def import_job_names_from_file():
@@ -29,8 +33,8 @@ def import_job_name_from_fts():
     logging.info('importing job names from Full Text Search results')
     cursor = conn.cursor()
     sql = """SELECT a.title actual, p.job_name AS prediction
-            FROM job_name_fts p
-            LEFT OUTER JOIN labeled_jobs a ON a.id = p.job_id"""
+            FROM classification_result_fts p
+            LEFT OUTER JOIN data_train a ON a.id = p.job_id"""
     cursor.execute(sql)
     for row in cursor:
         for job_name in merge(row['actual'], row['prediction']):
@@ -84,10 +88,10 @@ def truncate_target_table():
 
 
 def write_known_jobs_to_file():
-    logging.info('writing entries of table known_jobs to file {}'.format(known_jobs_tsv))
+    logging.info('writing entries of table known_jobs to file {}'.format(known_jobs_dirty))
 
-    df = pandas.read_csv(known_jobs_tsv, delimiter='\t', names=['job_name'])
-    logging.info('entries in {} before: {}'.format(known_jobs_tsv, df.shape[0]))
+    df = pandas.read_csv(known_jobs_dirty, delimiter='\t', names=['job_name'])
+    logging.info('entries in {} before: {}'.format(known_jobs_dirty, df.shape[0]))
 
     sql = """SELECT DISTINCT job_name FROM known_jobs ORDER BY job_name ASC"""
     conn = db.connect_to(Database.X28_PG)
@@ -96,8 +100,8 @@ def write_known_jobs_to_file():
     data = cursor.fetchall()
     all_jobs = pandas.DataFrame(np.array(data))
 
-    logging.info('entries in {} after: {}'.format(known_jobs_tsv, all_jobs.shape[0]))
-    all_jobs[0].to_csv(known_jobs_tsv, encoding='utf-8', index=False)
+    logging.info('entries in {} after: {}'.format(known_jobs_dirty, all_jobs.shape[0]))
+    all_jobs[0].to_csv(known_jobs_dirty, encoding='utf-8', index=False)
 
 
 conn = db.connect_to(Database.X28_PG)
