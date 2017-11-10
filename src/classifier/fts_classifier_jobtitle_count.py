@@ -1,13 +1,13 @@
 from src.classifier.classification_strategy import ClassificationStrategy
 from src.classifier.fts_classifier import FullTextSearchClassifier
 from src.importer.known_jobs_tsv_importer import KnownJobsImporter
-from src.util.jobtitle_util import create_variants, count_variant
+from src.util.jobtitle_util import create_gender_variants, count_variant
 
 
 def find_all_matches(tags, job_names):
     html_text = "".join(str(tag) for tag in tags)
     for job_name in job_names:
-        variants = create_variants(job_name)
+        variants = create_gender_variants(job_name)
         if any(job_name_variant in html_text for job_name_variant in variants):
             count = 0
             for variant in variants:

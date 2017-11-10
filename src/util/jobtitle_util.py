@@ -1,5 +1,8 @@
 import re
 
+from src.importer.known_jobs_tsv_importer import KnownJobsImporter
+
+pattern_hyphenated = re.compile('(?=\S*[-])([a-zA-Z-]+)')
 pattern_suffix = r"{}((in)|(euse)|(frau))"
 pattern_slashed = r"{}((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 
@@ -81,7 +84,23 @@ def to_wm_form(job_name):
     return to_male_form(job_name) + ' wm'
 
 
-def create_variants(job_name):
+def to_spaced_form(job_name_1, job_name_2):
+    return job_name_1.title() + ' ' + job_name_2.title()
+
+
+def to_concatenated_form(job_name_1, job_name_2):
+    return job_name_1.title() + job_name_2.lower()
+
+
+def to_hyphenated_form(job_name_1, job_name_2):
+    return job_name_1.title() + '-' + job_name_2.title()
+
+
+def is_hyphenated(job_name):
+    return pattern_hyphenated.match(job_name)
+
+
+def create_gender_variants(job_name):
     return {to_male_form(job_name),
             to_female_form(job_name),
             to_female_form_camel_cased(job_name),
@@ -95,6 +114,42 @@ def create_variants(job_name):
             to_wm_form_slashed(job_name),
             to_wm_form_brackets_slashed(job_name),
             }
+
+
+def create_write_variants(job_name):
+    write_variants = set()
+    write_variants.add(job_name)
+    if is_hyphenated(job_name):
+        job_name_parts = re.findall('([a-zA-Z]+)', job_name)
+        part1 = job_name_parts[0]
+        part2 = job_name_parts[1]
+        job_concatenated = to_concatenated_form(part1, part2.lower())
+        job_spaced = to_spaced_form(part1, part2)
+        write_variants.add(job_concatenated)
+        write_variants.add(job_spaced)
+    else:
+        for known_job in KnownJobsImporter():
+            if known_job.lower() in job_name:
+                part1 = job_name.split(known_job.lower())[0].strip()
+                job_concatenated = to_concatenated_form(part1, known_job.lower())
+                job_spaced = to_spaced_form(part1, known_job)
+                job_hyphenated = to_hyphenated_form(part1, known_job)
+                write_variants.add(job_concatenated)
+                write_variants.add(job_spaced)
+                write_variants.add(job_hyphenated)
+
+    return write_variants
+
+
+def create_variants(job_name):
+    variants = set()
+    write_variants = create_write_variants(job_name)
+    variants.update(write_variants)
+    for write_variant in write_variants:
+        gender_variants = create_gender_variants(write_variant)
+        variants.update(gender_variants)
+
+    return variants
 
 
 def count_variant(variant, string):

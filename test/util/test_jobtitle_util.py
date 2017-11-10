@@ -115,6 +115,26 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_wm_form('Coiffeuse'), is_('Coiffeur wm'))
         assert_that(testee.to_wm_form('Kauffrau'), is_('Kaufmann wm'))
 
+    def test_to_spaced_form_returns_correct_form(self):
+        assert_that(testee.to_spaced_form('Elektro', 'Monteur'), is_('Elektro Monteur'))
+        assert_that(testee.to_spaced_form('Elektro', 'monteur'), is_('Elektro Monteur'))
+        assert_that(testee.to_spaced_form('elektro', 'Monteur'), is_('Elektro Monteur'))
+        assert_that(testee.to_spaced_form('elektro', 'monteur'), is_('Elektro Monteur'))
+
+    def test_to_hyphenated_form_returns_correct_form(self):
+        assert_that(testee.to_hyphenated_form('Elektro', 'Monteur'), is_('Elektro-Monteur'))
+        assert_that(testee.to_hyphenated_form('Elektro', 'monteur'), is_('Elektro-Monteur'))
+        assert_that(testee.to_hyphenated_form('elektro', 'Monteur'), is_('Elektro-Monteur'))
+        assert_that(testee.to_hyphenated_form('elektro', 'monteur'), is_('Elektro-Monteur'))
+
+    def test_to_concatenated_form_returns_correct_form(self):
+        assert_that(testee.to_concatenated_form('Elektro', 'Monteur'), is_('Elektromonteur'))
+        assert_that(testee.to_concatenated_form('Elektro', 'monteur'), is_('Elektromonteur'))
+        assert_that(testee.to_concatenated_form('elektro', 'monteur'), is_('Elektromonteur'))
+        assert_that(testee.to_concatenated_form('elektro', 'Monteur'), is_('Elektromonteur'))
+
+
+
     def test_find_single_match(self):
         # arrange / act
         result = testee.find('Wir suchen einen 20-jährigen Schreiner mit 30 Jahren Erfahrung', 'Schreiner')
@@ -174,11 +194,11 @@ class TestJobTitleUtil(unittest.TestCase):
             match_item_for_job_name('Schreinerin')
         ))
 
-    def test_create_variants_returns_variants(self):
+    def test_create_gender_variants_returns_gender_variants(self):
         # arrange
         job_name = 'Schreiner'
         # act
-        result = testee.create_variants(job_name)
+        result = testee.create_gender_variants(job_name)
         # assert
         assert_that(result, contains_inanyorder('Schreiner',
                                                 'Schreinerin',
@@ -195,11 +215,11 @@ class TestJobTitleUtil(unittest.TestCase):
                                                 )
                     )
 
-    def test_create_variants_does_not_contain_duplicates(self):
+    def test_create_gender_variants_does_not_contain_duplicates(self):
         # arrange
         job_name = "Koch"
         # act
-        result = testee.create_variants(job_name)
+        result = testee.create_gender_variants(job_name)
         # assert
         assert_that(result, contains_inanyorder('Koch',
                                                 'Koch (m/w)',

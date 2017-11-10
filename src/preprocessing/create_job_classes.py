@@ -45,7 +45,7 @@ def write_job_classes_from_db_to_file():
 
 
 def create_gender_variants(job_name):
-    job_variants = jobtitle_util.create_variants(job_name)
+    job_variants = jobtitle_util.create_gender_variants(job_name)
     return job_variants
 
 

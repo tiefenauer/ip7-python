@@ -22,7 +22,7 @@ class TestImportJobNames(unittest.TestCase):
 
     def test_merge_different_forms_returns_male_form(self):
         job_name = 'Maler'
-        for actual, prediction in itertools.combinations(jobtitle_util.create_variants(job_name), 2):
+        for actual, prediction in itertools.combinations(jobtitle_util.create_gender_variants(job_name), 2):
             message = '{} / {} should be merged to {}'.format(actual, prediction, job_name)
             assert_that(testee.merge(actual, prediction), contains_inanyorder(job_name), message)
 
@@ -38,8 +38,8 @@ class TestImportJobNames(unittest.TestCase):
     def test_marge_no_match_actual_is_known_job_returns_actual(self):
         actual_job_name = 'Polymechaniker'
         predicted_job_name = 'Elektroniker'
-        polymechaniker_variants = jobtitle_util.create_variants(actual_job_name)
-        elektroniker_variants = jobtitle_util.create_variants(predicted_job_name)
+        polymechaniker_variants = jobtitle_util.create_gender_variants(actual_job_name)
+        elektroniker_variants = jobtitle_util.create_gender_variants(predicted_job_name)
 
         for actual_variant, prediction_variant in zip(polymechaniker_variants, elektroniker_variants):
             assert_that(testee.merge(actual_variant, prediction_variant), contains_inanyorder(actual_job_name))

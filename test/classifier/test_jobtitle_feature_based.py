@@ -6,7 +6,7 @@ from hamcrest.core.base_matcher import BaseMatcher
 
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier, count_variants, \
     extract_features
-from src.util.jobtitle_util import create_variants
+from src.util.jobtitle_util import create_gender_variants
 
 testee = FeatureBasedJobTitleClassifier()
 
@@ -46,7 +46,7 @@ class FeatureMatcher(BaseMatcher):
 
 def create_job_name_tuple(*job_names):
     for job_name in job_names:
-        yield job_name, create_variants(job_name)
+        yield job_name, create_gender_variants(job_name)
 
 
 class TestFeatureBasedJobtitleClassification(unittest.TestCase):
@@ -292,7 +292,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         tag = 'Polymechaniker'
         # act
-        result = count_variants(tag, create_variants('Polymechaniker'))
+        result = count_variants(tag, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker', 1)
@@ -302,7 +302,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         tag = 'Polymechaniker/-in'
         # act
-        result = count_variants(tag, create_variants('Polymechaniker'))
+        result = count_variants(tag, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/-in', 1)
@@ -312,7 +312,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         tag = 'Coiffeur/-euse'
         # act
-        result = count_variants(tag, create_variants('Coiffeur'))
+        result = count_variants(tag, create_gender_variants('Coiffeur'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Coiffeur/-euse', 1)
@@ -322,7 +322,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         tag = 'Kaufmann/-frau'
         # act
-        result = count_variants(tag, create_variants('Kaufmann'))
+        result = count_variants(tag, create_gender_variants('Kaufmann'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Kaufmann/-frau', 1)
@@ -332,7 +332,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         tag = 'Polymechaniker/in'
         # act
-        result = count_variants(tag, create_variants('Polymechaniker'))
+        result = count_variants(tag, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/in', 1)
@@ -342,7 +342,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         tag = 'Coiffeur/euse'
         # act
-        result = count_variants(tag, create_variants('Coiffeur'))
+        result = count_variants(tag, create_gender_variants('Coiffeur'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Coiffeur/euse', 1)
@@ -352,7 +352,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         tag = 'Kaufmann/frau'
         # act
-        result = count_variants(tag, create_variants('Kaufmann'))
+        result = count_variants(tag, create_gender_variants('Kaufmann'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Kaufmann/frau', 1)
@@ -362,7 +362,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         string = 'Polymechaniker (m/w)'
         # act
-        result = count_variants(string, create_variants('Polymechaniker'))
+        result = count_variants(string, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker (m/w)', 1)
@@ -372,7 +372,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
         # arrange
         string = '<h2>Polymechaniker oder Polymechanikerin</h2>'
         # act
-        result = count_variants(string, create_variants('Polymechaniker'))
+        result = count_variants(string, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker', 1),
@@ -382,9 +382,9 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
     def test_count_variants_multi_variants_returns_correct_job_count(self):
         # arrange
         tag = 'Coiffeur/-euse, Polymechaniker/in, Kaufmann (m/w)'
-        variants = create_variants('Polymechaniker') \
-            .union(create_variants('Coiffeur')) \
-            .union(create_variants('Kaufmann'))
+        variants = create_gender_variants('Polymechaniker') \
+            .union(create_gender_variants('Coiffeur')) \
+            .union(create_gender_variants('Kaufmann'))
         # act
         result = count_variants(tag, variants)
         # assert
