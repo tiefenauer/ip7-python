@@ -3,8 +3,12 @@ from abc import ABC, abstractmethod
 
 class ClassificationStrategy(ABC):
     @abstractmethod
-    def classify(self, tags):
-        """get a list of tags and predict the class"""
+    def train(self, data):
+        """train classifier with some given data"""
+
+    @abstractmethod
+    def classify(self, data):
+        """classify some new data and return the class label"""
 
     @abstractmethod
     def title(self):
