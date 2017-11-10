@@ -13,7 +13,7 @@ from src import preproc
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
-from src.importer.data_labeled import LabeledData
+from src.importer.data_train import TrainingData
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -47,8 +47,8 @@ def preprocess(labeled_data):
 max_features = 500
 train_size = 0.05
 test_size = 0.1
-data_train = LabeledData(split_from=0, split_to=train_size)
-data_test = LabeledData(split_from=train_size, split_to=train_size + test_size)
+data_train = TrainingData({'offset': 0, 'limit': train_size})
+data_test = TrainingData({'offset': train_size, 'limit': train_size + test_size})
 
 
 def create_data_labels(dataset):

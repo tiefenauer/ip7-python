@@ -1,6 +1,6 @@
 from src.classifier.classification_strategy import ClassificationStrategy
 from src.classifier.fts_classifier import FullTextSearchClassifier
-from src.importer.job_name_importer import JobNameImporter
+from src.importer.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import create_variants, count_variant
 
 
@@ -23,7 +23,7 @@ class CountBasedJobTitleClassification(FullTextSearchClassifier):
 
     def __init__(self, model_file=None):
         super(CountBasedJobTitleClassification, self).__init__(model_file)
-        self.job_names = JobNameImporter()
+        self.job_names = KnownJobsImporter()
 
     def classify(self, tags):
         best_count = 0

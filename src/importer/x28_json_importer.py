@@ -8,7 +8,7 @@ from src.db import Database
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-class X28ImporterJson(object):
+class X28JsonImporter(object):
     def __init__(self, dirname='D:/db/x28'):
         self.dirname = dirname
         self.num_files = len([name for name in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, name))])

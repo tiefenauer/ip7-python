@@ -2,7 +2,7 @@ import re
 
 from src.classifier.classification_strategy import ClassificationStrategy
 from src.classifier.fts_classifier import FullTextSearchClassifier
-from src.importer.job_name_importer import JobNameImporter
+from src.importer.known_jobs_tsv_importer import KnownJobsImporter
 from src.util import jobtitle_util
 from src.util.jobtitle_util import count_variant
 
@@ -38,7 +38,7 @@ def create_write_variants(job_name):
         write_variants.add(job_concatenated)
         write_variants.add(job_spaced)
     else:
-        for known_job in JobNameImporter():
+        for known_job in KnownJobsImporter():
             if known_job.lower() in job_name:
                 part1 = job_name.split(known_job.lower())[0].strip()
                 job_concatenated = create_job_name_concatenated(part1, known_job.lower())
@@ -68,7 +68,7 @@ def create_writing_and_gender_variants(job_name):
 
 
 job_name_variants = list((job_name, create_writing_and_gender_variants(job_name))
-                     for job_name in JobNameImporter())
+                         for job_name in KnownJobsImporter())
 tag_weight = {
     'h1': 0.6,
     'h2': 0.3,
