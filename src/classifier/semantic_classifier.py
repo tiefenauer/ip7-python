@@ -8,7 +8,7 @@ import time
 import gensim
 from gensim.models import word2vec
 
-from src.classifier.classification_strategy import ClassificationStrategy, data_dir
+from src.classifier.classifier import Classifier, data_dir
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -22,7 +22,7 @@ def create_filename(num_features, min_word_count, context):
     return os.path.join(data_dir, filename)
 
 
-class SemanticClassifier(ClassificationStrategy):
+class SemanticClassifier(Classifier):
     def __init__(self, model_file=None):
         super(SemanticClassifier, self).__init__(model_file)
         self.num_features = 300
@@ -41,6 +41,7 @@ class SemanticClassifier(ClassificationStrategy):
                                   sample=self.downsampling
                                   )
         model.init_sims()
+        self.model = model
         return model
 
     def _save_model(self, model, binary, zipped):
@@ -51,17 +52,19 @@ class SemanticClassifier(ClassificationStrategy):
             with open(filename, 'rb') as f_in, gzip.open(filename_gz, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
             os.remove(filename)
-        return filename_gz
+            return filename_gz
+        return filename
 
-    def _load_model(self, filename):
-        model = gensim.models.KeyedVectors.load_word2vec_format(filename, binary=True)
+    def _load_model(self, path):
+        model = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
+        model.init_sims(replace=True)
         return model
-
-    def title(self):
-        return 'Semantic Classifier'
 
     def classify(self, data):
         pass
+
+    def title(self):
+        return 'Semantic Classifier'
 
     def description(self):
         return 'classifies some text according to semantic criteria'

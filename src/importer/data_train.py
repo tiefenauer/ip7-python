@@ -9,7 +9,7 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 class TrainingData(object):
     def __init__(self, args):
-        self.id = args.id if args.id is not None else -1000
+        self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
         self.write = args.write if hasattr(args, 'write') else False
         self.truncate = args.truncate if hasattr(args, 'truncate') else False
         self.split_from = args.offset if hasattr(args, 'offset') else 0

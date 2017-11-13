@@ -2,12 +2,12 @@ import logging
 import sys
 from abc import abstractmethod
 
-from src.classifier.classification_strategy import ClassificationStrategy
+from src.classifier.classifier import Classifier
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-class FullTextSearchClassifier(ClassificationStrategy):
+class FullTextSearchClassifier(Classifier):
     def _train_model(self, data):
         logging.info("no model to train in FTS")
         return None

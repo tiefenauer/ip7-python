@@ -1,4 +1,4 @@
-from src.classifier.classification_strategy import ClassificationStrategy
+from src.classifier.classifier import Classifier
 from src.classifier.fts_classifier import FullTextSearchClassifier
 from src.importer.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import create_gender_variants, count_variant

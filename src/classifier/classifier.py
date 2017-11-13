@@ -10,16 +10,17 @@ if not os.path.isdir(data_dir):
     os.makedirs(data_dir)
 
 
-class ClassificationStrategy(ABC):
+class Classifier(ABC):
     def __init__(self, model_file=None):
-        self.model_file = model_file
+        if model_file:
+            self.model = self.load_model(model_file)
+        else:
+            self.model = None
 
     def train_model(self, data):
-        if self.model_file:
-            path = os.path.join(data_dir, self.model_file)
-            model = self.load_model(path) if self.model_file else None
-            if model:
-                return model
+        if self.model:
+            return self.model
+
         logging.info('train_model: Training new model...')
         model = self._train_model(data)
         logging.info('train_model: done!')
@@ -33,13 +34,14 @@ class ClassificationStrategy(ABC):
         return filename
 
     def load_model(self, filename):
-        logging.info('load_model: Trying to load model from {}'.format(filename))
-        model = self._load_model(filename)
+        path = os.path.join(data_dir, filename)
+        logging.info('load_model: Trying to load model from {}'.format(path))
+        model = self._load_model(path)
         if model:
-            logging.info('load_model: Successfully loaded model from {}'.format(filename))
+            logging.info('load_model: Successfully loaded model from {}'.format(path))
         else:
-            logging.info('load_model: Could not load model from {}'.format(filename))
-        return model
+            logging.info('load_model: Could not load model from {}'.format(path))
+        return model if model else None
 
     @abstractmethod
     def _train_model(self, data):

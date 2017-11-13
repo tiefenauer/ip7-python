@@ -6,12 +6,12 @@ from src.classifier.semantic_classifier import SemanticClassifier
 from src.importer.data_train import TrainingData
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
-parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
+parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")
 parser.add_argument('id', nargs='?', type=int, help='(optional) single id to process')
-parser.add_argument('-l', '--limit', nargs='?', type=float, default=1.0,
-                    help='(optional) fraction of base data to use (start value)')
+parser.add_argument('-l', '--limit', nargs='?', type=float, default=0.8,
+                    help='(optional) fraction of labeled data to use for training')
 parser.add_argument('-o', '--offset', nargs='?', type=float, default=0.0,
-                    help='(optional) fraction of base data to use (end value)')
+                    help='(optional) fraction value of labeled data to start from')
 parser.add_argument('-m', '--model',
                     help='(optional) file with saved model to use. A new model will be created if not set.')
 args = parser.parse_args()
