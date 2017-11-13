@@ -3,7 +3,7 @@ import unittest
 
 from hamcrest import assert_that, instance_of, is_
 
-from src.entity.job_classes_similar import JobClassesSimilar
+from src.database.job_classes_similar import JobClassesSimilar
 
 
 class TestJobClassesSimilar(unittest.TestCase):

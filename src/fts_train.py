@@ -2,10 +2,10 @@ import argparse
 import logging
 import sys
 
-from src.importer.data_fetchflow import FetchflowImporter
+from src.database.data_fetchflow import FetchflowImporter
 from src.preproc import preprocess
-from src.util.stats import print_stats
 from src.util.boot_util import choose_evaluation, choose_classifier
+from src.util.stats import print_stats
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 

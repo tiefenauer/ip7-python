@@ -7,9 +7,9 @@ from pony.orm import commit
 from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
-from src.entity.entities import Job_Class_Similar, Job_Class, Job_Class_To_Job_Class_Similar
+from src.database.data_train import TrainingData
+from src.database.entities import Job_Class_Similar, Job_Class, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
-from src.importer.data_train import TrainingData
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
@@ -20,6 +20,13 @@ parser.add_argument('-o', '--offset', nargs='?', type=float, default=0.8,
                     help='(optional) fraction value of labeled data to start from')
 parser.add_argument('-m', '--model',
                     help='(optional) file with saved model to use. A new model will be created if not set.')
+parser.add_argument('-t', '--truncate', action='store_true',
+                    help='truncate target tables before extraction (default=True)')
+parser.add_argument('-w', '--write', action='store_true',
+                    help="""Write classification results to DB (default=True). If set to true this will save the 
+                    classification results in the DB. If set to false this script will only provide a live view
+                    on the classifier's performance""")
+
 args = parser.parse_args()
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -70,11 +77,12 @@ def evaluate_avg(clf):
     evaluation = Evaluation(clf)
     with TrainingData(args) as data_train:
         i = 0
-        for actual_class, sentences in ((actual_class, sents) for (row_id, actual_class, sents) in
-                                        preprocessor.preprocess(data_train)):
+        for row_id, actual_class, sentences in ((row_id, actual_class, sents) for (row_id, actual_class, sents) in
+                                                preprocessor.preprocess(data_train)):
             i += 1
             predicted_class = clf.classify(sentences)
-            evaluation.update(actual_class, predicted_class, i, data_train.num_rows)
+            sc_str, sc_tol, sc_lin = evaluation.update(actual_class, predicted_class, i, data_train.num_rows)
+            data_train.update_classification('semantic_avg', row_id, predicted_class, sc_str, sc_tol, sc_lin)
         evaluation.stop()
     logging.info('evaluate_avg: done!')
 
@@ -83,5 +91,5 @@ classifier = SemanticClassifier(args.model)
 model = classifier.model
 
 if __name__ == '__main__':
-    #update_most_similar_job_classes()
+    update_most_similar_job_classes()
     evaluate_avg(classifier)

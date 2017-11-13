@@ -3,7 +3,7 @@ import unittest
 
 from hamcrest import assert_that, instance_of, is_, not_, empty, greater_than
 
-from src.entity.job_classes import JobClasses
+from src.database.job_classes import JobClasses
 
 
 class TestJobClasses(unittest.TestCase):

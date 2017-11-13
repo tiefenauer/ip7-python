@@ -59,19 +59,19 @@ class TrainingData(object):
             parms['limit'] = self.limit  # 100
         return sql, parms
 
-    def classify_job(self, id, predicted_class, sc_str, sc_tol, sc_lin):
+    def update_classification(self, method, id, predicted_class, sc_str, sc_tol, sc_lin):
         if not (self.write and predicted_class):
             # do not write classification if only dry run or no predicted class
             return
         cursor = self.conn_write.cursor()
-        cursor.execute("""INSERT INTO classification_result_fts 
-                                (job_id, job_name, score_strict, score_tolerant, score_linear) 
-                          VALUES(%s, %s, %s, %s, %s)""",
-                       (id, predicted_class, sc_str, sc_tol, sc_lin))
+        cursor.execute("""INSERT INTO classification_results 
+                                (job_id, clf_method, job_name, score_strict, score_tolerant, score_linear) 
+                          VALUES(%s, %s, %s, %s, %s, %s)""",
+                       (id, method, predicted_class, sc_str, sc_tol, sc_lin))
         self.conn_write.commit()
 
     def truncate_classification_tables(self):
         logging.info('truncating target tables...')
         cursor = self.conn_read.cursor()
-        cursor.execute("""TRUNCATE classification_result_fts""")
+        cursor.execute("""TRUNCATE classification_results""")
         self.conn_read.commit()

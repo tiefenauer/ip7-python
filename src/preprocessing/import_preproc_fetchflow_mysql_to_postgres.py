@@ -1,5 +1,5 @@
-from src.importer.data_preprocessed import PreprocessedData
-from src.importer.data_fetchflow import FetchflowImporter
+from src.database.data_fetchflow import FetchflowImporter
+from src.database.data_preprocessed import PreprocessedData
 from src.preproc import preprocess
 
 if __name__ == '__main__':

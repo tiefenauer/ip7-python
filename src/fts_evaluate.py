@@ -2,16 +2,13 @@ import argparse
 import logging
 import sys
 
-from tqdm import tqdm
-
-from src import preproc
 from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
 from src.classifier.fts_classifier_jobtitle_title import TitleBasedJobTitleClassifier
+from src.database.data_train import TrainingData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
-from src.importer.data_train import TrainingData
 from src.preprocessing.preprocessor_fts import FtsX28Preprocessor
 from src.util.boot_util import choose_classifier, choose_evaluation
 
@@ -55,5 +52,5 @@ if __name__ == '__main__':
         for i, (row_id, expected_class, relevant_tags) in enumerate(preprocessor.preprocess(data_train), 1):
             predicted_class = classifier.classify(relevant_tags)
             sc_str, sc_tol, sc_lin = evaluation.update(expected_class, predicted_class, i, data_train.num_rows)
-            data_train.classify_job(row_id, predicted_class, sc_str, sc_tol, sc_lin)
+            data_train.update_classification('fts', row_id, predicted_class, sc_str, sc_tol, sc_lin)
             evaluation.stop()

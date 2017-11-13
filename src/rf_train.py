@@ -10,10 +10,10 @@ from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm
 
 from src import preproc
+from src.database.data_train import TrainingData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
-from src.importer.data_train import TrainingData
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
