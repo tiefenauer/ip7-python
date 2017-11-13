@@ -1,7 +1,7 @@
-# Fills tables job_classes and job_classes_variants on DB by reading from known_jobs.tsv
-# Each row in known_jobs.tsv will be a class in job_classes
+# Fills tables job_class and job_class_variant on DB by reading from known_jobs.tsv
+# Each row in known_jobs.tsv will be a class in job_class
 # For each class the different writing and gender variants are created
-# Each created variant will be a row in job_classes_variants
+# Each created variant will be a row in job_class_variant
 import logging
 import os
 import re
@@ -23,8 +23,8 @@ known_jobs_tsv = os.path.join(resource_dir, 'known_jobs.tsv')
 def truncate_target_tables():
     logging.info('truncating target tables')
     cursor = conn.cursor()
-    cursor.execute("""TRUNCATE TABLE job_classes_variants""")
-    cursor.execute("""TRUNCATE TABLE job_classes CASCADE""")
+    cursor.execute("""TRUNCATE TABLE job_class_variant""")
+    cursor.execute("""TRUNCATE TABLE job_class CASCADE""")
     conn.commit()
 
 
@@ -37,11 +37,11 @@ def import_job_names_from_file():
 def write_job_classes_from_db_to_file():
     logging.info('writing classes back to file: {}'.format(known_jobs_tsv))
     cursor = conn.cursor()
-    cursor.execute("""SELECT DISTINCT job_class as job_class from job_classes ORDER BY job_class ASC""")
+    cursor.execute("""SELECT DISTINCT job_namee as job_name from job_class ORDER BY job_name ASC""")
     with open(known_jobs_tsv, mode='w+', encoding='utf-8') as file:
         file.truncate()
         for row in cursor:
-            file.write(row['job_class'] + '\n')
+            file.write(row['job_name'] + '\n')
 
 
 def create_gender_variants(job_name):
@@ -94,12 +94,12 @@ def is_hyphenated(job_name):
 
 
 def add_job_class(job_class):
-    job_class_stemmed = preproc.stem(job_class)
+    job_name_stemmed = preproc.stem(job_class)
     cursor = conn.cursor()
-    cursor.execute("""SELECT count(*) AS cnt FROM job_classes WHERE job_class = %s""", [job_class])
+    cursor.execute("""SELECT count(*) AS cnt FROM job_class WHERE job_name = %s""", [job_class])
     if cursor.fetchone()['cnt'] == 0:
-        cursor.execute("""INSERT INTO job_classes (job_class, job_class_stem) VALUES (%s, %s) RETURNING id""",
-                       (job_class, job_class_stemmed))
+        cursor.execute("""INSERT INTO job_class (job_name, job_name_stem) VALUES (%s, %s) RETURNING id""",
+                       (job_class, job_name_stemmed))
         conn.commit()
         return cursor.fetchone()[0]
     return -1
@@ -107,7 +107,7 @@ def add_job_class(job_class):
 
 def add_job_variant(job_id, job_variant):
     cursor = conn.cursor()
-    cursor.execute("""INSERT INTO job_classes_variants (job_class_id, job_class_variant) 
+    cursor.execute("""INSERT INTO job_class_variant (job_class_id, job_name_variant) 
                       VALUES(%s, %s)""",
                    (job_id, job_variant))
     conn.commit()

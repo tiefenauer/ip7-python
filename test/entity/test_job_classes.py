@@ -13,5 +13,5 @@ class TestJobClasses(unittest.TestCase):
             assert_that(len(list(testee)), is_(greater_than(0)))
             for item in testee:
                 assert_that(item['id'], is_(not_(empty())))
-                assert_that(item['job_class'], is_(not_(empty())))
-                assert_that(item['job_class_stem'], is_(not_(empty())))
+                assert_that(item['job_name'], is_(not_(empty())))
+                assert_that(item['job_name_stem'], is_(not_(empty())))

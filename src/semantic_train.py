@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-preprocessor = SemanticX28Preprocessor()
+preprocessor = SemanticX28Preprocessor(remove_stopwords=False)  # do not remove stopwords for training!
 classifier = SemanticClassifier(args.model)
 
 if __name__ == '__main__':

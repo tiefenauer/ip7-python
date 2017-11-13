@@ -142,7 +142,7 @@ if __name__ == '__main__':
     logging.info('using trained RandomForestClassifier to predict test features')
     predictions = forest.predict(test_features)
 
-    # evaluate predictions
+    # evaluate_avg predictions
     logging.info('measuring accuracy of predictions')
     e_strict = StrictEvaluator()
     e_tolerant = TolerantJobtitleEvaluator()

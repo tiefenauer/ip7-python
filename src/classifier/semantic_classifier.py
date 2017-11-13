@@ -6,6 +6,7 @@ import sys
 import time
 
 import gensim
+import numpy as np
 from gensim.models import word2vec
 
 from src.classifier.classifier import Classifier, data_dir
@@ -58,10 +59,25 @@ class SemanticClassifier(Classifier):
     def _load_model(self, path):
         model = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
         model.init_sims(replace=True)
+        self.index2word_set = set(model.index2word)
         return model
 
-    def classify(self, data):
-        pass
+    def classify(self, words):
+        featureVec = self.makeFeatureVec(words)
+        top10 = self.model.similar_by_vector(featureVec,1)
+        if top10:
+            return next(iter(top10))[0]
+        return None
+
+    def makeFeatureVec(self, words):
+        featureVec = np.zeros((self.num_features), dtype='float32')
+        nwords = 0
+        for word in words:
+            if word in self.index2word_set:
+                nwords += 1
+                featureVec = np.add(featureVec, self.model[word])
+        featureVec = np.divide(featureVec, nwords)
+        return featureVec
 
     def title(self):
         return 'Semantic Classifier'

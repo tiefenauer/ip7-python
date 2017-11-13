@@ -2,16 +2,18 @@ import argparse
 import logging
 import sys
 
+import pony.orm as pny
+from pony.orm import commit
+from tqdm import tqdm
+
 from src.classifier.semantic_classifier import SemanticClassifier
-from src.entity.job_class_to_job_class_similar import JobClassToJobClassSimilar
-from src.entity.job_classes_similar import JobClassesSimilar
+from src.entity.entities import Job_Class_Similar, Job_Class, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.importer.data_train import TrainingData
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
-from src.entity.job_classes import JobClasses
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
-parser.add_argument('model', nargs='?', help='file with saved model to evaluate')
+parser.add_argument('model', nargs='?', help='file with saved model to evaluate_avg')
 parser.add_argument('-l', '--limit', nargs='?', type=float, default=1.0,
                     help='(optional) fraction of labeled data to use for training')
 parser.add_argument('-o', '--offset', nargs='?', type=float, default=0.8,
@@ -22,21 +24,7 @@ args = parser.parse_args()
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-preprocessor = SemanticX28Preprocessor()
-
-
-def evaluate(clf):
-    evaluation = Evaluation(clf)
-    logging.info('evaluating model by matching predicted class with actual class for last 20% of labeled data')
-    with TrainingData(args) as data_train:
-        i = 0
-        for actual_class, sentences in ((actual_class, sents) for (row_id, actual_class, sents) in
-                                        preprocessor.preprocess(data_train)):
-            i += 1
-            predicted_class = clf.classify(sentences)
-            evaluation.update(actual_class, predicted_class, i, data_train.num_rows)
-        evaluation.stop()
-
+preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
 
 if not args.model:
     args.model = '2017-11-13-07-57-49_300features_40minwords_10context.gz'
@@ -56,17 +44,44 @@ def most_similar(word):
 
 
 def update_most_similar_job_classes():
-    with JobClasses() as job_classes, JobClassToJobClassSimilar() as job_class_to_similar, JobClassesSimilar() as job_classes_similar:
-        for job in (row['job_class'] for row in job_classes if row['job_class'] in model.index2word):
-            for job_similar, score in model.most_similar(job):
-                print(job, job_similar, score)
+    logging.info('update_most_similar_job_classes: Updating DB with most similar jobs for trained jobs...')
+    with pny.db_session:
+        # truncate previous mappings
+        Job_Class_To_Job_Class_Similar.select().delete(bulk=True)
+        Job_Class_Similar.select().delete(bulk=True)
+        commit()
+        # add new mappings
+        known_and_trained_jobs = list(
+            job_class for job_class in Job_Class.select() if job_class.job_name in model.index2word)
+        for job_class in tqdm(known_and_trained_jobs, unit=' rows'):
+            for similar_name, score in model.most_similar(job_class.job_name):
+                if Job_Class_Similar.exists(job_name_similar=similar_name):
+                    job_class_similar = Job_Class_Similar.get(job_name_similar=similar_name)
+                else:
+                    job_class_similar = Job_Class_Similar(job_name_similar=similar_name)
+                commit()
+                Job_Class_To_Job_Class_Similar(fk_job_class=job_class.id, fk_job_class_similar=job_class_similar.id,
+                                               score=score)
+    logging.info('update_most_similar_job_classes: done!')
+
+
+def evaluate_avg(clf):
+    logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
+    evaluation = Evaluation(clf)
+    with TrainingData(args) as data_train:
+        i = 0
+        for actual_class, sentences in ((actual_class, sents) for (row_id, actual_class, sents) in
+                                        preprocessor.preprocess(data_train)):
+            i += 1
+            predicted_class = clf.classify(sentences)
+            evaluation.update(actual_class, predicted_class, i, data_train.num_rows)
+        evaluation.stop()
+    logging.info('evaluate_avg: done!')
 
 
 classifier = SemanticClassifier(args.model)
 model = classifier.model
 
 if __name__ == '__main__':
-    update_most_similar_job_classes()
-    doesnt_match('Monteur Coiffeur Bahn Manager')
-
-    # evaluate(classifier)
+    #update_most_similar_job_classes()
+    evaluate_avg(classifier)
