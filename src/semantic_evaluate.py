@@ -7,7 +7,7 @@ from pony.orm import commit
 from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
-from src.database.data_classification_results import ClassificationResults
+from src.database.data_classification_results import ClassificationResults, SemanticAvgClassificationResults
 from src.database.data_train import TrainingData
 from src.database.entities import Job_Class_Similar, Job_Class, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
@@ -76,7 +76,7 @@ def update_most_similar_job_classes():
 def evaluate_avg(clf):
     logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     evaluation = Evaluation(clf)
-    with TrainingData(args) as data_train, ClassificationResults('semantic_avg', args) as results:
+    with TrainingData(args) as data_train, SemanticAvgClassificationResults(args) as results:
         i = 0
         for row_id, actual_class, sentences in ((row_id, actual_class, sents) for (row_id, actual_class, sents) in
                                                 preprocessor.preprocess(data_train)):

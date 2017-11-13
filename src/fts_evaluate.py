@@ -5,7 +5,7 @@ import sys
 from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
 from src.classifier.fts_classifier_jobtitle_title import TitleBasedJobTitleClassifier
-from src.database.data_classification_results import ClassificationResults
+from src.database.data_classification_results import ClassificationResults, FtsClassificationResults
 from src.database.data_train import TrainingData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
@@ -49,7 +49,7 @@ classifier = choose_classifier(args)
 evaluation = choose_evaluation(args, classifier)
 
 if __name__ == '__main__':
-    with TrainingData(args) as data_train, ClassificationResults('fts', args) as results:
+    with TrainingData(args) as data_train, FtsClassificationResults(args) as results:
         for i, (row_id, expected_class, relevant_tags) in enumerate(preprocessor.preprocess(data_train), 1):
             predicted_class = classifier.classify(relevant_tags)
             sc_str, sc_tol, sc_lin = evaluation.update(expected_class, predicted_class, i, data_train.num_rows)

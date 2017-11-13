@@ -43,3 +43,13 @@ class ClassificationResults(object):
         logging.info('truncating target tables...')
         Classification_Results.select(lambda r: r.clf_method == self.clf_method).delete()
         commit()
+
+
+class FtsClassificationResults(ClassificationResults):
+    def __init__(self, args):
+        super(FtsClassificationResults, self).__init__('fts', args)
+
+
+class SemanticAvgClassificationResults(ClassificationResults):
+    def __init__(self, args):
+        super(SemanticAvgClassificationResults, self).__init__('semantic_avg', args)
