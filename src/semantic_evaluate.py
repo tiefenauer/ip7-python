@@ -8,8 +8,8 @@ from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
 from src.database.TrainingData import TrainingData
-from src.database.data_classification_results import SemanticAvgClassificationResults
-from src.database.entities_x28 import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
+from src.database.entities_x28 import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar, \
+    Semantic_Avg_Classification_Results
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
@@ -76,14 +76,16 @@ def update_most_similar_job_classes():
 def evaluate_avg(clf):
     logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     evaluation = Evaluation(clf)
-    with TrainingData(args) as data_train, SemanticAvgClassificationResults(args) as results:
+    with TrainingData(args) as data_train:
         i = 0
         for row_id, actual_class, sentences in ((row_id, actual_class, sents) for (row_id, actual_class, sents) in
                                                 preprocessor.preprocess(data_train)):
             i += 1
             predicted_class = clf.classify(sentences)
             sc_str, sc_tol, sc_lin = evaluation.update(actual_class, predicted_class, i, data_train.num_rows)
-            results.update_classification(row_id, predicted_class, sc_str, sc_tol, sc_lin)
+            Semantic_Avg_Classification_Results.update_classification(Semantic_Avg_Classification_Results, row_id,
+                                                                      predicted_class, sc_str, sc_tol,
+                                                                      sc_lin)
         evaluation.stop()
     logging.info('evaluate_avg: done!')
 

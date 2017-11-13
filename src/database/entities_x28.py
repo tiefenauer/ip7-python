@@ -39,8 +39,8 @@ class Job_Class_To_Job_Class_Similar(DB_X28.Entity):
 
 
 class Classification_Results(DB_X28.Entity):
-    job_class = Required(Data_Train, column='job_id')
     clf_method = Discriminator(str)
+    job_class = Required(Data_Train, column='job_id')
     job_name = Required(str)
     score_strict = Required(float)
     score_tolerant = Required(float)
@@ -49,7 +49,7 @@ class Classification_Results(DB_X28.Entity):
     @db_session
     def update_classification(self, row_id, predicted_class, sc_str, sc_tol, sc_lin):
         job_class = Data_Train.get(id=row_id)
-        classification_result = Classification_Results(clf_method=self._discriminator,
+        classification_result = Classification_Results(clf_method=self._discriminator_,
                                                        job_class=job_class,
                                                        job_name=predicted_class,
                                                        score_strict=sc_str,
@@ -61,11 +61,11 @@ class Classification_Results(DB_X28.Entity):
 
 
 class Fts_Classification_Results(Classification_Results):
-    _discriminator = 'fts'
+    _discriminator_ = 'fts'
 
 
 class Semantic_Avg_Classification_Results(Classification_Results):
-    _discriminator = 'semantic_avg'
+    _discriminator_ = 'semantic_avg'
 
 
 DB_X28.bind('postgres', host='127.0.0.1', user='postgres', password='postgres', database='x28')
