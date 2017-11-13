@@ -13,6 +13,10 @@ from src.util.html_util import remove_all_attrs, strip_content
 stopwords_de = set(stopwords.words('german'))
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
 xml_parser = etree.HTMLParser(strip_cdata=False)
+punctuation_tokens = ['.', '..', '...', ',', ';', ':', '(', ')', '"', '\'', '[', ']',
+                      '{', '}', '?', '!', '-', '–', '+', '*', '--', '\'\'', '``']
+punctuation = '?.!/;:()&+'
+
 
 
 def preprocess(markup):
@@ -37,7 +41,7 @@ def remove_html_clutter(soup):
 
 
 def to_words(text):
-    return nltk.word_tokenize(text)
+    return nltk.word_tokenize(text, language='german')
 
 
 def remove_special_chars(text):
@@ -68,3 +72,9 @@ def stem_word(word):
 
 def is_iterable_and_not_string(text):
     return isinstance(text, collections.Iterable) and not isinstance(text, str)
+
+
+def remove_punctuation(words):
+    words = [x for x in words if x not in punctuation_tokens]
+    #words = [re.sub('[{}]'.format(punctuation), ' ', x) for x in words]
+    return words

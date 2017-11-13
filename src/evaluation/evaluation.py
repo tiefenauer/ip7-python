@@ -95,6 +95,6 @@ class Evaluation(object):
         text = str("{:1.4f}".format(height))
         self.labels[i] = ax.text(x, y, text, ha='center', va='bottom', color='black', fontsize=10)
 
-        def stop(self):
-            filename = self.start_time.strftime('%Y-%m-%d-%H-%M-%S')
-            plt.savefig(filename)
+    def stop(self):
+        filename = self.start_time.strftime('%Y-%m-%d-%H-%M-%S')
+        plt.savefig(filename)

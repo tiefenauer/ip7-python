@@ -56,3 +56,4 @@ if __name__ == '__main__':
             predicted_class = classifier.classify(relevant_tags)
             sc_str, sc_tol, sc_lin = evaluation.update(expected_class, predicted_class, i, data_train.num_rows)
             data_train.classify_job(row_id, predicted_class, sc_str, sc_tol, sc_lin)
+            evaluation.stop()

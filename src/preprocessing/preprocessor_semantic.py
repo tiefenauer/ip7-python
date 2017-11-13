@@ -15,10 +15,10 @@ tokenizer = nltk.data.load('tokenizers/punkt/german.pickle')
 
 def to_wordlist(markup, remove_stopwords=False):
     text = preproc.parse(markup).get_text()
-    text = re.sub("[^a-zA-Z]", " ", text)
-    words = text.lower().split()
+    words = preproc.to_words(text)
+    words = preproc.remove_punctuation(words)
     if remove_stopwords:
-        words = [w for w in words if w not in stops]
+        words = preproc.remove_stop_words(words)
     return words
 
 
