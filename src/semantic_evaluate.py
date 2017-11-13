@@ -2,14 +2,13 @@ import argparse
 import logging
 import sys
 
-import pony.orm as pny
-from pony.orm import commit
+from pony.orm import commit, db_session
 from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
+from src.database.ClassificationResults import SemanticAvgClassificationResults
 from src.database.TrainingData import TrainingData
-from src.database.entities_x28 import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar, \
-    Semantic_Avg_Classification_Results
+from src.database.entities_x28 import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
@@ -32,8 +31,6 @@ args = parser.parse_args()
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
-
 if not args.model:
     args.model = '2017-11-13-07-57-49_300features_40minwords_10context.gz'
 
@@ -53,7 +50,7 @@ def most_similar(word):
 
 def update_most_similar_job_classes():
     logging.info('update_most_similar_job_classes: Updating DB with most similar jobs for trained jobs...')
-    with pny.db_session:
+    with db_session:
         # truncate previous mappings
         Job_Class_To_Job_Class_Similar.select().delete(bulk=True)
         Job_Class_Similar.select().delete(bulk=True)
@@ -75,18 +72,16 @@ def update_most_similar_job_classes():
 
 def evaluate_avg(clf):
     logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
+    data_train = TrainingData(args)
+    preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
     evaluation = Evaluation(clf)
-    with TrainingData(args) as data_train:
-        i = 0
-        for row_id, actual_class, sentences in ((row_id, actual_class, sents) for (row_id, actual_class, sents) in
-                                                preprocessor.preprocess(data_train)):
-            i += 1
-            predicted_class = clf.classify(sentences)
-            sc_str, sc_tol, sc_lin = evaluation.update(actual_class, predicted_class, i, data_train.num_rows)
-            Semantic_Avg_Classification_Results.update_classification(Semantic_Avg_Classification_Results, row_id,
-                                                                      predicted_class, sc_str, sc_tol,
-                                                                      sc_lin)
-        evaluation.stop()
+    results = SemanticAvgClassificationResults(args)
+
+    for i, row in enumerate(preprocessor.preprocess(data_train), 1):
+        predicted_class = clf.classify(row.processed)
+        sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_train.num_rows)
+        results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
+    evaluation.stop()
     logging.info('evaluate_avg: done!')
 
 

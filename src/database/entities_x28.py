@@ -1,13 +1,13 @@
-from pony.orm import Required, Set, Optional, Discriminator, db_session, commit, Database
+from pony.orm import Required, Set, Optional, Discriminator, Database
 
 DB_X28 = Database()
 
 
 class Data_Train(DB_X28.Entity):
-    html = Required(str)
-    plaintext = Required(str)
-    url = Required(str)
-    title = Required(str)
+    html = Optional(str)
+    plaintext = Optional(str)
+    url = Optional(str)
+    title = Optional(str)
     x28_id = Required(int)
     cls_fts = Set('Classification_Results')
 
@@ -45,19 +45,6 @@ class Classification_Results(DB_X28.Entity):
     score_strict = Required(float)
     score_tolerant = Required(float)
     score_linear = Required(float)
-
-    @db_session
-    def update_classification(self, row_id, predicted_class, sc_str, sc_tol, sc_lin):
-        job_class = Data_Train.get(id=row_id)
-        classification_result = Classification_Results(clf_method=self._discriminator_,
-                                                       job_class=job_class,
-                                                       job_name=predicted_class,
-                                                       score_strict=sc_str,
-                                                       score_tolerant=sc_tol,
-                                                       score_linear=sc_lin
-                                                       )
-        commit()
-        return classification_result
 
 
 class Fts_Classification_Results(Classification_Results):

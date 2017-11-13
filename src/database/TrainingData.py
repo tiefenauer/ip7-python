@@ -1,48 +1,30 @@
 import logging
 import sys
 
+from pony.orm import db_session
+
 from src import db
+from src.database.entities_x28 import Data_Train
 from src.db import Database
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 class TrainingData(object):
+    @db_session
     def __init__(self, args):
         self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
         self.split_from = args.offset if hasattr(args, 'offset') else 0
         self.split_to = args.limit if hasattr(args, 'limit') else 1
-
-    def __enter__(self):
-        self.conn_read = db.connect_to(Database.X28_PG)
-        self.conn_write = db.connect_to(Database.X28_PG)
-        #
-        cursor = self.conn_read.cursor()
-        cursor.execute("""SELECT count(*) AS num_rows 
-                          FROM data_train 
-                          WHERE %(id)s < 0 OR id = %(id)s""",
-                       {'id': self.id})
-        self.num_total = cursor.fetchone()['num_rows']
+        self.num_total = Data_Train.select(lambda d: self.id < 0 or d.id == self.id).count()
         self.offset = int(self.num_total * self.split_from)
         self.limit = int(self.num_total * self.split_to)
         self.num_rows = self.limit - self.offset
-        return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.conn_read.close()
-        self.conn_write.close()
 
+    @db_session
     def __iter__(self):
-        sql = """SELECT id, html, plaintext, url, title, x28_id 
-                          FROM data_train
-                          WHERE %(id)s < 0 OR id = %(id)s
-                          """
-        parms = {'id': self.id}
-        sql, parms = self.limit_offset(sql, parms)
-
-        cursor = self.conn_read.cursor()
-        cursor.execute(sql, parms)
-        for row in cursor:
+        for row in Data_Train.select(lambda d: self.id < 0 or d.id == self.id):
             yield row
 
     def limit_offset(self, sql, parms):
