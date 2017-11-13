@@ -7,6 +7,7 @@ from pony.orm import commit
 from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
+from src.database.data_classification_results import ClassificationResults
 from src.database.data_train import TrainingData
 from src.database.entities import Job_Class_Similar, Job_Class, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
@@ -75,14 +76,14 @@ def update_most_similar_job_classes():
 def evaluate_avg(clf):
     logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     evaluation = Evaluation(clf)
-    with TrainingData(args) as data_train:
+    with TrainingData(args) as data_train, ClassificationResults('semantic_avg', args) as results:
         i = 0
         for row_id, actual_class, sentences in ((row_id, actual_class, sents) for (row_id, actual_class, sents) in
                                                 preprocessor.preprocess(data_train)):
             i += 1
             predicted_class = clf.classify(sentences)
             sc_str, sc_tol, sc_lin = evaluation.update(actual_class, predicted_class, i, data_train.num_rows)
-            data_train.update_classification('semantic_avg', row_id, predicted_class, sc_str, sc_tol, sc_lin)
+            results.update_classification(row_id, predicted_class, sc_str, sc_tol, sc_lin)
         evaluation.stop()
     logging.info('evaluate_avg: done!')
 
@@ -91,5 +92,5 @@ classifier = SemanticClassifier(args.model)
 model = classifier.model
 
 if __name__ == '__main__':
-    update_most_similar_job_classes()
+    #update_most_similar_job_classes()
     evaluate_avg(classifier)

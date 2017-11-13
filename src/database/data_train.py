@@ -10,17 +10,12 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 class TrainingData(object):
     def __init__(self, args):
         self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
-        self.write = args.write if hasattr(args, 'write') else False
-        self.truncate = args.truncate if hasattr(args, 'truncate') else False
         self.split_from = args.offset if hasattr(args, 'offset') else 0
         self.split_to = args.limit if hasattr(args, 'limit') else 1
 
     def __enter__(self):
         self.conn_read = db.connect_to(Database.X28_PG)
         self.conn_write = db.connect_to(Database.X28_PG)
-        #
-        if self.truncate:
-            self.truncate_classification_tables()
         #
         cursor = self.conn_read.cursor()
         cursor.execute("""SELECT count(*) AS num_rows 
@@ -58,20 +53,3 @@ class TrainingData(object):
             sql += ' LIMIT %(limit)s'
             parms['limit'] = self.limit  # 100
         return sql, parms
-
-    def update_classification(self, method, id, predicted_class, sc_str, sc_tol, sc_lin):
-        if not (self.write and predicted_class):
-            # do not write classification if only dry run or no predicted class
-            return
-        cursor = self.conn_write.cursor()
-        cursor.execute("""INSERT INTO classification_results 
-                                (job_id, clf_method, job_name, score_strict, score_tolerant, score_linear) 
-                          VALUES(%s, %s, %s, %s, %s, %s)""",
-                       (id, method, predicted_class, sc_str, sc_tol, sc_lin))
-        self.conn_write.commit()
-
-    def truncate_classification_tables(self):
-        logging.info('truncating target tables...')
-        cursor = self.conn_read.cursor()
-        cursor.execute("""TRUNCATE classification_results""")
-        self.conn_read.commit()
