@@ -7,9 +7,9 @@ from pony.orm import commit
 from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
-from src.database.data_classification_results import ClassificationResults, SemanticAvgClassificationResults
-from src.database.data_train import TrainingData
-from src.database.entities import Job_Class_Similar, Job_Class, Job_Class_To_Job_Class_Similar
+from src.database.TrainingData import TrainingData
+from src.database.data_classification_results import SemanticAvgClassificationResults
+from src.database.entities_x28 import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
@@ -92,5 +92,5 @@ classifier = SemanticClassifier(args.model)
 model = classifier.model
 
 if __name__ == '__main__':
-    #update_most_similar_job_classes()
+    # update_most_similar_job_classes()
     evaluate_avg(classifier)

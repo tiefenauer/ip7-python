@@ -6,7 +6,7 @@ from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClass
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
 from src.classifier.fts_classifier_jobtitle_title import TitleBasedJobTitleClassifier
 from src.database.data_classification_results import ClassificationResults, FtsClassificationResults
-from src.database.data_train import TrainingData
+from src.database.TrainingData import TrainingData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator

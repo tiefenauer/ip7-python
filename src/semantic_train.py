@@ -3,7 +3,7 @@ import logging
 import sys
 
 from src.classifier.semantic_classifier import SemanticClassifier
-from src.database.data_train import TrainingData
+from src.database.TrainingData import TrainingData
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
 parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")

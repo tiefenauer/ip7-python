@@ -3,7 +3,7 @@ import sys
 
 from pony.orm import commit, db_session
 
-from src.database.entities import Classification_Results, Data_Train
+from src.database.entities_x28 import Data_Train, Classification_Results
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -23,11 +23,11 @@ class ClassificationResults(object):
         pass
 
     @db_session
-    def update_classification(self, id, predicted_class, sc_str, sc_tol, sc_lin):
+    def update_classification(self, row_id, predicted_class, sc_str, sc_tol, sc_lin):
         if not (self.write and predicted_class):
             # do not write classification if only dry run or no predicted class
             return
-        job_class = Data_Train.get(id=id)
+        job_class = Data_Train.get(id=row_id)
         classification_result = Classification_Results(clf_method=self.clf_method,
                                                        job_class=job_class,
                                                        job_name=predicted_class,
