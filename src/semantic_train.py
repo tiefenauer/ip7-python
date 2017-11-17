@@ -2,14 +2,8 @@ import argparse
 import logging
 import sys
 
-from pony.orm import db_session
-from tqdm import tqdm
-
-from src import db
-from src.database.FetchflowData import Row
-from src.db import Database
 from src.classifier.semantic_classifier import SemanticClassifier
-from src.database.entities_mysql_fetchflow import Labeled_Text
+from src.database.TrainingData import TrainingData
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
 parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")
@@ -26,40 +20,19 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 preprocessor = SemanticX28Preprocessor(remove_stopwords=False)  # do not remove stopwords for training!
 classifier = SemanticClassifier(args.model)
-args.limit = 0.01
 
 
 class MySentences(object):
-    def __init__(self, sentences):
-        self.sentences = sentences
+    def __init__(self, rows):
+        self.rows = rows
 
     def __iter__(self):
-        for sent in self.sentences:
-            yield sent
-
-
-class Bla(object):
-    @db_session
-    def __init__(self, args):
-        self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
-        self.num_rows = Labeled_Text.select(lambda d: self.id < 0 or d.id == self.id).count()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-    @db_session
-    def __iter__(self):
-        conn = db.connect_to(Database.FETCHFLOW_MYSQL)
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("""SELECT id, title, CONVERT(contentbytes USING utf8) AS html FROM labeled_text""")
-        for row in cursor:
-            yield Row(row)
+        for sentences in self.rows:
+            yield sentences
 
 
 if __name__ == '__main__':
-    with Bla(args) as data_train:
-        sentences = tqdm(MySentences((row.processed for row in preprocessor.preprocess(data_train))),total=data_train.num_rows)
-        classifier.train_model(sentences)
+    with TrainingData(args) as data_train:
+        rows_processed = preprocessor.preprocess(data_train, data_train.num_rows)
+        rows = (row.processed for row in rows_processed)
+        classifier.train_model(MySentences(rows))

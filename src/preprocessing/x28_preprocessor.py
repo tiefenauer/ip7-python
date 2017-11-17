@@ -8,9 +8,9 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 
 class X28Preprocessor(ABC):
-    def preprocess(self, data):
+    def preprocess(self, data, num_rows):
         logging.info('Preprocessing X28 data...')
-        for row in (row for row in data if row.html):
+        for row in tqdm((row for row in data if row.html), total=num_rows):
             row.processed = self.preprocess_single(row.html)
             yield row
 
