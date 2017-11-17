@@ -45,3 +45,12 @@ class TestUtil(unittest.TestCase):
         result = testee.create_contexts(text, 'keyword')
         # assert
         assert_that(result, contains_inanyorder('...s blu blö keyword lorem ips...'))
+
+    def test_flatten_flattens_list(self):
+        # arrange
+        list_a = ['a', 'b', 'c', 'd']
+        list_b = ['c', 'd', 'e', 'f']
+        # act
+        result = list(testee.flatten([list_a, list_b]))
+        # assert
+        assert_that(result, is_(list_a + list_b))

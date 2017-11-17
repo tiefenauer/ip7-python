@@ -5,6 +5,7 @@ import nltk
 from src import preproc
 from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.preprocessing.x28_preprocessor import X28Preprocessor
+from src.util import util
 
 german_pos_tagger = None
 with open(german_pos_tagger_path, 'rb') as f:
@@ -17,25 +18,22 @@ def remove_tags(tags):
 
 def create_sentences(contents):
     sentences = (nltk.sent_tokenize(content) for content in contents)
-    return flatten(sentences)
-
-
-def create_tags_from_sentences(sentences):
-    return (german_pos_tagger.tag(words) for words in (sent.split(' ') for sent in sentences))
+    return util.flatten(sentences)
 
 
 def create_words(sentences):
     words = (nltk.word_tokenize(sent, language='german') for sent in sentences)
     return words
-    # return flatten(words)
+    # return flatten(words) # do not flatten as NLTK taggers expect lists of words!
 
 
-def create_tagged_words(words):
-    return (nltk.pos_tag(word, lang='deu') for word in words)
+def create_pos_tags(words_list):
+    tagged_words = (german_pos_tagger.tag(words) for words in words_list)
+    return util.flatten(tagged_words)
 
 
-def flatten(some_list):
-    return (item for sublist in some_list for item in sublist)
+def stem_words(tagged_words):
+    return ((preproc.stem(word), tag) for word, tag in tagged_words)
 
 
 class StructuralX28Preprocessor(X28Preprocessor):
@@ -46,7 +44,7 @@ class StructuralX28Preprocessor(X28Preprocessor):
         tags = preproc.extract_relevant_tags(markup)
         contents = remove_tags(tags)
         sentences = create_sentences(contents)
-        tagged_words = create_tags_from_sentences(sentences)
         words = create_words(sentences)
-        tagged_words = create_tagged_words(words)
-        return sentences
+        tagged_words = create_pos_tags(words)
+        tagged_stems = stem_words(tagged_words)
+        return tagged_stems

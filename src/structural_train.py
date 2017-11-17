@@ -9,4 +9,6 @@ data_train = X28_Data_Train(args)
 preprocessor = StructuralX28Preprocessor()
 
 if __name__ == '__main__':
-    rows_processed = preprocessor.preprocess(data_train)
+    rows_processed = preprocessor.preprocess(data_train, data_train.num_rows)
+    # tagged_sents = list(brown.tagged_sents(categories='news'))
+    # print(len(tagged_sents))

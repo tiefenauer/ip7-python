@@ -22,10 +22,5 @@ def create_contexts(text, word):
     return contexts
 
 
-def flatten(it):
-    for x in it:
-        if (isinstance(x, collections.Iterable) and
-                not isinstance(x, str)):
-            yield from flatten(x)
-        else:
-            yield x
+def flatten(iterable):
+    return (item for sublist in iterable for item in sublist)

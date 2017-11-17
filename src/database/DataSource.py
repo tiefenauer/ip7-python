@@ -7,13 +7,15 @@ class DataSource(ABC):
     @db_session
     def __init__(self, args, entity):
         self.Entity = entity
+        # calculate total number of available rows
         self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
         num_total = self.Entity.select(lambda d: self.id < 0 or d.id == self.id).count()
+        self.num_total = num_total
+        # calculate effective number of rows with limit and offset
         split_from = args.offset if hasattr(args, 'offset') else 0
         split_to = args.limit if hasattr(args, 'limit') else 1
         self.offset = int(num_total * split_from)
         self.limit = int(num_total * split_to)
-        self.num_total = num_total
         self.num_rows = self.limit - self.offset
 
     @db_session
