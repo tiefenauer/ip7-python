@@ -33,8 +33,8 @@ class Job_Class_Similar(DB_X28.Entity):
 
 class Job_Class_To_Job_Class_Similar(DB_X28.Entity):
     _table = 'job_class_to_job_class_similar'
-    fk_job_class = Required(Job_Class)
-    fk_job_class_similar = Required(Job_Class_Similar)
+    job_class = Required(Job_Class, column='fk_job_class')
+    job_class_similar = Required(Job_Class_Similar, column='fk_job_class_similar')
     score = Required(float)
 
 
