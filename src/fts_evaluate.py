@@ -2,6 +2,8 @@ import argparse
 import logging
 import sys
 
+from tqdm import tqdm
+
 from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
 from src.classifier.fts_classifier_jobtitle_title import TitleBasedJobTitleClassifier
@@ -52,7 +54,7 @@ if __name__ == '__main__':
     data_train = TrainingData(args)
     results = FtsClassificationResults(args)
 
-    for i, row in enumerate(preprocessor.preprocess(data_train), 1):
+    for i, row in enumerate(tqdm(preprocessor.preprocess(data_train), total=data_train.num_rows, unit=' rows'), 1):
         predicted_class = classifier.classify(row.processed)
         sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_train.num_rows)
         results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)

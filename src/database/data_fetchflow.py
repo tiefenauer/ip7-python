@@ -11,26 +11,32 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(m
 
 
 class FetchflowImporter(object):
-    def __init__(self):
+    def __init__(self, args):
         self.curr_datetime = time.strftime('%Y-%m-%d %H:%M:%S')
-
-    def __enter__(self):
         self.conn_read = db.connect_to(Database.FETCHFLOW_MYSQL)
         self.conn_write = db.connect_to(Database.FETCHFLOW_MYSQL)
+        self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
+        self.split_from = args.offset if hasattr(args, 'offset') else 0
+        self.split_to = args.limit if hasattr(args, 'limit') else 1
+        cursor = self.conn_read.cursor(dictionary=True)
+        cursor.execute("SELECT count(*) AS num_total FROM labeled_text")
+        self.num_total = cursor.fetchone()['num_total']
+        self.offset = int(self.num_total * self.split_from)
+        self.limit = int(self.num_total * self.split_to)
+        self.num_rows = self.limit - self.offset
+
+    def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.conn_read.close()
+        self.conn_write.close()
 
     def __iter__(self):
         cursor = self.conn_read.cursor(dictionary=True)
-        cursor.execute("SELECT count(*) AS num_total FROM labeled_text")
-        self.num_total = cursor.fetchone()['num_total']
-        logging.info('processing {} rows'.format(self.num_total))
-
-        cursor.execute("SELECT id, title, CONVERT(contentbytes USING utf8) AS dom FROM labeled_text")
-        for row in tqdm(cursor, total=self.num_total, unit=' rows'):
-            yield row
+        cursor.execute("SELECT id, title, CONVERT(contentbytes USING utf8) AS html FROM labeled_text LIMIT 1000")
+        for row in cursor:
+            yield Row(row)
 
     def update_job_with_title(self, row, job_title, job_count):
         labeled_text_id = row['id']
@@ -66,3 +72,9 @@ class FetchflowImporter(object):
         cursor.execute("""TRUNCATE  job_title_contexts""")
         cursor.execute("""TRUNCATE job_titles""")
         self.conn_write.commit()
+
+
+class Row(dict):
+    def __init__(self, row):
+        self.id = row['id']
+        self.html = row['html']

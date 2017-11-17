@@ -3,14 +3,18 @@ import sys
 
 from pony.orm import db_session
 
-from src import db
 from src.database.entities_x28 import Data_Train
-from src.db import Database
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 class TrainingData(object):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
     @db_session
     def __init__(self, args):
         self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
@@ -20,7 +24,6 @@ class TrainingData(object):
         self.offset = int(self.num_total * self.split_from)
         self.limit = int(self.num_total * self.split_to)
         self.num_rows = self.limit - self.offset
-
 
     @db_session
     def __iter__(self):
