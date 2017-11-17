@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
 from src.database.ClassificationResults import SemanticAvgClassificationResults
-from src.database.TrainingData import TrainingData
+from src.database.X28_Data_Train import X28_Data_Train
 from src.database.entities_x28 import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
@@ -72,7 +72,7 @@ def update_most_similar_job_classes():
 
 def evaluate_avg(clf):
     logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
-    data_train = TrainingData(args)
+    data_train = X28_Data_Train(args)
     preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
     evaluation = Evaluation(clf)
     results = SemanticAvgClassificationResults(args)

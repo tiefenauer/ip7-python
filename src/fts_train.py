@@ -3,7 +3,7 @@ import logging
 import sys
 
 from src.database.data_fetchflow import FetchflowImporter
-from src.preproc import preprocess
+from src.preproc import extract_relevant_tags
 from src.util.boot_util import choose_evaluation, choose_classifier
 from src.util.stats import print_stats
 
@@ -48,8 +48,8 @@ if __name__ == '__main__':
         if args.truncate:
             fetchflow.truncate_results()
         for row in (row for row in fetchflow if row['dom']):
-            relevant_tags = preprocess(row['dom'])
-            (job_title, job_count) = strategy.classify(relevant_tags)
+            relevant_tags = extract_relevant_tags(row['dom'])
+            (job_title, job_count) = strategy.classify(set(relevant_tags))
             if job_title is not None:
                 fetchflow.update_job_with_title(row, job_title, job_count)
     print_stats(stats)

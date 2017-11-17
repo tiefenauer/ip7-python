@@ -18,15 +18,14 @@ punctuation_tokens = ['.', '..', '...', ',', ';', ':', '(', ')', '"', '\'', '[',
 punctuation = '?.!/;:()&+'
 
 
-
-def preprocess(markup):
+def extract_relevant_tags(markup):
     soup = parse(markup)
-    return set(tag for tag in
-               (strip_content(tag) for tag in
-                (remove_all_attrs(tag) for tag in soup.findAll(html_util.RELEVANT_TAGS))
-                )
-               if len(tag.getText(strip=True)) > 2
-               )
+    return (tag for tag in
+            (strip_content(tag) for tag in
+             (remove_all_attrs(tag) for tag in soup.findAll(html_util.RELEVANT_TAGS))
+             )
+            if len(tag.getText(strip=True)) > 2
+            )
 
 
 def parse(markup):
@@ -76,5 +75,5 @@ def is_iterable_and_not_string(text):
 
 def remove_punctuation(words):
     words = [x for x in words if x not in punctuation_tokens]
-    #words = [re.sub('[{}]'.format(punctuation), ' ', x) for x in words]
+    # words = [re.sub('[{}]'.format(punctuation), ' ', x) for x in words]
     return words

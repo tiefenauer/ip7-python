@@ -8,7 +8,7 @@ from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClass
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
 from src.classifier.fts_classifier_jobtitle_title import TitleBasedJobTitleClassifier
 from src.database.ClassificationResults import FtsClassificationResults
-from src.database.TrainingData import TrainingData
+from src.database.X28_Data_Train import X28_Data_Train
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
@@ -51,7 +51,7 @@ classifier = choose_classifier(args)
 evaluation = choose_evaluation(args, classifier)
 
 if __name__ == '__main__':
-    data_train = TrainingData(args)
+    data_train = X28_Data_Train(args)
     results = FtsClassificationResults(args)
 
     for i, row in enumerate(tqdm(preprocessor.preprocess(data_train), total=data_train.num_rows, unit=' rows'), 1):

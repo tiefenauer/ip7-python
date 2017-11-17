@@ -1,25 +1,10 @@
-import argparse
-import logging
-import sys
-
 from src.classifier.semantic_classifier import SemanticClassifier
-from src.database.TrainingData import TrainingData
+from src.database.X28_Data_Train import X28_Data_Train
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
+from src.util.boot_util import parse_args, set_up_logger
 
-parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")
-parser.add_argument('id', nargs='?', type=int, help='(optional) single id to process')
-parser.add_argument('-l', '--limit', nargs='?', type=float, default=0.8,
-                    help='(optional) fraction of labeled data to use for training')
-parser.add_argument('-o', '--offset', nargs='?', type=float, default=0.0,
-                    help='(optional) fraction value of labeled data to start from')
-parser.add_argument('-m', '--model',
-                    help='(optional) file with saved model to use. A new model will be created if not set.')
-args = parser.parse_args()
-
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-
-preprocessor = SemanticX28Preprocessor(remove_stopwords=False)  # do not remove stopwords for training!
-classifier = SemanticClassifier(args.model)
+logging = set_up_logger()
+args = parse_args()
 
 
 class MySentences(object):
@@ -31,8 +16,11 @@ class MySentences(object):
             yield sentences
 
 
+data_train = X28_Data_Train(args)
+preprocessor = SemanticX28Preprocessor(remove_stopwords=False)  # do not remove stopwords for training!
+classifier = SemanticClassifier(args.model)
+
 if __name__ == '__main__':
-    with TrainingData(args) as data_train:
-        rows_processed = preprocessor.preprocess(data_train, data_train.num_rows)
-        rows = (row.processed for row in rows_processed)
-        classifier.train_model(MySentences(rows))
+    rows_processed = preprocessor.preprocess(data_train, data_train.num_rows)
+    rows = (row.processed for row in rows_processed)
+    classifier.train_model(MySentences(rows))

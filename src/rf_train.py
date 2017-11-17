@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm
 
 from src import preproc
-from src.database.TrainingData import TrainingData
+from src.database.X28_Data_Train import X28_Data_Train
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
@@ -37,7 +37,7 @@ file_clf_random_forest = os.path.join(data_dir, 'clf_random_forest.pkl')
 def preprocess(labeled_data):
     with labeled_data as data:
         for row in (row for row in tqdm(data, total=data.num_rows, unit=' rows') if row['html']):
-            relevant_tags = preproc.preprocess(row['html'])
+            relevant_tags = preproc.extract_relevant_tags(row['html'])
             vacancy_text = ' '.join((tag.getText() for tag in relevant_tags))
             words = preproc.remove_stop_words(vacancy_text)
             if len(words) > 0:
@@ -47,8 +47,8 @@ def preprocess(labeled_data):
 max_features = 500
 train_size = 0.05
 test_size = 0.1
-data_train = TrainingData({'offset': 0, 'limit': train_size})
-data_test = TrainingData({'offset': train_size, 'limit': train_size + test_size})
+data_train = X28_Data_Train({'offset': 0, 'limit': train_size})
+data_test = X28_Data_Train({'offset': train_size, 'limit': train_size + test_size})
 
 
 def create_data_labels(dataset):
