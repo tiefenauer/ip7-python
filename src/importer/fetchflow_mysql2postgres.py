@@ -3,10 +3,10 @@ import logging
 import math
 import sys
 
-from pony.orm import db_session, select, commit
+from pony.orm import db_session, select
 from tqdm import tqdm
 
-from src.database.entities_mysql_fetchflow import Labeled_Text
+from src.database.entities_mysql_fetchflow import Labeled_Text, mysqldb
 from src.database.entities_x28 import Fetchflow_HTML, pgdb
 
 parser = argparse.ArgumentParser(description="""Migrate MySQL to PG""")
@@ -16,8 +16,50 @@ args = parser.parse_args()
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-num_migrated = num_non_migrateable = num_empty = num_not_html = 0
+num_migrated = num_non_migrateable = num_empty = 0
 limit = 1000
+
+
+def decode_html(row):
+    html = None
+    try:
+        html = row.html.decode(encoding='utf-8')
+    except UnicodeError as e:
+        try:
+            html = row.html.decode(encoding='latin_1')
+        except ValueError as e:
+            logging.info("""could not decode html: {}""".format(str(e)))
+    return html
+
+
+def update_migrateable(row, migrateable):
+    try:
+        row.migrateable = int(migrateable)
+    except Exception as e:
+        logging.info("""could not update labeled_text.migrateable: {}""".format(str(e)))
+        return False
+    return True
+
+
+def update_migrated(row, migrated):
+    try:
+        row.migrated = int(migrated)
+    except Exception as e:
+        logging.info("""could not update labeled_text.migrated: {}""".format(str(e)))
+        return False
+    return True
+
+
+def write_entity(html, row):
+    ent = None
+    try:
+        ent = Fetchflow_HTML(fetchflow_id=row.id, html=html)
+        pgdb.commit()
+    except Exception as e:
+        logging.info("could not write fetchflow_html: {}".format(str(e)))
+    return ent
+
+
 with db_session:
     if args.truncate:
         logging.info('Truncating target tables...')
@@ -30,51 +72,26 @@ with db_session:
     num_rows = Labeled_Text.select(lambda r: r.migrated == 0 and r.migrateable == 1).count()
     num_batches = int(math.ceil(num_rows / limit))
     for i in tqdm(range(0, num_batches), total=num_batches, unit=' rows', unit_scale=1000):
-        cursor = Labeled_Text.select(lambda r: r.migrated == 0 and r.migrateable == 1 and r.id > rowid) \
+        cursor = Labeled_Text.select(lambda r: r.migrated == 0 and r.migrateable == 1 and r.id >= rowid) \
                      .for_update() \
                      .order_by(Labeled_Text.id)[0:limit]
         for row in cursor:
-            if row.contenttype and 'text/html' not in row.contenttype:
-                num_not_html += 1
-                continue
-            if not row.html:
-                num_empty += 1
-                continue
             rowid = row.id
-            try:
-                html = False
-                try:
-                    html = row.html.decode(encoding='utf-8')
-                except UnicodeError as e:
-                    try:
-                        html = row.html.decode(encoding='latin_1')
-                    except ValueError as e:
-                        num_non_migrateable += 1
-                        logging.info("""could not decode html: {}""".format(str(e)))
 
-                if html:
-                    try:
-                        Fetchflow_HTML(fetchflow_id=rowid, html=html)
-                    except ValueError as e:
-                        logging.info("could not write html: {}".format(str(e)))
-                try:
-                    row.migrated = 1
-                    num_migrated += 1
-                except Exception as e:
-                    # rollback()
-                    num_non_migrateable += 1
-                    row.migrateable = 0
-                    logging.info("""could not update migration status: {}""".format(str(e)))
-            except Exception as e:
-                # rollback()
+            html = decode_html(row)
+            if not html:
                 num_non_migrateable += 1
-                logging.info('could not migrate row id={}: {}'.format(rowid, str(e)))
-                try:
-                    row.migrateable = 0
-                except Exception as e:
-                    # rollback()
-                    logging.info('could not update migrateable status: {}'.format(str(e)))
-        commit()
+                update_migrateable(row, False)
+                continue
+
+            entity = write_entity(html, row)
+            if not entity:
+                num_non_migrateable += 1
+                continue
+
+            num_migrated += 1
+            update_migrated(row, True)
+        mysqldb.commit()
     logging.info('migrated {}/{} rows.'.format(num_migrated, num_rows))
-    logging.info('Could not migrate {} rows. {} rows were empty. {} rows were not HTML'.format(num_non_migrateable,
-                                                                                               num_empty, num_not_html))
+    logging.info('Could not migrate {} rows due to charset errors'.format(num_non_migrateable))
+    logging.info('Could not migrate {} rows because content was empty.'.format(num_empty))
