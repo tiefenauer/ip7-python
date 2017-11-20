@@ -1,5 +1,5 @@
 from src.database.DataSource import DataSource
-from src.database.entities_x28 import Fetchflow_HTML
+from src.database.entities_pg import Fetchflow_HTML
 
 
 class FetchflowData(DataSource):

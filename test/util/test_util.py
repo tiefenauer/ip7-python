@@ -1,3 +1,4 @@
+import collections
 import unittest
 
 from hamcrest import *
@@ -54,3 +55,13 @@ class TestUtil(unittest.TestCase):
         result = list(testee.flatten([list_a, list_b]))
         # assert
         assert_that(result, is_(list_a + list_b))
+
+    def test_gen2it_returns_iterator(self):
+        # arrange
+        gen = (1, 2, 3, 4)
+        # act
+        result = testee.gen2it(gen)
+        # assert
+        assert_that(result, is_(instance_of(collections.Iterable)))
+        for item in result:
+            assert_that(item, is_(greater_than(0)))

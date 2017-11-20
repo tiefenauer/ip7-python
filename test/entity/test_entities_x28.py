@@ -1,6 +1,6 @@
 import unittest
 
-from src.database.entities_x28 import Job_Class, Job_Class_To_Job_Class_Similar, Job_Class_Similar, Data_Train, \
+from src.database.entities_pg import Job_Class, Job_Class_To_Job_Class_Similar, Job_Class_Similar, Data_Train, \
     Job_Class_Variant, Classification_Results
 
 

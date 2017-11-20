@@ -6,8 +6,8 @@ import sys
 from pony.orm import db_session, select
 from tqdm import tqdm
 
-from src.database.entities_mysql_fetchflow import Labeled_Text, mysqldb
-from src.database.entities_x28 import Fetchflow_HTML, pgdb
+from src.database.entities_mysql import Labeled_Text, mysql
+from src.database.entities_pg import Fetchflow_HTML, pg
 
 parser = argparse.ArgumentParser(description="""Migrate MySQL to PG""")
 parser.add_argument('-t', '--truncate', type=bool, default=False,
@@ -54,7 +54,7 @@ def write_entity(html, row):
     ent = None
     try:
         ent = Fetchflow_HTML(fetchflow_id=row.id, html=html)
-        pgdb.commit()
+        pg.commit()
     except Exception as e:
         logging.info("could not write fetchflow_html: {}".format(str(e)))
     return ent
@@ -64,7 +64,7 @@ with db_session:
     if args.truncate:
         logging.info('Truncating target tables...')
         Fetchflow_HTML.select().delete()
-        pgdb.commit()
+        pg.commit()
         logging.info('...done!')
 
     rowid = select(r.id for r in Labeled_Text).min() - 1
@@ -91,7 +91,7 @@ with db_session:
 
             num_migrated += 1
             update_migrated(row, True)
-        mysqldb.commit()
+        mysql.commit()
     logging.info('migrated {}/{} rows.'.format(num_migrated, num_rows))
     logging.info('Could not migrate {} rows due to charset errors'.format(num_non_migrateable))
     logging.info('Could not migrate {} rows because content was empty.'.format(num_empty))

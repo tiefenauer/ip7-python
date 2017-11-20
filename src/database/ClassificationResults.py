@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 from pony.orm import commit, db_session
 
-from src.database.entities_x28 import Semantic_Avg_Classification_Results, Classification_Results, \
+from src.database.entities_pg import Semantic_Avg_Classification_Results, Classification_Results, \
     Fts_Classification_Results, Data_Train
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)

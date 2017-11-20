@@ -4,7 +4,7 @@ from hamcrest import assert_that, is_
 from pony.orm import db_session
 
 from src.database.DataSource import DataSource
-from src.database.entities_x28 import Data_Train
+from src.database.entities_pg import Data_Train
 
 with db_session:
     train_data_count = Data_Train.select().count()

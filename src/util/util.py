@@ -1,3 +1,4 @@
+import collections
 import logging
 import re
 import sys
@@ -22,3 +23,16 @@ def create_contexts(text, word):
 
 def flatten(iterable):
     return (item for sublist in iterable for item in sublist)
+
+
+def gen2it(gen):
+    return Generator2Iterable(gen)
+
+
+class Generator2Iterable(object):
+    def __init__(self, rows):
+        self.rows = rows
+
+    def __iter__(self):
+        for sentences in self.rows:
+            yield sentences
