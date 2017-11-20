@@ -9,6 +9,7 @@ from nltk.stem.snowball import SnowballStemmer
 
 from src.util import html_util
 from src.util.html_util import remove_all_attrs, strip_content
+from src.util.util import flatten
 
 stopwords_de = set(stopwords.words('german'))
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
@@ -37,6 +38,16 @@ def remove_html_clutter(soup):
     tags = []
     html_util.extract_tags(soup, tags)
     return tags
+
+
+def text_list_to_sentence_list(contents):
+    sentences = (nltk.sent_tokenize(content) for content in contents)
+    return flatten(sentences)
+
+
+def sentence_list_to_word_list(sentences):
+    words = (to_words(sent) for sent in sentences)
+    return words
 
 
 def to_words(text):

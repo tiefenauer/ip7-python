@@ -113,6 +113,36 @@ class TestPreprocessing(unittest.TestCase):
         assert_that(sentence_stemmed, is_('aufeinand kategori'))
         assert_that(list(words_stemmed), is_(['aufeinand', 'kategori']))
 
+    def test_text_list_to_sentence_list_returns_one_sentence_list_per_text(self):
+        # arrange
+        text_list = [
+            'Dies ist Satz eins. Dies ist Satz zwei.',
+            'Dies ist Satz drei. Dies ist Satz vier.',
+        ]
+        # act
+        result = testee.text_list_to_sentence_list(text_list)
+        # assert
+        assert_that(result, contains(
+            'Dies ist Satz eins.',
+            'Dies ist Satz zwei.',
+            'Dies ist Satz drei.',
+            'Dies ist Satz vier.'
+        ))
+
+    def test_sentence_list_to_word_list_returns_one_wordlist_per_sentence(self):
+        # arrange
+        sentence_list = [
+            'Dies ist ein einfacher Satz.',
+            'Und das gleich nochmals einer.'
+        ]
+        # act
+        result = testee.sentence_list_to_word_list(sentence_list)
+        # assert
+        assert_that(result, contains(
+            ['Dies', 'ist', 'ein', 'einfacher', 'Satz', '.'],
+            ['Und', 'das', 'gleich', 'nochmals', 'einer', '.']
+        ))
+
     def test_is_iterable_and_not_string(self):
         assert_that(testee.is_iterable_and_not_string('foo bar'), is_(False))
         assert_that(testee.is_iterable_and_not_string(['foo', 'bar']), is_(True))
