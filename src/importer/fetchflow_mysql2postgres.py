@@ -3,10 +3,10 @@ import logging
 import math
 import sys
 
-from pony.orm import db_session, select
+from pony.orm import db_session, select, commit
 from tqdm import tqdm
 
-from src.database.entities_mysql_fetchflow import Labeled_Text, mysqldb
+from src.database.entities_mysql_fetchflow import Labeled_Text
 from src.database.entities_x28 import Fetchflow_HTML, pgdb
 
 parser = argparse.ArgumentParser(description="""Migrate MySQL to PG""")
@@ -34,7 +34,7 @@ with db_session:
                      .for_update() \
                      .order_by(Labeled_Text.id)[0:limit]
         for row in cursor:
-            if row.contenttype != 'text/html':
+            if row.contenttype and 'text/html' not in row.contenttype:
                 num_not_html += 1
                 continue
             if not row.html:
@@ -46,27 +46,35 @@ with db_session:
                 try:
                     html = row.html.decode(encoding='utf-8')
                 except UnicodeError as e:
-                    html = row.html.decode(encoding='latin_1')
+                    try:
+                        html = row.html.decode(encoding='latin_1')
+                    except ValueError as e:
+                        num_non_migrateable += 1
+                        logging.info("""could not decode html: {}""".format(str(e)))
+
                 if html:
-                    Fetchflow_HTML(fetchflow_id=rowid, html=html)
+                    try:
+                        Fetchflow_HTML(fetchflow_id=rowid, html=html)
+                    except ValueError as e:
+                        logging.info("could not write html: {}".format(str(e)))
                 try:
                     row.migrated = 1
                     num_migrated += 1
                 except Exception as e:
-                    pgdb.rollback()
+                    # rollback()
                     num_non_migrateable += 1
+                    row.migrateable = 0
                     logging.info("""could not update migration status: {}""".format(str(e)))
             except Exception as e:
-                pgdb.rollback()
+                # rollback()
                 num_non_migrateable += 1
                 logging.info('could not migrate row id={}: {}'.format(rowid, str(e)))
                 try:
                     row.migrateable = 0
                 except Exception as e:
-                    mysqldb.rollback()
+                    # rollback()
                     logging.info('could not update migrateable status: {}'.format(str(e)))
-        mysqldb.commit()
-        pgdb.commit()
+        commit()
     logging.info('migrated {}/{} rows.'.format(num_migrated, num_rows))
     logging.info('Could not migrate {} rows. {} rows were empty. {} rows were not HTML'.format(num_non_migrateable,
                                                                                                num_empty, num_not_html))
