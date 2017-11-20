@@ -67,12 +67,12 @@ with db_session:
         pgdb.commit()
         logging.info('...done!')
 
-    rowid = select(r.id for r in Labeled_Text).min()
+    rowid = select(r.id for r in Labeled_Text).min() - 1
 
     num_rows = Labeled_Text.select(lambda r: r.migrated == 0 and r.migrateable == 1).count()
     num_batches = int(math.ceil(num_rows / limit))
     for i in tqdm(range(0, num_batches), total=num_batches, unit=' rows', unit_scale=1000):
-        cursor = Labeled_Text.select(lambda r: r.migrated == 0 and r.migrateable == 1 and r.id >= rowid) \
+        cursor = Labeled_Text.select(lambda r: r.migrated == 0 and r.migrateable == 1 and r.id > rowid) \
                      .for_update() \
                      .order_by(Labeled_Text.id)[0:limit]
         for row in cursor:

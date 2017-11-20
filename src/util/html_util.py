@@ -81,3 +81,7 @@ def remove_all_attrs_except_saving(soup):
                 if attr not in ['src', 'href']:
                     del tag.attrs[attr]
     return soup
+
+
+def remove_tags(tags):
+    return (tag.get_text() for tag in tags)

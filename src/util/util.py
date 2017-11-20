@@ -1,8 +1,8 @@
-import collections
 import logging
 import re
-
 import sys
+
+import nltk
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -24,3 +24,14 @@ def create_contexts(text, word):
 
 def flatten(iterable):
     return (item for sublist in iterable for item in sublist)
+
+
+def create_sentences(contents):
+    sentences = (nltk.sent_tokenize(content) for content in contents)
+    return flatten(sentences)
+
+
+def create_words(sentences):
+    words = (nltk.word_tokenize(sent, language='german') for sent in sentences)
+    return words
+    # return flatten(words) # do not flatten as NLTK taggers expect lists of words!

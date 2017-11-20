@@ -35,8 +35,8 @@ class TestDataSource(unittest.TestCase):
         testee = DataSource(args, Data_Train)
         # assert
         assert_that(count_items(testee), is_(train_data_count))
-        assert_that(testee.offset, is_(0))
-        assert_that(testee.limit, is_(train_data_count))
+        assert_that(testee.row_from, is_(0))
+        assert_that(testee.row_to, is_(train_data_count))
         assert_that(testee.num_total, is_(train_data_count))
         assert_that(testee.num_rows, is_(train_data_count))
 
@@ -47,10 +47,10 @@ class TestDataSource(unittest.TestCase):
         testee = DataSource(create_args(offset=offset), Data_Train)
         # assert
         assert_that(count_items(testee), is_(train_data_count))
-        assert_that(testee.offset, is_(int(train_data_count * offset)))
-        assert_that(testee.limit, is_(train_data_count))
+        assert_that(testee.row_from, is_(int(train_data_count * offset)))
+        assert_that(testee.row_to, is_(train_data_count))
         assert_that(testee.num_total, is_(train_data_count))
-        assert_that(testee.num_rows, is_(testee.num_total - testee.offset))
+        assert_that(testee.num_rows, is_(testee.num_total - testee.row_from))
 
     def test_limit_offset_with_limit_no_offset_returns_all_rows_to_limit(self):
         # arrange
@@ -59,8 +59,8 @@ class TestDataSource(unittest.TestCase):
         testee = DataSource(create_args(limit=limit), Data_Train)
         # assert
         assert_that(count_items(testee), is_(train_data_count))
-        assert_that(testee.offset, is_(0))
-        assert_that(testee.limit, is_(int(train_data_count * limit)))
+        assert_that(testee.row_from, is_(0))
+        assert_that(testee.row_to, is_(int(train_data_count * limit)))
         assert_that(testee.num_total, is_(train_data_count))
         assert_that(testee.num_rows, is_(int(train_data_count * limit)))
 
@@ -72,7 +72,7 @@ class TestDataSource(unittest.TestCase):
         testee = DataSource(create_args(offset=offset, limit=limit), Data_Train)
         # assert
         assert_that(count_items(testee), is_(train_data_count))
-        assert_that(testee.offset, is_(int(train_data_count * offset)))
-        assert_that(testee.limit, is_(int(train_data_count * limit)))
+        assert_that(testee.row_from, is_(int(train_data_count * offset)))
+        assert_that(testee.row_to, is_(int(train_data_count * limit)))
         assert_that(testee.num_total, is_(train_data_count))
-        assert_that(testee.num_rows, is_(testee.limit - testee.offset))
+        assert_that(testee.num_rows, is_(testee.row_to - testee.row_from))
