@@ -5,7 +5,7 @@ import sys
 from pony.orm import commit, db_session
 from tqdm import tqdm
 
-from src.classifier.semantic_classifier import SemanticClassifier
+from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
 from src.database.ClassificationResults import SemanticAvgClassificationResults
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
@@ -66,10 +66,17 @@ def update_most_similar_job_classes():
     logging.info('update_most_similar_job_classes: done!')
 
 
-def evaluate_avg(clf):
+if not args.model:
+    args.model = '2017-11-21-12-38-54_300features_40minwords_10context.gz'
+
+classifier = SemanticClassifierAvg(args.model)
+model = classifier.model
+
+if __name__ == '__main__':
+    # update_most_similar_job_classes()
     data_test = X28TestData(args)
     preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
-    evaluation = Evaluation(clf)
+    evaluation = Evaluation(classifier)
     results = SemanticAvgClassificationResults(args)
     if args.truncate:
         logging.info('Truncating previous results...')
@@ -77,19 +84,8 @@ def evaluate_avg(clf):
 
     logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     for i, row in enumerate(preprocessor.preprocess(data_test, data_test.num_rows), 1):
-        predicted_class = clf.classify(row.processed)
+        predicted_class = classifier.classify(row.processed)
         sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
         results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
     evaluation.stop()
     logging.info('evaluate_avg: done!')
-
-
-if not args.model:
-    args.model = '2017-11-21-12-38-54_300features_40minwords_10context.gz'
-
-classifier = SemanticClassifier(args.model)
-model = classifier.model
-
-if __name__ == '__main__':
-    # update_most_similar_job_classes()
-    evaluate_avg(classifier)

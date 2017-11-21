@@ -3,14 +3,13 @@ import logging
 import os
 import shutil
 import sys
+from abc import abstractmethod
 
 import gensim
-import numpy as np
 from gensim.models import word2vec
 
 from src.classifier.classifier import Classifier
 from src.util import semantic_util
-from src.util.semantic_util import create_filename
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -55,27 +54,12 @@ class SemanticClassifier(Classifier):
         return model
 
     def classify(self, words):
-        featureVec = self.makeFeatureVec(words)
-        top10 = self.model.similar_by_vector(featureVec,1)
+        featureVec = self.make_feature_vec(words)
+        top10 = self.model.similar_by_vector(featureVec, 1)
         if top10:
             return next(iter(top10))[0]
         return None
 
-    def makeFeatureVec(self, words):
-        featureVec = np.zeros((self.num_features), dtype='float32')
-        nwords = 0
-        for word in words:
-            if word in self.index2word_set:
-                nwords += 1
-                featureVec = np.add(featureVec, self.model[word])
-        featureVec = np.divide(featureVec, nwords)
-        return featureVec
-
-    def title(self):
-        return 'Semantic Classifier'
-
-    def description(self):
-        return 'classifies some text according to semantic criteria'
-
-    def label(self):
-        return 'semantic'
+    @abstractmethod
+    def make_feature_vec(self, words):
+        """create a feature vector (numpy array)"""
