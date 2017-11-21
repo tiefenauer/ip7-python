@@ -7,7 +7,7 @@ from pony.orm import db_session
 class DataSource(ABC):
     @db_session
     def __init__(self, args, entity):
-        self.pagesize = 10
+        self.pagesize = 1000
         self.Entity = entity
         # calculate total number of available rows
         self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
@@ -20,7 +20,7 @@ class DataSource(ABC):
     @db_session
     def __iter__(self):
         num_pages = int(math.ceil(self.num_rows / self.pagesize))
-        for page in (self.Entity.select().page(i+1, pagesize=self.pagesize) for i in (i for i in range(num_pages))):
+        for page in (self.Entity.select().page(i, pagesize=self.pagesize) for i in (i for i in range(1, num_pages))):
             for row in page:
                 yield row
 

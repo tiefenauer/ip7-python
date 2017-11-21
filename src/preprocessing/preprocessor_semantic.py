@@ -13,8 +13,7 @@ class SemanticX28Preprocessor(X28Preprocessor):
         self.remove_stopwords = remove_stopwords
 
     def preprocess_single(self, row):
-        sentences = preproc.text_list_to_sentence_list(row.plaintext)
-        words = preproc.to_words(sentences)
+        words = preproc.to_words(row.plaintext)
         words = preproc.remove_punctuation(words)
         if self.remove_stopwords:
             words = preproc.remove_stop_words(words)
