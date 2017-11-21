@@ -11,9 +11,9 @@ class X28Preprocessor(ABC):
     def preprocess(self, data, num_rows):
         logging.info('Preprocessing X28 data...')
         for row in tqdm((row for row in data if row.html), total=num_rows):
-            row.processed = self.preprocess_single(row.html)
+            row.processed = self.preprocess_single(row)
             yield row
 
     @abstractmethod
-    def preprocess_single(self, markup):
+    def preprocess_single(self, row):
         """preprocess some HTML content and return the result in the desired format"""

@@ -45,6 +45,18 @@ class TestPreprocessing(unittest.TestCase):
         # assert
         assert_that(result, contains('Lehrstelle', 'als', 'Logistiker/in', '(', 'Distribution', ')', 'EFZ'))
 
+    def test_to_sentences_splits_into_nltk_sentences(self):
+        # arrange
+        text = 'Dies ist ein Satz. Ist dies eine Frage? Dies ist ein Ausruf!'
+        # act
+        result = testee.to_sentences(text)
+        # assert
+        assert_that(result, contains(
+            'Dies ist ein Satz.',
+            'Ist dies eine Frage?',
+            'Dies ist ein Ausruf!'
+        ))
+
     def test_remove_special_chars_does_not_remove_forward_slash_or_hyphen(self):
         assert_that(testee.remove_special_chars('Logistiker/in'), is_('Logistiker/in'))
         assert_that(testee.remove_special_chars('Logistiker/-in'), is_('Logistiker/-in'))

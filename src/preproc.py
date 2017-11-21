@@ -41,7 +41,7 @@ def remove_html_clutter(soup):
 
 
 def text_list_to_sentence_list(contents):
-    sentences = (nltk.sent_tokenize(content) for content in contents)
+    sentences = (to_sentences(content) for content in contents)
     return flatten(sentences)
 
 
@@ -52,6 +52,10 @@ def sentence_list_to_word_list(sentences):
 
 def to_words(text):
     return nltk.word_tokenize(text, language='german')
+
+
+def to_sentences(text):
+    return nltk.sent_tokenize(text, language='german')
 
 
 def remove_special_chars(text):

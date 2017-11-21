@@ -23,10 +23,8 @@ class StructuralX28Preprocessor(X28Preprocessor):
     def __init__(self):
         super(X28Preprocessor, self).__init__()
 
-    def preprocess_single(self, markup):
-        tags = preproc.extract_relevant_tags(markup)
-        contents = html_util.remove_tags(tags)
-        sentences = preproc.text_list_to_sentence_list(contents)
+    def preprocess_single(self, row):
+        sentences = preproc.to_sentences(row.plaintext)
         words = preproc.sentence_list_to_word_list(sentences)
         tagged_words = create_pos_tags(words)
         tagged_stems = stem_words(tagged_words)
