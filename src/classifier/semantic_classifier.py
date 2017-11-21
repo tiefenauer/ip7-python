@@ -3,24 +3,16 @@ import logging
 import os
 import shutil
 import sys
-import time
 
 import gensim
 import numpy as np
 from gensim.models import word2vec
 
-from src.classifier.classifier import Classifier, data_dir
+from src.classifier.classifier import Classifier
+from src.util import semantic_util
+from src.util.semantic_util import create_filename
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-
-
-def create_filename(num_features, min_word_count, context):
-    fn_ts = time.strftime('%Y-%m-%d-%H-%M-%S')
-    fn_parms = '{features}features_{minwords}minwords_{context}context'.format(features=num_features,
-                                                                               minwords=min_word_count,
-                                                                               context=context)
-    filename = fn_ts + '_' + fn_parms
-    return os.path.join(data_dir, filename)
 
 
 class SemanticClassifier(Classifier):
@@ -46,7 +38,7 @@ class SemanticClassifier(Classifier):
         return model
 
     def _save_model(self, model, binary, zipped):
-        filename = create_filename(self.num_features, self.min_word_count, self.context)
+        filename = semantic_util.create_filename(self.num_features, self.min_word_count, self.context)
         model.wv.save_word2vec_format(filename, binary=binary)
         if zipped:
             filename_gz = filename + '.gz'

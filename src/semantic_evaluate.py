@@ -14,12 +14,8 @@ from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
 parser.add_argument('model', nargs='?', help='file with saved model to evaluate_avg')
-parser.add_argument('-l', '--limit', nargs='?', type=float, default=1.0,
-                    help='(optional) fraction of labeled data to use for training')
-parser.add_argument('-o', '--offset', nargs='?', type=float, default=0.8,
-                    help='(optional) fraction value of labeled data to start from')
-parser.add_argument('-m', '--model',
-                    help='(optional) file with saved model to use. A new model will be created if not set.')
+parser.add_argument('-s', '--split', nargs='?', type=float, default=1.0,
+                    help='(optional) fraction value of labeled data to use for training')
 parser.add_argument('-t', '--truncate', action='store_true',
                     help='truncate target tables before extraction (default=True)')
 parser.add_argument('-w', '--write', action='store_true',
@@ -31,8 +27,7 @@ args = parser.parse_args()
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-if not args.model:
-    args.model = '2017-11-13-07-57-49_300features_40minwords_10context.gz'
+data_dir = data_dir = 'D:/code/ip7-python/resource/models/word2vec'
 
 
 def doesnt_match(words):
@@ -84,6 +79,9 @@ def evaluate_avg(clf):
     evaluation.stop()
     logging.info('evaluate_avg: done!')
 
+
+if not args.model:
+    args.model = '2017-11-13-07-57-49_300features_40minwords_10context.gz'
 
 classifier = SemanticClassifier(args.model)
 model = classifier.model

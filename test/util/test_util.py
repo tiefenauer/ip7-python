@@ -1,8 +1,10 @@
 import collections
+import datetime
 import unittest
 
 from hamcrest import *
 
+import src.util.semantic_util
 from src.util import util as testee
 
 lorem_ipsum = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut ' \
