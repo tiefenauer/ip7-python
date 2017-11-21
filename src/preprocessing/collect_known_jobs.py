@@ -34,7 +34,7 @@ def import_job_name_from_fts():
     cursor = conn.cursor()
     sql = """SELECT a.title actual, p.job_name AS prediction
             FROM classification_results p
-            LEFT OUTER JOIN data_train a ON a.id = p.job_id
+            LEFT OUTER JOIN x28_data a ON a.id = p.job_id
             WHERE clf_method='fts'
             """
     cursor.execute(sql)

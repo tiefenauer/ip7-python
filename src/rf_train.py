@@ -10,7 +10,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm
 
 from src import preproc
-from src.database.X28Data import X28Data
+from src.database.X28TestData import X28TestData
+from src.database.X28TrainData import X28TrainData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
@@ -45,10 +46,8 @@ def preprocess(labeled_data):
 
 
 max_features = 500
-train_size = 0.05
-test_size = 0.1
-data_train = X28Data({'offset': 0, 'limit': train_size})
-data_test = X28Data({'offset': train_size, 'limit': train_size + test_size})
+data_train = X28TrainData(args)
+data_test = X28TestData(args)
 
 
 def create_data_labels(dataset):

@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from src.classifier.semantic_classifier import SemanticClassifier
 from src.database.ClassificationResults import SemanticAvgClassificationResults
-from src.database.X28Data import X28Data
+from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
@@ -51,8 +51,9 @@ def update_most_similar_job_classes():
         Job_Class_Similar.select().delete(bulk=True)
         commit()
         # add new mappings
-        known_and_trained_jobs = list(
-            job_class for job_class in Job_Class.select() if job_class.job_name in model.index2word)
+        known_and_trained_jobs = list(job_class for job_class in Job_Class.select()
+                                      if job_class.job_name in model.index2word)
+
         for job_class in tqdm(known_and_trained_jobs, unit=' rows'):
             for similar_name, score in model.most_similar(job_class.job_name):
                 if Job_Class_Similar.exists(job_name_similar=similar_name):
@@ -66,22 +67,25 @@ def update_most_similar_job_classes():
 
 
 def evaluate_avg(clf):
-    logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
-    data_train = X28Data(args)
+    data_test = X28TestData(args)
     preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
     evaluation = Evaluation(clf)
     results = SemanticAvgClassificationResults(args)
+    if args.truncate:
+        logging.info('Truncating previous results...')
+        results.truncate()
 
-    for i, row in enumerate(preprocessor.preprocess(data_train), 1):
+    logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
+    for i, row in enumerate(preprocessor.preprocess(data_test, data_test.num_rows), 1):
         predicted_class = clf.classify(row.processed)
-        sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_train.num_rows)
+        sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
         results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
     evaluation.stop()
     logging.info('evaluate_avg: done!')
 
 
 if not args.model:
-    args.model = '2017-11-13-07-57-49_300features_40minwords_10context.gz'
+    args.model = '2017-11-21-12-38-54_300features_40minwords_10context.gz'
 
 classifier = SemanticClassifier(args.model)
 model = classifier.model

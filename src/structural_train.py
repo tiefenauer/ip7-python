@@ -1,12 +1,12 @@
 from src.classifier.structural_classifier import StructuralClassifier
-from src.database.X28Data import X28Data
+from src.database.X28TestData import X28TestData
 from src.preprocessing.preprocessor_structural import StructuralX28Preprocessor
 from src.util.boot_util import set_up_logger, parse_args
 
 logging = set_up_logger()
 args = parse_args()
 
-data_train = X28Data(args)
+data_train = X28TestData(args)
 preprocessor = StructuralX28Preprocessor()
 classifier = StructuralClassifier()
 

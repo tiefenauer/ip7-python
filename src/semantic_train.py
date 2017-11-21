@@ -4,7 +4,7 @@ import sys
 
 from src.classifier.semantic_classifier import SemanticClassifier
 from src.database.FetchflowData import FetchflowData
-from src.database.X28Data import X28Data
+from src.database.X28TrainData import X28TrainData
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 from src.util import util
 
@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 data_train = FetchflowData(args)
 if args.source == 'x28':
-    data_train = X28Data(args)
+    data_train = X28TrainData(args)
 
 preprocessor = SemanticX28Preprocessor(remove_stopwords=False)  # do not remove stopwords for training!
 classifier = SemanticClassifier(args.model)

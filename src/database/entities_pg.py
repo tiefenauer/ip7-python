@@ -8,7 +8,7 @@ class Fetchflow_HTML(pg.Entity):
     fetchflow_id = Required(int)
 
 
-class Data_Train(pg.Entity):
+class X28_HTML(pg.Entity):
     html = Optional(str)
     plaintext = Optional(str)
     url = Optional(str)
@@ -45,7 +45,7 @@ class Job_Class_To_Job_Class_Similar(pg.Entity):
 
 class Classification_Results(pg.Entity):
     clf_method = Discriminator(str)
-    job_class = Required(Data_Train, column='job_id')
+    job = Required(X28_HTML, column='job_id')
     job_name = Required(str)
     score_strict = Required(float)
     score_tolerant = Required(float)

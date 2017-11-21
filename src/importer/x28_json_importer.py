@@ -35,7 +35,7 @@ class X28JsonImporter(object):
         plaintext = jsonobj['plaincontent']
         url = jsonobj['url']
         cursor = self.conn_x28.cursor()
-        sql = r"""INSERT INTO data_train(x28_id, html, plaintext, url, title) 
+        sql = r"""INSERT INTO x28_data(x28_id, html, plaintext, url, title) 
                           VALUES (%s,%s,%s,%s,%s)
                           ON CONFLICT(x28_id) DO UPDATE
                           SET html = excluded.html,
@@ -49,4 +49,4 @@ class X28JsonImporter(object):
     def truncate_tables(self):
         logging.info('truncating target tables...')
         cursor = self.conn_x28.cursor()
-        cursor.execute("""TRUNCATE data_train""")
+        cursor.execute("""TRUNCATE x28_data""")
