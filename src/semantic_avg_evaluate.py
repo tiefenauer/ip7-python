@@ -2,15 +2,12 @@ import argparse
 import logging
 import sys
 
-import numpy
 from pony.orm import commit, db_session
-from sklearn.ensemble import RandomForestClassifier
 from tqdm import tqdm
 
 from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
-from src.database.ClassificationResults import SemanticAvgClassificationResults, SemanticRfClassificationResults
+from src.database.ClassificationResults import SemanticAvgClassificationResults
 from src.database.X28TestData import X28TestData
-from src.database.X28TrainData import X28TrainData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
@@ -30,7 +27,7 @@ args = parser.parse_args()
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-data_dir = data_dir = 'D:/code/ip7-python/resource/models/word2vec'
+data_dir = 'D:/code/ip7-python/resource/models/word2vec'
 
 
 def doesnt_match(words):
@@ -72,46 +69,23 @@ def update_most_similar_job_classes():
 if not args.model:
     args.model = '2017-11-21-12-38-54_300features_40minwords_10context.gz'
 
-args.split = 0.001
-data_train = X28TrainData(args)
-args.split = 0.999
+classifier = SemanticClassifierAvg(args.model)
 data_test = X28TestData(args)
 preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
-classifier = SemanticClassifierAvg(args.model)
 evaluation = Evaluation(classifier)
-results = SemanticRfClassificationResults(args)
+results = SemanticAvgClassificationResults(args)
 model = classifier.model
 
 if __name__ == '__main__':
+
     if args.truncate:
         logging.info('Truncating previous results...')
         results.truncate()
 
-    processed_train_data = preprocessor.preprocess(data_train, data_train.num_rows)
-    processed_test_data = preprocessor.preprocess(data_test, data_test.num_rows)
-    trainDataVecs = classifier.getAvgFeatureVecs(processed_train_data, data_train.num_rows)
-    testDataVecs = classifier.getAvgFeatureVecs(processed_test_data, data_test.num_rows)
-    args.split = 0.001
-    trainDataLabels = [row.title for row in X28TrainData(args)]
-    args.split = 0.999
-    testDataLabels = [row.title for row in X28TestData(args)]
-
-    forest = RandomForestClassifier(n_estimators=100)
-    forest.fit(trainDataVecs, trainDataLabels)
-
-    result = forest.predict(testDataVecs)
-    logging.info('evaluate_rf: evaluating random forest...')
-    args.split = 0.999
-    data_test = X28TestData(args)
-    processed_test_data = preprocessor.preprocess(data_test, data_test.num_rows)
-    for i, (row, predicted_class) in enumerate(zip(processed_test_data, result), 1):
+    logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
+    for i, row in enumerate(preprocessor.preprocess(data_test, data_test.num_rows), 1):
+        predicted_class = classifier.classify(row.processed)
         sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
         results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
-
-    # logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
-    # for i, row in enumerate(processed_test_data, 1):
-    #     predicted_class = classifier.classify(row.processed)
-    #     sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
-    #     results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
     evaluation.stop()
     logging.info('evaluate_avg: done!')
