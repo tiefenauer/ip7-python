@@ -1,0 +1,2 @@
+from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
+

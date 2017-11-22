@@ -5,7 +5,7 @@ from abc import abstractmethod
 from pony.orm import commit, db_session
 
 from src.database.entities_pg import Semantic_Avg_Classification_Results, Classification_Results, \
-    Fts_Classification_Results, X28_HTML
+    Fts_Classification_Results, X28_HTML, Semantic_Rf_Classification_Results
 
 logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -63,3 +63,16 @@ class SemanticAvgClassificationResults(ClassificationResults):
                                                    score_strict=sc_str,
                                                    score_tolerant=sc_tol,
                                                    score_linear=sc_lin)
+
+
+class SemanticRfClassificationResults(ClassificationResults):
+    def __init__(self, args):
+        super(SemanticRfClassificationResults, self).__init__('semantic_rf', Semantic_Rf_Classification_Results,
+                                                              args)
+
+    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
+        return Semantic_Rf_Classification_Results(job=job_entity,
+                                                  job_name=predicted_class,
+                                                  score_strict=sc_str,
+                                                  score_tolerant=sc_tol,
+                                                  score_linear=sc_lin)
