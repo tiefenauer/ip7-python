@@ -25,8 +25,7 @@ class Classifier(ABC):
             return self.model
 
         log.info('train_model: Training new model...')
-        processed_data = util.gen2it(
-            row.processed for row in self.preprocessor.preprocess(train_data, train_data.num_rows))
+        processed_data = self.preprocessor.preprocess(train_data, train_data.num_rows)
         labels = (row.title for row in train_data)
         self.model = self._train_model(processed_data, labels, train_data.num_rows)
         log.info('train_model: done!')

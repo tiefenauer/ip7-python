@@ -1,14 +1,35 @@
+import logging
+
+import gensim
+
 from src.classifier.semantic_classifier import SemanticClassifier
+
+log = logging.getLogger(__name__)
 
 
 class SemanticClassifierAvg(SemanticClassifier):
     def classify(self, processed_row):
-        feature_vec = self.to_average_vector(processed_row)
+        feature_vec = self.to_average_vector(processed_row, self.model)
         # query w2v model
         top10 = self.model.similar_by_vector(feature_vec, 1)
         if top10:
             return next(iter(top10))[0]
         return None
+
+    def _train_model(self, sentences, labels, num_rows):
+        log.info('Training Word2Vec model')
+        model = self.train_w2v_model(sentences)
+        model.init_sims()
+        return model
+
+    def _save_model(self, path):
+        self.model.wv.save_word2vec_format(path, binary=True)
+        return path
+
+    def _load_model(self, path):
+        model = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
+        model.init_sims(replace=True)
+        return model
 
     def title(self):
         return 'Semantic Classifier (average vector)'

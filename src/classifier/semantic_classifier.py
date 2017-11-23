@@ -1,6 +1,6 @@
 import logging
+from abc import abstractmethod
 
-import gensim
 import numpy
 from gensim.models import word2vec
 
@@ -19,8 +19,7 @@ class SemanticClassifier(Classifier):
         self.context = 10
         self.downsampling = 1e-3
 
-    def _train_model(self, sentences, labels, num_rows):
-        log.info('Training Word2Vec model')
+    def train_w2v_model(self, sentences):
         model = word2vec.Word2Vec(sentences,
                                   workers=self.num_workers,
                                   size=self.num_features,
@@ -31,29 +30,47 @@ class SemanticClassifier(Classifier):
         model.init_sims()
         return model
 
-    def _save_model(self, path):
-        self.model.wv.save_word2vec_format(path, binary=True)
-        self.index2word_set = set(model.index2word)
-        return path
-
-    def _load_model(self, path):
-        model = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
-        model.init_sims(replace=True)
-        self.index2word_set = set(model.index2word)
-        return model
+    def to_average_vector(self, processed_row, w2v_model):
+        feature_vec = numpy.zeros(self.num_features, dtype='float32')
+        num_words = 0
+        index2word_set = set(w2v_model.index2word)
+        for word in processed_row:
+            if word in index2word_set:
+                num_words += 1
+                feature_vec = numpy.add(feature_vec, self.model[word])
+        if num_words > 0:
+            feature_vec = numpy.divide(feature_vec, num_words)
+        return feature_vec
 
     def _get_filename_postfix(self):
         return '{features}features_{minwords}minwords_{context}context'.format(features=self.num_features,
                                                                                minwords=self.min_word_count,
                                                                                context=self.context)
 
-    def to_average_vector(self, processed_row):
-        feature_vec = numpy.zeros(self.num_features, dtype='float32')
-        num_words = 0
-        for word in processed_row:
-            if word in self.index2word_set:
-                num_words += 1
-                feature_vec = numpy.add(feature_vec, self.model[word])
-        if num_words > 0:
-            feature_vec = numpy.divide(feature_vec, num_words)
-        return feature_vec
+    @abstractmethod
+    def description(self):
+        """to be implemented in subclass"""
+
+    @abstractmethod
+    def classify(self, processed_data):
+        """to be implemented in subclass"""
+
+    @abstractmethod
+    def _load_model(self, path):
+        """to be implemented in subclass"""
+
+    @abstractmethod
+    def _save_model(self, path):
+        """to be implemented in subclass"""
+
+    @abstractmethod
+    def _train_model(self, processed_data, labels, num_rows):
+        """to be implemented in subclass"""
+
+    @abstractmethod
+    def title(self):
+        pass
+
+    @abstractmethod
+    def label(self):
+        pass
