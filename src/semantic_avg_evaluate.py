@@ -1,6 +1,5 @@
 import argparse
 import logging
-import sys
 
 from pony.orm import commit, db_session
 from tqdm import tqdm
@@ -11,6 +10,10 @@ from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
+from src.util.boot_util import log_setup
+
+log_setup()
+log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
 parser.add_argument('model', nargs='?', help='file with saved model to evaluate_avg')
@@ -24,8 +27,6 @@ parser.add_argument('-w', '--write', action='store_true',
                     on the classifier's performance""")
 
 args = parser.parse_args()
-
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 data_dir = 'D:/code/ip7-python/resource/models/word2vec'
 
@@ -44,7 +45,7 @@ def most_similar(word):
 
 
 def update_most_similar_job_classes():
-    logging.info('update_most_similar_job_classes: Updating DB with most similar jobs for trained jobs...')
+    log.info('update_most_similar_job_classes: Updating DB with most similar jobs for trained jobs...')
     with db_session:
         # truncate previous mappings
         Job_Class_To_Job_Class_Similar.select().delete(bulk=True)
@@ -63,15 +64,15 @@ def update_most_similar_job_classes():
                 commit()
                 Job_Class_To_Job_Class_Similar(fk_job_class=job_class.id, fk_job_class_similar=job_class_similar.id,
                                                score=score)
-    logging.info('update_most_similar_job_classes: done!')
+    log.info('update_most_similar_job_classes: done!')
 
 
 if not args.model:
-    args.model = '2017-11-21-12-38-54_300features_40minwords_10context.gz'
+    args.model = 'semantic_avg_2017-11-21-12-38-54_300features_40minwords_10context.gz'
 
-classifier = SemanticClassifierAvg(args.model)
 data_test = X28TestData(args)
 preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
+classifier = SemanticClassifierAvg(args, preprocessor)
 evaluation = Evaluation(classifier)
 results = SemanticAvgClassificationResults(args)
 model = classifier.model
@@ -79,13 +80,13 @@ model = classifier.model
 if __name__ == '__main__':
 
     if args.truncate:
-        logging.info('Truncating previous results...')
+        log.info('Truncating previous results...')
         results.truncate()
 
-    logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
+    log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     for i, row in enumerate(preprocessor.preprocess(data_test, data_test.num_rows), 1):
         predicted_class = classifier.classify(row.processed)
         sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
         results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
     evaluation.stop()
-    logging.info('evaluate_avg: done!')
+    log.info('evaluate_avg: done!')

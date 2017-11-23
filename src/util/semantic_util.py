@@ -1,20 +1,7 @@
 import datetime
-import os
 import re
-import time
 
-from src.classifier.classifier import data_dir
-
-date_pattern = '%Y-%m-%d-%H-%M-%S'
-
-
-def create_filename(num_features, min_word_count, context):
-    fn_ts = time.strftime(date_pattern)
-    fn_parms = '{features}features_{minwords}minwords_{context}context'.format(features=num_features,
-                                                                               minwords=min_word_count,
-                                                                               context=context)
-    filename = fn_ts + '_' + fn_parms
-    return os.path.join(data_dir, filename)
+from src.util import util
 
 
 def parse_filename(filename):
@@ -37,7 +24,7 @@ def parse_filename(filename):
     for i, match in enumerate(match for match in matches[0] if matches):
         if i == 0:
             str = re.match(patterns['datetime'], match).string
-            parms['datetime'] = datetime.datetime.strptime(str, date_pattern)
+            parms['datetime'] = datetime.datetime.strptime(str, util.DATE_PATTERN)
         elif i == 2:
             parms['num_words'] = int(match)
         elif i == 4:

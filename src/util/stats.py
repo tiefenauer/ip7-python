@@ -1,8 +1,10 @@
 import logging
 
+log = logging.getLogger(__name__)
+
 
 def print_stats(stats, asc=False):
-    logging.info("Found the following jobs: ")
+    log.info("Found the following jobs: ")
     num_classifications = sum(stats.values())
     stats_sorted = sort_stats(stats, asc)
     pattern = "{:<30} {:<4}"

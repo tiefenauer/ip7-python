@@ -1,5 +1,4 @@
-from src.classifier.classifier import Classifier
-from src.classifier.fts_classifier import FullTextSearchClassifier
+from src.classifier.fts_classifier import FtsClassifier
 from src.importer.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import create_gender_variants, count_variant
 
@@ -15,12 +14,7 @@ def find_all_matches(tags, job_names):
             yield (count, job_name)
 
 
-class CountBasedJobTitleClassification(FullTextSearchClassifier):
-    TITLE = """Count-based classification"""
-    DESCRIPTION = """Classify a vacancy based on the number of occurrences of a certain word. The words are jobs
-    taken from a whitelist of known job names. The occurrence of each job name is counted and the vacancy is then
-    classified as the job name with the highest occurrence."""
-
+class CountBasedJobTitleClassification(FtsClassifier):
     def __init__(self, model_file=None):
         super(CountBasedJobTitleClassification, self).__init__(model_file)
         self.job_names = KnownJobsImporter()
@@ -41,10 +35,12 @@ class CountBasedJobTitleClassification(FullTextSearchClassifier):
             yield match
 
     def title(self):
-        return self.TITLE
+        return 'Count-based classification'
 
     def description(self):
-        return self.DESCRIPTION
+        return """Classify a vacancy based on the number of occurrences of a certain word. The words are jobs
+        taken from a whitelist of known job names. The occurrence of each job name is counted and the vacancy is then
+        classified as the job name with the highest occurrence."""
 
     def label(self):
         return 'count-based'

@@ -1,23 +1,25 @@
 import logging
-import sys
 from abc import abstractmethod
 
 from src.classifier.classifier import Classifier
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
-class FullTextSearchClassifier(Classifier):
-    def _train_model(self, data):
-        logging.info("no model to train in FTS")
+class FtsClassifier(Classifier):
+    def __init__(self, args, preprocessor):
+        super(FtsClassifier, self).__init__(args, preprocessor)
+
+    def _train_model(self, processed_data, labels, num_rows):
+        log.info("no model to train in FTS")
         return None
 
-    def _load_model(self, filename):
-        logging.info("no model to load in FTS")
+    def _load_model(self, path):
+        log.info("no model to load in FTS")
         return None
 
-    def _save_model(self, model, binary, zipped):
-        logging.info("no model to save in FTS")
+    def _save_model(self, path, binary, zipped):
+        log.info("no model to save in FTS")
         return None
 
     @abstractmethod
@@ -33,5 +35,5 @@ class FullTextSearchClassifier(Classifier):
         """to be implemented in subclass"""
 
     @abstractmethod
-    def classify(self, data):
+    def classify(self, processed_data):
         """to be implemented in subclass"""

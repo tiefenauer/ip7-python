@@ -1,11 +1,10 @@
 import logging
 import os
-import sys
 
 from src import db
 from src.db import Database
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 class X28JsonImporter(object):
@@ -23,7 +22,7 @@ class X28JsonImporter(object):
         self.conn_fetchflow.close()
 
     def __iter__(self):
-        logging.info('Processing {} files...'.format(self.num_files))
+        log.info('Processing {} files...'.format(self.num_files))
         for fname in os.listdir(self.dirname):
             with open(os.path.join(self.dirname, fname), encoding='utf-8') as file:
                 yield file.read()
@@ -47,6 +46,6 @@ class X28JsonImporter(object):
         self.conn_x28.commit()
 
     def truncate_tables(self):
-        logging.info('truncating target tables...')
+        log.info('truncating target tables...')
         cursor = self.conn_x28.cursor()
         cursor.execute("""TRUNCATE x28_data""")

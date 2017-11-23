@@ -1,10 +1,5 @@
-import logging
-import sys
-
 from src import preproc
 from src.preprocessing.x28_preprocessor import X28Preprocessor
-
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 class SemanticX28Preprocessor(X28Preprocessor):

@@ -9,17 +9,20 @@ def extract_features(tagged_words):
 
 
 class StructuralClassifier(Classifier):
-    def classify(self, data):
+    def __init__(self, args, preprocessor):
+        super(StructuralClassifier, self).__init__(args, preprocessor)
+
+    def classify(self, processed_data):
         pass
 
-    def _load_model(self, filename):
+    def _load_model(self, path):
         pass
 
-    def _save_model(self, model, binary, zipped):
+    def _save_model(self, path, binary, zipped):
         pass
 
-    def _train_model(self, data):
-        train_set = [(extract_features(row.processed), row.title) for row in data]
+    def _train_model(self, processed_data, labels, num_rows):
+        train_set = [(extract_features(row.processed), row.title) for row in processed_data]
         model = nltk.NaiveBayesClassifier.train(train_set)
 
     def title(self):

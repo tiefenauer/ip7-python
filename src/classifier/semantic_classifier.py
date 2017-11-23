@@ -1,30 +1,26 @@
-import gzip
 import logging
-import os
-import shutil
-import sys
-from abc import abstractmethod
 
 import gensim
+import numpy
 from gensim.models import word2vec
 
 from src.classifier.classifier import Classifier
-from src.util import semantic_util
+from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 class SemanticClassifier(Classifier):
-    def __init__(self, model_file=None):
-        super(SemanticClassifier, self).__init__(model_file)
+    def __init__(self, args, preprocessor=SemanticX28Preprocessor(remove_stopwords=False)):
+        super(SemanticClassifier, self).__init__(args, preprocessor)
         self.num_features = 300
         self.min_word_count = 40
         self.num_workers = 6
         self.context = 10
         self.downsampling = 1e-3
 
-    def _train_model(self, sentences):
-        logging.info('Training Word2Vec model')
+    def _train_model(self, sentences, labels, num_rows):
+        log.info('Training Word2Vec model')
         model = word2vec.Word2Vec(sentences,
                                   workers=self.num_workers,
                                   size=self.num_features,
@@ -33,19 +29,12 @@ class SemanticClassifier(Classifier):
                                   sample=self.downsampling
                                   )
         model.init_sims()
-        self.model = model
         return model
 
-    def _save_model(self, model, binary, zipped):
-        filename = semantic_util.create_filename(self.num_features, self.min_word_count, self.context)
-        model.wv.save_word2vec_format(filename, binary=binary)
-        if zipped:
-            filename_gz = filename + '.gz'
-            with open(filename, 'rb') as f_in, gzip.open(filename_gz, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-            os.remove(filename)
-            return filename_gz
-        return filename
+    def _save_model(self, path):
+        self.model.wv.save_word2vec_format(path, binary=True)
+        self.index2word_set = set(model.index2word)
+        return path
 
     def _load_model(self, path):
         model = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
@@ -53,13 +42,18 @@ class SemanticClassifier(Classifier):
         self.index2word_set = set(model.index2word)
         return model
 
-    def classify(self, words):
-        featureVec = self.make_feature_vec(words)
-        top10 = self.model.similar_by_vector(featureVec, 1)
-        if top10:
-            return next(iter(top10))[0]
-        return None
+    def _get_filename_postfix(self):
+        return '{features}features_{minwords}minwords_{context}context'.format(features=self.num_features,
+                                                                               minwords=self.min_word_count,
+                                                                               context=self.context)
 
-    @abstractmethod
-    def make_feature_vec(self, words):
-        """create a feature vector (numpy array)"""
+    def to_average_vector(self, processed_row):
+        feature_vec = numpy.zeros(self.num_features, dtype='float32')
+        num_words = 0
+        for word in processed_row:
+            if word in self.index2word_set:
+                num_words += 1
+                feature_vec = numpy.add(feature_vec, self.model[word])
+        if num_words > 0:
+            feature_vec = numpy.divide(feature_vec, num_words)
+        return feature_vec

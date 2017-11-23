@@ -1,5 +1,4 @@
 import logging
-import sys
 from abc import abstractmethod
 
 from pony.orm import commit, db_session
@@ -7,7 +6,7 @@ from pony.orm import commit, db_session
 from src.database.entities_pg import Semantic_Avg_Classification_Results, Classification_Results, \
     Fts_Classification_Results, X28_HTML, Semantic_Rf_Classification_Results
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 class ClassificationResults(object):
@@ -17,7 +16,7 @@ class ClassificationResults(object):
         self.Entity = Entity
         self.write = args.write if hasattr(args, 'write') else False
         if hasattr(args, 'truncate') and args.truncate:
-            logging.info('truncating target tables...')
+            log.info('truncating target tables...')
             Classification_Results.select(lambda r: r.clf_method == self.classification_method).delete()
             commit()
 

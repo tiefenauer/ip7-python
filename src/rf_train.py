@@ -15,8 +15,10 @@ from src.database.X28TrainData import X28TrainData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
+from src.util.boot_util import log_setup
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log_setup()
+log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""
 Reads training data and classifies it using full text search.
@@ -61,20 +63,20 @@ def create_data_labels(dataset):
 
 def load_data(name, dataset, transform_fun, file_features, file_labels):
     if args.rebuild or not os.path.isfile(file_features):
-        logging.info('loading/cleaning {} data from DB...'.format(name))
+        log.info('loading/cleaning {} data from DB...'.format(name))
         data, labels = create_data_labels(dataset)
-        logging.info('created {} elements with {} labels'.format(len(data), len(labels)))
+        log.info('created {} elements with {} labels'.format(len(data), len(labels)))
 
-        logging.info('creating features from {} data...'.format(name))
+        log.info('creating features from {} data...'.format(name))
         features = transform_fun(data)
         features = features.toarray()
 
-        logging.info('saving {}x{} features to file'.format(features.shape[0], features.shape[1]))
+        log.info('saving {}x{} features to file'.format(features.shape[0], features.shape[1]))
         pickle.dump(labels, open(file_labels, 'wb'))
         pickle.dump(features, open(file_features, 'wb'))
         return features, labels
     else:
-        logging.info('Loading {} data and labels from file...'.format(name))
+        log.info('Loading {} data and labels from file...'.format(name))
         data = pickle.load(open(file_features, 'rb'))
         labels = pickle.load(open(file_labels, 'rb'))
         return data, labels
@@ -87,7 +89,7 @@ def create_train_data(vectorizer):
                                  file_features=file_train_features,
                                  file_labels=file_train_labels
                                  )
-    logging.info('saving vectorizer to file')
+    log.info('saving vectorizer to file')
     pickle.dump(vectorizer, open(file_vectorizer, 'wb'))
     return features, labels
 
@@ -103,7 +105,7 @@ def create_test_data(vectorizer):
 
 def create_vectorizer(args):
     if args.rebuild or not os.path.isfile(file_vectorizer):
-        logging.info('recreating vectorizer...')
+        log.info('recreating vectorizer...')
         return CountVectorizer(analyzer="word",
                                tokenizer=None,
                                preprocessor=None,
@@ -111,16 +113,16 @@ def create_vectorizer(args):
                                max_features=max_features
                                )
     else:
-        logging.info('loading vectorizer from file...')
+        log.info('loading vectorizer from file...')
         return pickle.load(open(file_vectorizer, 'rb'))
 
 
 def train_random_forest():
     if os.path.exists(file_clf_random_forest):
-        logging.info('Loading RandomForestClassifier from file')
+        log.info('Loading RandomForestClassifier from file')
         return pickle.load(open(file_clf_random_forest, 'rb'))
 
-    logging.info('Training new RandomForestClassifier')
+    log.info('Training new RandomForestClassifier')
     clf = RandomForestClassifier(n_estimators=10)
     clf.fit(train_features, train_labels)
     pickle.dump(clf, open(file_clf_random_forest, 'wb'))
@@ -129,7 +131,7 @@ def train_random_forest():
 
 if __name__ == '__main__':
     # create test/training data
-    logging.info('Creating training data')
+    log.info('Creating training data')
     vectorizer = create_vectorizer(args)
     train_features, train_labels = create_train_data(vectorizer)
 
@@ -138,11 +140,11 @@ if __name__ == '__main__':
 
     # make predictions
     test_features, test_labels = create_test_data(vectorizer)
-    logging.info('using trained RandomForestClassifier to predict test features')
+    log.info('using trained RandomForestClassifier to predict test features')
     predictions = forest.predict(test_features)
 
     # evaluate_avg predictions
-    logging.info('measuring accuracy of predictions')
+    log.info('measuring accuracy of predictions')
     e_strict = StrictEvaluator()
     e_tolerant = TolerantJobtitleEvaluator()
     e_linear = LinearJobTitleEvaluator()
@@ -150,6 +152,6 @@ if __name__ == '__main__':
     acc_tolerant = e_tolerant.evaluate_all(test_labels, predictions)
     acc_linear = e_linear.evaluate_all(test_labels, predictions)
 
-    logging.info('accuracy (strict): {}'.format("{:1.4f}".format(acc_strict)))
-    logging.info('accuracy (tolerant): {}'.format("{:1.4f}".format(acc_tolerant)))
-    logging.info('accuracy (linear): {}'.format("{:1.4f}".format(acc_linear)))
+    log.info('accuracy (strict): {}'.format("{:1.4f}".format(acc_strict)))
+    log.info('accuracy (tolerant): {}'.format("{:1.4f}".format(acc_tolerant)))
+    log.info('accuracy (linear): {}'.format("{:1.4f}".format(acc_linear)))

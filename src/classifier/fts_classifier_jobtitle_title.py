@@ -1,11 +1,7 @@
-from src.classifier.fts_classifier import FullTextSearchClassifier
+from src.classifier.fts_classifier import FtsClassifier
 
 
-class TitleBasedJobTitleClassifier(FullTextSearchClassifier):
-    TITLE = """TITLE BASED CLASSIFICATION"""
-    DESCRIPTION = """Classifies jobs according to the job name found in the title tag. The title tag is used without
-    changes as the class label."""
-
+class TitleBasedJobTitleClassifier(FtsClassifier):
     def classify(self, tags):
         title = None
         for tag in (tag for tag in tags if tag.name and tag.name == 'title'):
@@ -13,10 +9,11 @@ class TitleBasedJobTitleClassifier(FullTextSearchClassifier):
         return title, 1, 0
 
     def title(self):
-        return self.TITLE
+        return 'TITLE BASED CLASSIFICATION'
 
     def description(self):
-        return self.DESCRIPTION
+        return """Classifies jobs according to the job name found in the title tag. The title tag is used without
+        changes as the class label."""
 
     def label(self):
         return 'title-based'

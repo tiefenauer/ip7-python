@@ -1,4 +1,4 @@
-from src.classifier.fts_classifier import FullTextSearchClassifier
+from src.classifier.fts_classifier import FtsClassifier
 from src.importer.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import count_variant, create_variants
 
@@ -40,17 +40,7 @@ def count_variants(string, variants):
             yield (variant, count)
 
 
-class FeatureBasedJobTitleClassifier(FullTextSearchClassifier):
-    TITLE = """"Feature based classification"""
-    DESCRIPTION = """Feature-Based classification: classifies a vacancy according to the features of the
-        individual tags. Each tag is analyzed in isolation. Only tags which contain known job names (from a whitelist)
-        or variants of them are considered. A tag can contain several job names or variants.
-        For each tag the relevant features are extracted. Relevant features can be:
-        - the name of the tag
-        - the number of occurrences for the individual matches
-        Classification is then made by calculating a score based on the extracted features. The vacancy is classified
-        as the job name with the highest occurrence from the tag with the highest score."""
-
+class FeatureBasedJobTitleClassifier(FtsClassifier):
     def classify(self, tags):
         features = extract_features(tags, job_name_variants)
         best_match = None
@@ -96,10 +86,17 @@ class FeatureBasedJobTitleClassifier(FullTextSearchClassifier):
         return 1 / score
 
     def title(self):
-        return self.TITLE
+        return 'Feature based classification'
 
     def description(self):
-        return self.DESCRIPTION
+        return """Feature-Based classification: classifies a vacancy according to the features of the
+        individual tags. Each tag is analyzed in isolation. Only tags which contain known job names (from a whitelist)
+        or variants of them are considered. A tag can contain several job names or variants.
+        For each tag the relevant features are extracted. Relevant features can be:
+        - the name of the tag
+        - the number of occurrences for the individual matches
+        Classification is then made by calculating a score based on the extracted features. The vacancy is classified
+        as the job name with the highest occurrence from the tag with the highest score."""
 
     def label(self):
         return 'feature-based'

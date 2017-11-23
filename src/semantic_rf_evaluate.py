@@ -1,15 +1,18 @@
 import argparse
 import logging
-import sys
 
 from sklearn.ensemble import RandomForestClassifier
 
-from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
+from src.classifier.semantic_classifier_rf import SemanticClassifierRF
 from src.database.ClassificationResults import SemanticRfClassificationResults
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
+from src.util.boot_util import log_setup
+
+log_setup()
+log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
 parser.add_argument('model', nargs='?', help='file with saved model to evaluate_avg')
@@ -24,8 +27,6 @@ parser.add_argument('-w', '--write', action='store_true',
 
 args = parser.parse_args()
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-
 data_dir = 'D:/code/ip7-python/resource/models/word2vec'
 
 if not args.model:
@@ -36,20 +37,20 @@ data_train = X28TrainData(args)
 args.split = 0.999
 data_test = X28TestData(args)
 preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
-classifier = SemanticClassifierAvg(args.model)
+classifier = SemanticClassifierRF(args.model)
 evaluation = Evaluation(classifier)
 results = SemanticRfClassificationResults(args)
 model = classifier.model
 
 if __name__ == '__main__':
     if args.truncate:
-        logging.info('Truncating previous results...')
+        log.info('Truncating previous results...')
         results.truncate()
 
     processed_train_data = preprocessor.preprocess(data_train, data_train.num_rows)
     processed_test_data = preprocessor.preprocess(data_test, data_test.num_rows)
-    trainDataVecs = classifier.getAvgFeatureVecs(processed_train_data, data_train.num_rows)
-    testDataVecs = classifier.getAvgFeatureVecs(processed_test_data, data_test.num_rows)
+    trainDataVecs = classifier.create_average_vectors(processed_train_data, data_train.num_rows)
+    testDataVecs = classifier.create_average_vectors(processed_test_data, data_test.num_rows)
     args.split = 0.001
     trainDataLabels = [row.title for row in X28TrainData(args)]
     args.split = 0.999
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     forest.fit(trainDataVecs, trainDataLabels)
 
     result = forest.predict(testDataVecs)
-    logging.info('evaluate_rf: evaluating random forest...')
+    log.info('evaluate_rf: evaluating random forest...')
     args.split = 0.999
     data_test = X28TestData(args)
     processed_test_data = preprocessor.preprocess(data_test, data_test.num_rows)
@@ -67,10 +68,10 @@ if __name__ == '__main__':
         sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
         results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
 
-    # logging.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
+    # log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     # for i, row in enumerate(processed_test_data, 1):
     #     predicted_class = classifier.classify(row.processed)
     #     sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
     #     results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
     evaluation.stop()
-    logging.info('evaluate_avg: done!')
+    log.info('evaluate_avg: done!')

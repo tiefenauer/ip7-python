@@ -9,10 +9,11 @@ from src.evaluation.evaluation import Evaluation
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 
+log = logging.getLogger(__name__)
 
-def set_up_logger():
-    logger = logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s',
-                                 level=logging.INFO)
+
+def log_setup():
+    logger = logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s', level=logging.INFO)
     return logger
 
 
@@ -36,9 +37,9 @@ def choose_evaluation(args, classifier):
         evaluators.append(StrictEvaluator())
     if args.evaluator == 'linear':
         evaluators.append(LinearJobTitleEvaluator())
-    logging.info('================================================')
-    logging.info('Evaluation method(s): ' + ', '.join(e.title() for e in evaluators))
-    logging.info('================================================')
+    log.info('================================================')
+    log.info('Evaluation method(s): ' + ', '.join(e.title() for e in evaluators))
+    log.info('================================================')
     return Evaluation(classifier, evaluators)
 
 
@@ -48,8 +49,8 @@ def choose_classifier(args):
         classifier = CountBasedJobTitleClassification()
     if args.strategy == 'title-based':
         classifier = TitleBasedJobTitleClassifier()
-    logging.info('================================================')
-    logging.info(classifier.title())
-    logging.info(classifier.description())
-    logging.info('================================================')
+    log.info('================================================')
+    log.info(classifier.title())
+    log.info(classifier.description())
+    log.info('================================================')
     return classifier

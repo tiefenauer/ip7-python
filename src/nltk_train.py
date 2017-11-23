@@ -1,10 +1,11 @@
 import logging
-import sys
 
 from src.importer import import_all
+from src.util.boot_util import log_setup
 from src.util.stats import print_stats
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log_setup()
+log = logging.getLogger(__name__)
 
 
 def process_structure(row):

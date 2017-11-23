@@ -5,7 +5,6 @@
 import logging
 import os
 import re
-import sys
 
 import pandas
 from tqdm import tqdm
@@ -13,15 +12,17 @@ from tqdm import tqdm
 from src import db, preproc
 from src.db import Database
 from src.util import jobtitle_util
+from src.util.boot_util import log_setup
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log_setup()
+log = logging.getLogger(__name__)
 
 resource_dir = 'D:/code/ip7-python/resource'
 known_jobs_tsv = os.path.join(resource_dir, 'known_jobs.tsv')
 
 
 def truncate_target_tables():
-    logging.info('truncating target tables')
+    log.info('truncating target tables')
     cursor = conn.cursor()
     cursor.execute("""TRUNCATE TABLE job_class_variant""")
     cursor.execute("""TRUNCATE TABLE job_class CASCADE""")
@@ -29,15 +30,15 @@ def truncate_target_tables():
 
 
 def import_job_names_from_file():
-    logging.info('importing job names from {}'.format(known_jobs_tsv))
+    log.info('importing job names from {}'.format(known_jobs_tsv))
     df = pandas.read_csv(known_jobs_tsv, delimiter='\t', names=['job_name'])
     return df['job_name']
 
 
 def write_job_classes_from_db_to_file():
-    logging.info('writing classes back to file: {}'.format(known_jobs_tsv))
+    log.info('writing classes back to file: {}'.format(known_jobs_tsv))
     cursor = conn.cursor()
-    cursor.execute("""SELECT DISTINCT job_namee as job_name from job_class ORDER BY job_name ASC""")
+    cursor.execute("""SELECT DISTINCT job_namee AS job_name FROM job_class ORDER BY job_name ASC""")
     with open(known_jobs_tsv, mode='w+', encoding='utf-8') as file:
         file.truncate()
         for row in cursor:

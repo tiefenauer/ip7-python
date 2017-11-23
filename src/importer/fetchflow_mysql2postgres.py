@@ -1,7 +1,6 @@
 import argparse
 import logging
 import math
-import sys
 
 from pony.orm import db_session, select
 from tqdm import tqdm
@@ -14,7 +13,7 @@ parser.add_argument('-t', '--truncate', type=bool, default=False,
                     help='(optional) truncate target table')
 args = parser.parse_args()
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log = logging.getLogger(__name__)
 
 num_migrated = num_non_migrateable = num_empty = 0
 limit = 1000
@@ -28,7 +27,7 @@ def decode_html(row):
         try:
             html = row.html.decode(encoding='latin_1')
         except ValueError as e:
-            logging.info("""could not decode html: {}""".format(str(e)))
+            log.info("""could not decode html: {}""".format(str(e)))
     return html
 
 
@@ -36,7 +35,7 @@ def update_migrateable(row, migrateable):
     try:
         row.migrateable = int(migrateable)
     except Exception as e:
-        logging.info("""could not update labeled_text.migrateable: {}""".format(str(e)))
+        log.info("""could not update labeled_text.migrateable: {}""".format(str(e)))
         return False
     return True
 
@@ -45,7 +44,7 @@ def update_migrated(row, migrated):
     try:
         row.migrated = int(migrated)
     except Exception as e:
-        logging.info("""could not update labeled_text.migrated: {}""".format(str(e)))
+        log.info("""could not update labeled_text.migrated: {}""".format(str(e)))
         return False
     return True
 
@@ -56,16 +55,16 @@ def write_entity(html, row):
         ent = Fetchflow_HTML(fetchflow_id=row.id, html=html)
         pg.commit()
     except Exception as e:
-        logging.info("could not write fetchflow_html: {}".format(str(e)))
+        log.info("could not write fetchflow_html: {}".format(str(e)))
     return ent
 
 
 with db_session:
     if args.truncate:
-        logging.info('Truncating target tables...')
+        log.info('Truncating target tables...')
         Fetchflow_HTML.select().delete()
         pg.commit()
-        logging.info('...done!')
+        log.info('...done!')
 
     rowid = select(r.id for r in Labeled_Text).min() - 1
 
@@ -92,6 +91,6 @@ with db_session:
             num_migrated += 1
             update_migrated(row, True)
         mysql.commit()
-    logging.info('migrated {}/{} rows.'.format(num_migrated, num_rows))
-    logging.info('Could not migrate {} rows due to charset errors'.format(num_non_migrateable))
-    logging.info('Could not migrate {} rows because content was empty.'.format(num_empty))
+    log.info('migrated {}/{} rows.'.format(num_migrated, num_rows))
+    log.info('Could not migrate {} rows due to charset errors'.format(num_non_migrateable))
+    log.info('Could not migrate {} rows because content was empty.'.format(num_empty))

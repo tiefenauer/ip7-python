@@ -1,6 +1,5 @@
 import argparse
 import logging
-import sys
 
 from tqdm import tqdm
 
@@ -13,9 +12,10 @@ from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 from src.preprocessing.preprocessor_fts import FtsX28Preprocessor
-from src.util.boot_util import choose_classifier, choose_evaluation
+from src.util.boot_util import choose_classifier, choose_evaluation, log_setup
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log_setup()
+log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""
 Reads training data and classifies it using full text search.

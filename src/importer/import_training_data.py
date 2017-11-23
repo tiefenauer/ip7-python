@@ -1,13 +1,12 @@
 import argparse
 import json
-import logging
-import sys
 
 from tqdm import tqdm
 
 from src.importer.x28_json_importer import X28JsonImporter
+from src.util.boot_util import log_setup
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log_setup()
 
 parser = argparse.ArgumentParser(description="""
 Reads X28 JSON data from a directory into a local postgres database. Only the most important attributes are read.
