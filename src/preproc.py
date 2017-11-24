@@ -89,6 +89,4 @@ def is_iterable_and_not_string(text):
 
 
 def remove_punctuation(words):
-    words = (x for x in words if x not in punctuation_tokens)
-    # words = [re.sub('[{}]'.format(punctuation), ' ', x) for x in words]
-    return words
+    return (word for word in words if word not in punctuation_tokens)
