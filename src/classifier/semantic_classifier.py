@@ -61,7 +61,7 @@ class SemanticClassifier(Classifier):
         """to be implemented in subclass"""
 
     @abstractmethod
-    def _save_model(self, path):
+    def _save_model(self, model, path):
         """to be implemented in subclass"""
 
     @abstractmethod

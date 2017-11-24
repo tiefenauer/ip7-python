@@ -1,5 +1,6 @@
 import itertools
 import operator
+import pickle
 
 import nltk
 
@@ -36,18 +37,21 @@ class StructuralClassifier(Classifier):
     def classify(self, processed_data):
         pass
 
-    def _get_filename_postfix(self):
-        pass
+    def _train_model(self, processed_data, labels, num_rows):
+        labeled_data = zip(processed_data, labels)
+        train_set = ((extract_features(words), label) for words, label in labeled_data)
+        model = nltk.NaiveBayesClassifier.train(train_set)
+        return model
 
-    def _save_model(self, path):
-        pass
+    def _get_filename_postfix(self):
+        return ''
+
+    def _save_model(self, model, path):
+        pickle.dump(model, open(path, 'wb'))
+        return path
 
     def _load_model(self, path):
-        pass
-
-    def _train_model(self, processed_data, labels, num_rows):
-        train_set = [(extract_features(row.processed), row.title) for row in processed_data]
-        model = nltk.NaiveBayesClassifier.train(train_set)
+        return pickle.load(open(path, 'rb'))
 
     def title(self):
         return 'Structural classifier'
@@ -56,4 +60,4 @@ class StructuralClassifier(Classifier):
         return 'Classifies text according to POS tag patterns'
 
     def label(self):
-        'structural (POS)'
+        return 'structural_nv'

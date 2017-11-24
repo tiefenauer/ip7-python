@@ -18,7 +18,7 @@ class FtsClassifier(Classifier):
         log.info("no model to load in FTS")
         return None
 
-    def _save_model(self, path, binary, zipped):
+    def _save_model(self, model, path):
         log.info("no model to save in FTS")
         return None
 

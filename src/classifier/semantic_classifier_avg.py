@@ -22,8 +22,8 @@ class SemanticClassifierAvg(SemanticClassifier):
         model.init_sims()
         return model
 
-    def _save_model(self, path):
-        self.model.wv.save_word2vec_format(path, binary=True)
+    def _save_model(self, model, path):
+        model.wv.save_word2vec_format(path, binary=True)
         return path
 
     def _load_model(self, path):

@@ -64,8 +64,8 @@ class SemanticClassifierRF(SemanticClassifier):
             counter += 1
         return avg_feature_vecs
 
-    def _save_model(self, path):
-        pickle.dump(path, open(path, 'wb'))
+    def _save_model(self, model, path):
+        pickle.dump(model, open(path, 'wb'))
         return path
 
     def _load_model(self, path):

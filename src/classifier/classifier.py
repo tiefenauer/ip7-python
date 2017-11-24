@@ -36,7 +36,7 @@ class Classifier(ABC):
     def save_model(self, filename=None):
         log.info('save_model: Saving model...')
         path = self.get_model_path(filename)
-        self._save_model(path)
+        self._save_model(self.model, path)
         # compress
         with open(path, 'rb') as f_in, gzip.open(path + '.gz', 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
@@ -76,7 +76,7 @@ class Classifier(ABC):
         """train classifier with some given data"""
 
     @abstractmethod
-    def _save_model(self, path):
+    def _save_model(self, model, path):
         """train classifier with some given data"""
 
     @abstractmethod
