@@ -6,12 +6,12 @@ from hamcrest import assert_that, contains, is_, not_
 from src.classifier import structural_classifier_nv
 from src.classifier.structural_classifier_nv import StructuralClassifierNV, top_n
 from src.database.X28TrainData import X28TrainData
-from src.preprocessing.preprocessor_structural import StructuralPreprocessor
+from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from systemtest.test_TestData import create_args
 from test.preprocessing.test_preprocessor_structural import create_dummy_row
 
 args = create_args()
-preprocessor = StructuralPreprocessor()
+preprocessor = StructuralPreprocessorNV()
 testee = StructuralClassifierNV(args, preprocessor)
 
 

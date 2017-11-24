@@ -5,7 +5,7 @@ from src.classifier.structural_classifier_nv import StructuralClassifierNV
 from src.database.ClassificationResults import StructuralClassificationResults
 from src.database.X28TestData import X28TestData
 from src.evaluation.evaluation import Evaluation
-from src.preprocessing.preprocessor_structural import StructuralPreprocessor
+from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from src.util.boot_util import log_setup
 
 log_setup()
@@ -28,7 +28,7 @@ if not args.model:
     args.model = 'structural_nv_2017-11-24-14-51-03_19rows.gz'
 
 data_test = X28TestData(args)
-preprocessor = StructuralPreprocessor()
+preprocessor = StructuralPreprocessorNV()
 classifier = StructuralClassifierNV(args, preprocessor)
 evaluation = Evaluation(classifier)
 results = StructuralClassificationResults(args, classifier)

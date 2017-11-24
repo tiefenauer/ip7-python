@@ -31,10 +31,12 @@ class StructuralClassifierNV(StructuralClassifier):
         return features
 
     def title(self):
-        return 'Structural classifier'
+        return 'Structural Classifier (POS-Tags only)'
 
     def description(self):
-        return 'Classifies text according to POS tag patterns'
+        return """Classifies text according to POS tag patterns. Only the plaintext of a vacancy is considered.
+        The n most frequent nouns and verbs are extracted as features. 
+        """
 
     def label(self):
         return 'structural_nv'

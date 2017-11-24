@@ -19,9 +19,9 @@ def stem_words(tagged_words):
     return ((preproc.stem(word), tag) for word, tag in tagged_words)
 
 
-class StructuralPreprocessor(Preprocessor):
+class StructuralPreprocessorNV(Preprocessor):
     def __init__(self):
-        super(StructuralPreprocessor, self).__init__()
+        super(StructuralPreprocessorNV, self).__init__()
 
     def preprocess_single(self, row):
         sentences = preproc.to_sentences(row.plaintext)
