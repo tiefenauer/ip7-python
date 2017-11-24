@@ -17,8 +17,8 @@ log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
 parser.add_argument('model', nargs='?', help='file with saved model to evaluate_avg')
-parser.add_argument('-s', '--split', nargs='?', type=float, default=1.0,
-                    help='(optional) fraction value of labeled data to use for training')
+parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
+                    help='(optional) fraction value of labeled data to use for training/testing')
 parser.add_argument('-t', '--truncate', action='store_true',
                     help='truncate target tables before extraction (default=True)')
 parser.add_argument('-w', '--write', action='store_true',
@@ -74,15 +74,10 @@ data_test = X28TestData(args)
 preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
 classifier = SemanticClassifierAvg(args, preprocessor)
 evaluation = Evaluation(classifier)
-results = SemanticAvgClassificationResults(args)
+results = SemanticAvgClassificationResults(args, classifier)
 model = classifier.model
 
 if __name__ == '__main__':
-
-    if args.truncate:
-        log.info('Truncating previous results...')
-        results.truncate()
-
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     for i, row in enumerate(preprocessor.preprocess(data_test, data_test.num_rows), 1):
         predicted_class = classifier.classify(row.processed)

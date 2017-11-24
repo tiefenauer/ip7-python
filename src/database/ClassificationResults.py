@@ -3,21 +3,21 @@ from abc import abstractmethod
 
 from pony.orm import commit, db_session
 
-from src.database.entities_pg import Semantic_Avg_Classification_Results, Classification_Results, \
-    Fts_Classification_Results, X28_HTML, Semantic_Rf_Classification_Results
+from src.database.entities_pg import Semantic_Avg_Classification_Results, Fts_Classification_Results, X28_HTML, \
+    Semantic_Rf_Classification_Results
 
 log = logging.getLogger(__name__)
 
 
 class ClassificationResults(object):
     @db_session
-    def __init__(self, method, Entity, args):
-        self.classification_method = method
+    def __init__(self, classifier, Entity, args):
+        self.classification_method = classifier.label()
         self.Entity = Entity
         self.write = args.write if hasattr(args, 'write') else False
         if hasattr(args, 'truncate') and args.truncate:
             log.info('truncating target tables...')
-            Classification_Results.select(lambda r: r.clf_method == self.classification_method).delete()
+            self.truncate()
             commit()
 
     @db_session
@@ -40,8 +40,8 @@ class ClassificationResults(object):
 
 
 class FtsClassificationResults(ClassificationResults):
-    def __init__(self, args):
-        super(FtsClassificationResults, self).__init__('fts', Fts_Classification_Results, args)
+    def __init__(self, args, classifier):
+        super(FtsClassificationResults, self).__init__(classifier, Fts_Classification_Results, args)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Fts_Classification_Results(job=job_entity,
@@ -52,8 +52,8 @@ class FtsClassificationResults(ClassificationResults):
 
 
 class SemanticAvgClassificationResults(ClassificationResults):
-    def __init__(self, args):
-        super(SemanticAvgClassificationResults, self).__init__('semantic_avg', Semantic_Avg_Classification_Results,
+    def __init__(self, args, classifier):
+        super(SemanticAvgClassificationResults, self).__init__(classifier, Semantic_Avg_Classification_Results,
                                                                args)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
@@ -65,8 +65,8 @@ class SemanticAvgClassificationResults(ClassificationResults):
 
 
 class SemanticRfClassificationResults(ClassificationResults):
-    def __init__(self, args):
-        super(SemanticRfClassificationResults, self).__init__('semantic_rf', Semantic_Rf_Classification_Results,
+    def __init__(self, args, classifier):
+        super(SemanticRfClassificationResults, self).__init__(classifier, Semantic_Rf_Classification_Results,
                                                               args)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
