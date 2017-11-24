@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from src.classifier.structural_classifier import StructuralClassifier
+from src.classifier.structural_classifier_nv import StructuralClassifierNV
 from src.database.ClassificationResults import StructuralClassificationResults
 from src.database.X28TestData import X28TestData
 from src.evaluation.evaluation import Evaluation
@@ -29,7 +29,7 @@ if not args.model:
 
 data_test = X28TestData(args)
 preprocessor = StructuralPreprocessor()
-classifier = StructuralClassifier(args, preprocessor)
+classifier = StructuralClassifierNV(args, preprocessor)
 evaluation = Evaluation(classifier)
 results = StructuralClassificationResults(args, classifier)
 model = classifier.model

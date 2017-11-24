@@ -1,6 +1,6 @@
 import argparse
 
-from src.classifier.structural_classifier import StructuralClassifier
+from src.classifier.structural_classifier_nv import StructuralClassifierNV
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.preprocessor_structural import StructuralPreprocessor
 from src.util.boot_util import log_setup
@@ -17,9 +17,7 @@ logging = log_setup()
 
 data_train = X28TrainData(args)
 preprocessor = StructuralPreprocessor()
-classifier = StructuralClassifier(args, preprocessor)
+classifier = StructuralClassifierNV(args, preprocessor)
 
 if __name__ == '__main__':
     classifier.train_model(data_train)
-    # tagged_sents = list(brown.tagged_sents(categories='news'))
-    # print(len(tagged_sents))

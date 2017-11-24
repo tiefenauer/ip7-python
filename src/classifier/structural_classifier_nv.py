@@ -46,9 +46,9 @@ def clean_labels(labels_list):
         yield label
 
 
-class StructuralClassifier(Classifier):
+class StructuralClassifierNV(Classifier):
     def __init__(self, args, preprocessor):
-        super(StructuralClassifier, self).__init__(args, preprocessor)
+        super(StructuralClassifierNV, self).__init__(args, preprocessor)
 
     def classify(self, processed_data):
         features = extract_features(processed_data)

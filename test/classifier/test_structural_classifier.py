@@ -3,8 +3,8 @@ import unittest
 import os
 from hamcrest import assert_that, contains, is_, not_
 
-from src.classifier import structural_classifier
-from src.classifier.structural_classifier import StructuralClassifier, top_n
+from src.classifier import structural_classifier_nv
+from src.classifier.structural_classifier_nv import StructuralClassifierNV, top_n
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.preprocessor_structural import StructuralPreprocessor
 from systemtest.test_TestData import create_args
@@ -12,7 +12,7 @@ from test.preprocessing.test_preprocessor_structural import create_dummy_row
 
 args = create_args()
 preprocessor = StructuralPreprocessor()
-testee = StructuralClassifier(args, preprocessor)
+testee = StructuralClassifierNV(args, preprocessor)
 
 
 class TestStructuralClassifier(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestStructuralClassifier(unittest.TestCase):
         row = create_dummy_row('Baum Baum Baum Baum Baum Haus Haus Haus Haus Maler Maler Maler Bäcker Bäcker')
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = structural_classifier.top_n(tagged_words, 'N', 3)
+        result = structural_classifier_nv.top_n(tagged_words, 'N', 3)
         # assert
         assert_that(result, contains(
             ('baum', 5),
@@ -38,7 +38,7 @@ class TestStructuralClassifier(unittest.TestCase):
                                 """)
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = structural_classifier.top_n(tagged_words, 'V', 3)
+        result = structural_classifier_nv.top_n(tagged_words, 'V', 3)
         # assert
         assert_that(result, contains(
             ('seh', 5),
@@ -63,7 +63,7 @@ class TestStructuralClassifier(unittest.TestCase):
                                   """)
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = structural_classifier.extract_features(tagged_words)
+        result = structural_classifier_nv.extract_features(tagged_words)
         # assert
         assert_that(result['noun-1'], is_('baum'))
         assert_that(result['noun-2'], is_('haus'))
