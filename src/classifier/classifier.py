@@ -36,12 +36,14 @@ class Classifier(ABC):
     def save_model(self, filename=None):
         log.info('save_model: Saving model...')
         path = self.get_model_path(filename)
+        # save
         self._save_model(self.model, path)
         # compress
-        with open(path, 'rb') as f_in, gzip.open(path + '.gz', 'wb') as f_out:
+        path_gz = path + '.gz'
+        with open(path, 'rb') as f_in, gzip.open(path_gz, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
         os.remove(path)
-        return path
+        return path_gz
 
     def load_model(self, filename=None):
         path = self.get_model_path(filename)
@@ -57,7 +59,10 @@ class Classifier(ABC):
         time_str = time.strftime(util.DATE_PATTERN)
         label = self.label()
         postfix = self._get_filename_postfix()
-        return '{label}_{time}_{postfix}'.format(label=label, time=time_str, postfix=postfix)
+        filename = '{label}_{time}'.format(label=label, time=time_str)
+        if postfix:
+            filename += '_{postfix}'.format(postfix=postfix)
+        return filename
 
     def get_model_path(self, filename=None):
         if filename is None:

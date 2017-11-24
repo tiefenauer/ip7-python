@@ -1,3 +1,4 @@
+import gzip
 import itertools
 import operator
 import pickle
@@ -35,7 +36,9 @@ class StructuralClassifier(Classifier):
         super(StructuralClassifier, self).__init__(args, preprocessor)
 
     def classify(self, processed_data):
-        pass
+        features = extract_features(processed_data)
+        result = self.model.classify(features)
+        return result
 
     def _train_model(self, processed_data, labels, num_rows):
         labeled_data = zip(processed_data, labels)
@@ -51,7 +54,10 @@ class StructuralClassifier(Classifier):
         return path
 
     def _load_model(self, path):
-        return pickle.load(open(path, 'rb'))
+        model = None
+        with gzip.open(path, 'rb') as f:
+            model = pickle.load(f)
+        return model
 
     def title(self):
         return 'Structural classifier'

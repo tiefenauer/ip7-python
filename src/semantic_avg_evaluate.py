@@ -28,8 +28,6 @@ parser.add_argument('-w', '--write', action='store_true',
 
 args = parser.parse_args()
 
-data_dir = 'D:/code/ip7-python/resource/models/word2vec'
-
 
 def doesnt_match(words):
     print('Doesn\'t match: ' + words)

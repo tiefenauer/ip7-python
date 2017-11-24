@@ -64,5 +64,9 @@ class Semantic_Rf_Classification_Results(Classification_Results):
     _discriminator_ = 'semantic_rf'
 
 
+class Structural_Classification_Results(Classification_Results):
+    _discriminator_ = 'structural_nv'
+
+
 pg.bind('postgres', host='127.0.0.1', user='postgres', password='postgres', database='x28')
 pg.generate_mapping()

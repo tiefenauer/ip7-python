@@ -1,9 +1,11 @@
 import unittest
 
-from hamcrest import assert_that, contains, is_
+import os
+from hamcrest import assert_that, contains, is_, not_
 
 from src.classifier import structural_classifier
 from src.classifier.structural_classifier import StructuralClassifier, top_n
+from src.database.X28TrainData import X28TrainData
 from src.preprocessing.preprocessor_structural import StructuralPreprocessor
 from systemtest.test_TestData import create_args
 from test.preprocessing.test_preprocessor_structural import create_dummy_row
@@ -73,3 +75,15 @@ class TestStructuralClassifier(unittest.TestCase):
         assert_that(result['verb-3'], is_('brat'))
         assert_that(result['verb-4'], is_('koch'))
         assert_that(result['verb-5'], is_('such'))
+
+    def test_save_load(self):
+        # arrange
+        data_train = X28TrainData(create_args(split=0.00001))
+        testee.train_model(data_train)
+        # act
+        filename = 'test.pickle'
+        path = testee.save_model(filename)
+        model = testee.load_model(path)
+        os.remove(path)
+        # assert
+        assert_that(model, is_(not_(None)))

@@ -4,7 +4,7 @@ from abc import abstractmethod
 from pony.orm import commit, db_session
 
 from src.database.entities_pg import Semantic_Avg_Classification_Results, Fts_Classification_Results, X28_HTML, \
-    Semantic_Rf_Classification_Results
+    Semantic_Rf_Classification_Results, Structural_Classification_Results
 
 log = logging.getLogger(__name__)
 
@@ -53,8 +53,7 @@ class FtsClassificationResults(ClassificationResults):
 
 class SemanticAvgClassificationResults(ClassificationResults):
     def __init__(self, args, classifier):
-        super(SemanticAvgClassificationResults, self).__init__(classifier, Semantic_Avg_Classification_Results,
-                                                               args)
+        super(SemanticAvgClassificationResults, self).__init__(classifier, Semantic_Avg_Classification_Results, args)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Semantic_Avg_Classification_Results(job=job_entity,
@@ -66,8 +65,7 @@ class SemanticAvgClassificationResults(ClassificationResults):
 
 class SemanticRfClassificationResults(ClassificationResults):
     def __init__(self, args, classifier):
-        super(SemanticRfClassificationResults, self).__init__(classifier, Semantic_Rf_Classification_Results,
-                                                              args)
+        super(SemanticRfClassificationResults, self).__init__(classifier, Semantic_Rf_Classification_Results, args)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Semantic_Rf_Classification_Results(job=job_entity,
@@ -75,3 +73,15 @@ class SemanticRfClassificationResults(ClassificationResults):
                                                   score_strict=sc_str,
                                                   score_tolerant=sc_tol,
                                                   score_linear=sc_lin)
+
+
+class StructuralClassificationResults(ClassificationResults):
+    def __init__(self, args, classifier):
+        super(StructuralClassificationResults, self).__init__(classifier, Structural_Classification_Results, args)
+
+    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
+        return Structural_Classification_Results(job=job_entity,
+                                                 job_name=predicted_class,
+                                                 score_strict=sc_str,
+                                                 score_tolerant=sc_tol,
+                                                 score_linear=sc_lin)
