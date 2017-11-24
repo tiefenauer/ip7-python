@@ -19,7 +19,8 @@ class SemanticClassifier(Classifier):
         self.context = 10
         self.downsampling = 1e-3
 
-    def train_w2v_model(self, sentences):
+    def train_w2v_model(self, processed_data):
+        sentences = [list(words) for words in processed_data]
         model = word2vec.Word2Vec(sentences,
                                   workers=self.num_workers,
                                   size=self.num_features,
@@ -37,7 +38,7 @@ class SemanticClassifier(Classifier):
         for word in processed_row:
             if word in index2word_set:
                 num_words += 1
-                feature_vec = numpy.add(feature_vec, self.model[word])
+                feature_vec = numpy.add(feature_vec, w2v_model[word])
         if num_words > 0:
             feature_vec = numpy.divide(feature_vec, num_words)
         return feature_vec
