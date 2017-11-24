@@ -25,7 +25,7 @@ def to_html_word_list(html):
     for tag, content in tag_content:
         words = preproc.to_words(content)
         for word in words:
-            yield tag, word
+            yield word, tag
 
 
 class StructuralPreprocessorNVT(Preprocessor):

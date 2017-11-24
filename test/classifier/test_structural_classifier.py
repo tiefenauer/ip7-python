@@ -8,7 +8,7 @@ from src.classifier.structural_classifier_nv import StructuralClassifierNV, top_
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from systemtest.test_TestData import create_args
-from test.preprocessing.test_preprocessor_structural import create_dummy_row
+from test.preprocessing.test_structural_preprocessor_nv import create_dummy_row
 
 args = create_args()
 preprocessor = StructuralPreprocessorNV()

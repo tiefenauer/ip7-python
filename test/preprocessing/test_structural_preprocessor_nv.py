@@ -13,8 +13,9 @@ class DummyRow(object):
         self.processed = []
 
 
-def create_dummy_row(plaintext):
+def create_dummy_row(plaintext=None, html=None):
     row = DummyRow()
+    row.html = html
     row.plaintext = plaintext
     return row
 
@@ -22,7 +23,7 @@ def create_dummy_row(plaintext):
 testee = StructuralPreprocessorNV()
 
 
-class TestPreprocessorStructural(unittest.TestCase):
+class TestStructuralPreprocessorNV(unittest.TestCase):
     def test_preprocess_single_returns_tagged_words(self):
         # arrange
         row = create_dummy_row('Dies ist ein Test zum schauen ob es funktioniert')
