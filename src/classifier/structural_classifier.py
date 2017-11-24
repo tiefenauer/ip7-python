@@ -6,7 +6,12 @@ import pickle
 import nltk
 
 from src.classifier.classifier import Classifier
+from src.importer.known_jobs_tsv_importer import KnownJobsImporter
+from src.util import jobtitle_util
 
+known_jobs = KnownJobsImporter()
+# number of nouns/verbs to use as features (i.e. the top n nouns and the top n features)
+# --> size of the featureset will be 2n
 n = 5
 
 
@@ -31,6 +36,16 @@ def extract_features(tagged_words):
     return features
 
 
+def clean_labels(labels_list):
+    for label in labels_list:
+        # search known job in label
+        for job_name_m in (jobtitle_util.to_male_form(job_name) for job_name in known_jobs):
+            if job_name_m in label:
+                yield job_name_m
+        # known job not found ==> return original label
+        yield label
+
+
 class StructuralClassifier(Classifier):
     def __init__(self, args, preprocessor):
         super(StructuralClassifier, self).__init__(args, preprocessor)
@@ -41,7 +56,8 @@ class StructuralClassifier(Classifier):
         return result
 
     def _train_model(self, processed_data, labels, num_rows):
-        labeled_data = zip(processed_data, labels)
+        cleaned_labels = clean_labels(labels)
+        labeled_data = zip(processed_data, cleaned_labels)
         train_set = ((extract_features(words), label) for words, label in labeled_data)
         model = nltk.NaiveBayesClassifier.train(train_set)
         return model
