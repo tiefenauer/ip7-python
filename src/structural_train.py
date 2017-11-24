@@ -2,7 +2,7 @@ import argparse
 
 from src.classifier.structural_classifier import StructuralClassifier
 from src.database.X28TrainData import X28TrainData
-from src.preprocessing.preprocessor_structural import StructuralX28Preprocessor
+from src.preprocessing.preprocessor_structural import StructuralPreprocessor
 from src.util.boot_util import log_setup
 
 parser = argparse.ArgumentParser(description="""Train Structural Classifier (NLTK)""")
@@ -16,7 +16,7 @@ args = parser.parse_args()
 logging = log_setup()
 
 data_train = X28TrainData(args)
-preprocessor = StructuralX28Preprocessor()
+preprocessor = StructuralPreprocessor()
 classifier = StructuralClassifier(args, preprocessor)
 
 if __name__ == '__main__':

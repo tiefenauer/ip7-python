@@ -6,12 +6,12 @@ from hamcrest.core.base_matcher import BaseMatcher
 
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier, count_variants, \
     extract_features
-from src.preprocessing.preprocessor_fts import FtsX28Preprocessor
+from src.preprocessing.preprocessor_fts import FtsPreprocessor
 from src.util.jobtitle_util import create_gender_variants
 from systemtest.test_TestData import create_args
 
 args = create_args()
-preprocessor = FtsX28Preprocessor()
+preprocessor = FtsPreprocessor()
 testee = FeatureBasedJobTitleClassifier(args, preprocessor)
 
 

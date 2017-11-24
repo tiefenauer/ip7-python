@@ -6,7 +6,7 @@ from tqdm import tqdm
 log = logging.getLogger(__name__)
 
 
-class X28Preprocessor(ABC):
+class Preprocessor(ABC):
     def preprocess(self, data, num_rows):
         log.info('Preprocessing X28 data...')
         for row in tqdm((row for row in data if row.html), total=num_rows):

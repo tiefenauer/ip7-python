@@ -3,7 +3,7 @@ from unittest.test.testmock.support import is_instance
 
 from hamcrest import assert_that, contains
 
-from src.preprocessing.preprocessor_structural import StructuralX28Preprocessor
+from src.preprocessing.preprocessor_structural import StructuralPreprocessor
 
 
 class DummyRow(object):
@@ -19,7 +19,7 @@ def create_dummy_row(plaintext):
     return row
 
 
-testee = StructuralX28Preprocessor()
+testee = StructuralPreprocessor()
 
 
 class TestPreprocessorStructural(unittest.TestCase):

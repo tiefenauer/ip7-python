@@ -8,7 +8,7 @@ from src.database.ClassificationResults import SemanticRfClassificationResults
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.evaluation import Evaluation
-from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
+from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
 from src.util.boot_util import log_setup
 
 log_setup()
@@ -36,7 +36,7 @@ args.split = 0.001
 data_train = X28TrainData(args)
 args.split = 0.999
 data_test = X28TestData(args)
-preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
+preprocessor = SemanticPreprocessor(remove_stopwords=True)  # remove stopwords for evaluation
 classifier = SemanticClassifierRF(args.model)
 evaluation = Evaluation(classifier)
 results = SemanticRfClassificationResults(args)

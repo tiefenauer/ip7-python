@@ -8,13 +8,13 @@ from sklearn.ensemble import RandomForestClassifier
 from src.classifier.classifier import data_dir
 from src.classifier.semantic_classifier import SemanticClassifier
 from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
-from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
+from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
 
 class SemanticClassifierRF(SemanticClassifier):
-    def __init__(self, args, preprocessor=SemanticX28Preprocessor(remove_stopwords=False)):
+    def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
         super(SemanticClassifierRF, self).__init__(args, preprocessor)
         self.w2v_model = None
         if hasattr(args, 'w2vmodel') and args.w2vmodel:

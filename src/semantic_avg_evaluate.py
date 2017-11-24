@@ -9,7 +9,7 @@ from src.database.ClassificationResults import SemanticAvgClassificationResults
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
-from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
+from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
 from src.util.boot_util import log_setup
 
 log_setup()
@@ -71,7 +71,7 @@ if not args.model:
     args.model = 'semantic_avg_2017-11-21-12-38-54_300features_40minwords_10context.gz'
 
 data_test = X28TestData(args)
-preprocessor = SemanticX28Preprocessor(remove_stopwords=True)  # remove stopwords for evaluation
+preprocessor = SemanticPreprocessor(remove_stopwords=True)  # remove stopwords for evaluation
 classifier = SemanticClassifierAvg(args, preprocessor)
 evaluation = Evaluation(classifier)
 results = SemanticAvgClassificationResults(args, classifier)

@@ -5,13 +5,13 @@ import numpy
 from gensim.models import word2vec
 
 from src.classifier.classifier import Classifier
-from src.preprocessing.preprocessor_semantic import SemanticX28Preprocessor
+from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
 
 class SemanticClassifier(Classifier):
-    def __init__(self, args, preprocessor=SemanticX28Preprocessor(remove_stopwords=False)):
+    def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
         super(SemanticClassifier, self).__init__(args, preprocessor)
         self.num_features = 300
         self.min_word_count = 40

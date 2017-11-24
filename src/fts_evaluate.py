@@ -11,7 +11,7 @@ from src.database.X28TestData import X28TestData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
-from src.preprocessing.preprocessor_fts import FtsX28Preprocessor
+from src.preprocessing.preprocessor_fts import FtsPreprocessor
 from src.util.boot_util import choose_classifier, choose_evaluation, log_setup
 
 log_setup()
@@ -46,7 +46,7 @@ parser.add_argument('-w', '--write', action='store_true',
                     on the classifier's performance""")
 args = parser.parse_args()
 
-preprocessor = FtsX28Preprocessor()
+preprocessor = FtsPreprocessor()
 classifier = choose_classifier(args)
 evaluation = choose_evaluation(args, classifier)
 
