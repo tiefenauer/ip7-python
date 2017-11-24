@@ -1,4 +1,3 @@
-import argparse
 import logging
 import sys
 
@@ -13,20 +12,9 @@ log = logging.getLogger(__name__)
 
 
 def log_setup():
-    logger = logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s', level=logging.INFO)
+    logger = logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s',
+                                 level=logging.INFO)
     return logger
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")
-    parser.add_argument('id', nargs='?', type=int, help='(optional) single id to process')
-    parser.add_argument('-l', '--limit', nargs='?', type=float, default=0.8,
-                        help='(optional) fraction of labeled data to use for training')
-    parser.add_argument('-o', '--offset', nargs='?', type=float, default=0.0,
-                        help='(optional) fraction value of labeled data to start from')
-    parser.add_argument('-m', '--model',
-                        help='(optional) file with saved model to use. A new model will be created if not set.')
-    return parser.parse_args()
 
 
 def choose_evaluation(args, classifier):

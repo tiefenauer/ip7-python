@@ -8,6 +8,9 @@ class TitleBasedJobTitleClassifier(FtsClassifier):
             title = tag.getText()
         return title, 1, 0
 
+    def _get_filename_postfix(self):
+        return ''
+
     def title(self):
         return 'TITLE BASED CLASSIFICATION'
 

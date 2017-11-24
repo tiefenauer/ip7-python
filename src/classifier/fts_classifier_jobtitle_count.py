@@ -15,8 +15,8 @@ def find_all_matches(tags, job_names):
 
 
 class CountBasedJobTitleClassification(FtsClassifier):
-    def __init__(self, model_file=None):
-        super(CountBasedJobTitleClassification, self).__init__(model_file)
+    def __init__(self, args, preprocessor):
+        super(CountBasedJobTitleClassification, self).__init__(args, preprocessor)
         self.job_names = KnownJobsImporter()
 
     def classify(self, tags):
@@ -33,6 +33,9 @@ class CountBasedJobTitleClassification(FtsClassifier):
             job_names = self.job_names
         for match in find_all_matches(tags, job_names):
             yield match
+
+    def _get_filename_postfix(self):
+        return ''
 
     def title(self):
         return 'Count-based classification'

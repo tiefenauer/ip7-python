@@ -3,7 +3,7 @@ import pickle
 from src import preproc
 from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.preprocessing.x28_preprocessor import X28Preprocessor
-from src.util import util, html_util
+from src.util import util
 
 german_pos_tagger = None
 with open(german_pos_tagger_path, 'rb') as f:

@@ -72,6 +72,14 @@ class FeatureBasedJobTitleClassifier(FtsClassifier):
                             best_job_diversity = job_diversity
         return best_match
 
+    def normalize(self, score):
+        if score < 1:
+            return score
+        return 1 / score
+
+    def _get_filename_postfix(self):
+        return ''
+
     def calculate_score(self, tag, count):
         score = 0
         key = tag if tag in tag_weight else 'default'
@@ -79,11 +87,6 @@ class FeatureBasedJobTitleClassifier(FtsClassifier):
         # todo: add more feature values here if available
         return score
         # return self.normalize(score)
-
-    def normalize(self, score):
-        if score < 1:
-            return score
-        return 1 / score
 
     def title(self):
         return 'Feature based classification'

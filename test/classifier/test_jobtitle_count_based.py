@@ -3,8 +3,12 @@ import unittest
 from hamcrest import *
 
 from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification, find_all_matches
+from src.preprocessing.preprocessor_fts import FtsX28Preprocessor
+from systemtest.test_TestData import create_args
 
-testee = CountBasedJobTitleClassification()
+args = create_args()
+preprocessor = FtsX28Preprocessor()
+testee = CountBasedJobTitleClassification(args, preprocessor)
 
 
 class TestJobtitleStrategyCount(unittest.TestCase):

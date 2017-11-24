@@ -15,6 +15,9 @@ class StructuralClassifier(Classifier):
     def classify(self, processed_data):
         pass
 
+    def _get_filename_postfix(self):
+        pass
+
     def _load_model(self, path):
         pass
 
