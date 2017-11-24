@@ -25,7 +25,7 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if not args.model:
-    args.model = 'structural_nv_2017-11-24-14-29-31.gz'
+    args.model = 'structural_nv_2017-11-24-14-51-03_19rows.gz'
 
 data_test = X28TestData(args)
 preprocessor = StructuralPreprocessor()
