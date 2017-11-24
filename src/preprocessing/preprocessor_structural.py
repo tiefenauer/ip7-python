@@ -2,7 +2,7 @@ import pickle
 
 from src import preproc
 from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
-from src.preprocessing.x28_preprocessor import X28Preprocessor
+from src.preprocessing.preprocessor import Preprocessor
 from src.util import util
 
 german_pos_tagger = None
@@ -19,9 +19,9 @@ def stem_words(tagged_words):
     return ((preproc.stem(word), tag) for word, tag in tagged_words)
 
 
-class StructuralX28Preprocessor(X28Preprocessor):
+class StructuralPreprocessor(Preprocessor):
     def __init__(self):
-        super(StructuralX28Preprocessor, self).__init__()
+        super(StructuralPreprocessor, self).__init__()
 
     def preprocess_single(self, row):
         sentences = preproc.to_sentences(row.plaintext)

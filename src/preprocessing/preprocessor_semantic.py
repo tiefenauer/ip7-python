@@ -1,10 +1,10 @@
 from src import preproc
-from src.preprocessing.x28_preprocessor import X28Preprocessor
+from src.preprocessing.preprocessor import Preprocessor
 
 
-class SemanticX28Preprocessor(X28Preprocessor):
+class SemanticPreprocessor(Preprocessor):
     def __init__(self, remove_stopwords=False):
-        super(X28Preprocessor, self).__init__()
+        super(Preprocessor, self).__init__()
         self.remove_stopwords = remove_stopwords
 
     def preprocess_single(self, row):

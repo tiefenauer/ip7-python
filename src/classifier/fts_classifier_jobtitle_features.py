@@ -2,7 +2,7 @@ from src.classifier.fts_classifier import FtsClassifier
 from src.importer.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import count_variant, create_variants
 
-job_name_variants = list((job_name, create_variants(job_name)) for job_name in KnownJobsImporter())
+job_name_variants = ((job_name, create_variants(job_name)) for job_name in KnownJobsImporter())
 tag_weight = {
     'h1': 0.6,
     'h2': 0.3,
