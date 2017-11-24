@@ -1,7 +1,8 @@
 import unittest
 
-from hamcrest import assert_that, contains
+from hamcrest import assert_that, contains, is_
 
+from src.classifier import structural_classifier
 from src.classifier.structural_classifier import StructuralClassifier, top_n
 from src.preprocessing.preprocessor_structural import StructuralPreprocessor
 from systemtest.test_TestData import create_args
@@ -18,10 +19,57 @@ class TestStructuralClassifier(unittest.TestCase):
         row = create_dummy_row('Baum Baum Baum Baum Baum Haus Haus Haus Haus Maler Maler Maler Bäcker Bäcker')
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = top_n(tagged_words, 'N', 3)
+        result = structural_classifier.top_n(tagged_words, 'N', 3)
         # assert
         assert_that(result, contains(
             ('baum', 5),
             ('haus', 4),
             ('mal', 3)
         ))
+
+    def test_top_n_ignores_variants(self):
+        # arrange
+        row = create_dummy_row("""sehen ich sehe sehen sehen sehen 
+                                helfen ich helfe helfen helfen
+                                schauen ich schaue schauen 
+                                fahren fahrend 
+                                """)
+        tagged_words = preprocessor.preprocess_single(row)
+        # act
+        result = structural_classifier.top_n(tagged_words, 'V', 3)
+        # assert
+        assert_that(result, contains(
+            ('seh', 5),
+            ('helf', 4),
+            ('schau', 3)
+        ))
+
+    def test_extract_features_returns_top_5_nouns_and_verbs(self):
+        # arrange
+        row = create_dummy_row("""Baum Baum Baum Baum Baum Baum Baum 
+                                  Haus Haus Haus Haus Haus Haus  
+                                  Maler Maler Maler Maler Maler
+                                  Bäcker Bäcker Bäcker Bäcker
+                                  Auto Auto Auto 
+                                  Fahrrad Fahrrad   
+                                  sehen sehen sehen sehen sehen sehen sehen 
+                                  backen backen backen backen backen backen 
+                                  braten braten braten braten braten 
+                                  kochen kochen kochen kochen 
+                                  suchen suchen suchen 
+                                  finden finden     
+                                  """)
+        tagged_words = preprocessor.preprocess_single(row)
+        # act
+        result = structural_classifier.extract_features(tagged_words)
+        # assert
+        assert_that(result['noun-1'], is_('baum'))
+        assert_that(result['noun-2'], is_('haus'))
+        assert_that(result['noun-3'], is_('mal'))
+        assert_that(result['noun-4'], is_('back'))
+        assert_that(result['noun-5'], is_('auto'))
+        assert_that(result['verb-1'], is_('seh'))
+        assert_that(result['verb-2'], is_('back'))
+        assert_that(result['verb-3'], is_('brat'))
+        assert_that(result['verb-4'], is_('koch'))
+        assert_that(result['verb-5'], is_('such'))
