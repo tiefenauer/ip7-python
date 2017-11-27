@@ -3,24 +3,10 @@ import pickle
 from src import preproc
 from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.preprocessing.preprocessor import Preprocessor
-from src.util import util
 
 german_pos_tagger = None
 with open(german_pos_tagger_path, 'rb') as f:
     german_pos_tagger = pickle.load(f)
-
-
-def create_pos_tags(words_list, html_tags):
-    result = []
-    for words, tag in zip(words_list, html_tags):
-        tagged_words = german_pos_tagger.tag(words)
-        for (content, pos) in tagged_words:
-            result.append((content, pos, tag))
-    return result
-
-
-def stem_words(tagged_words):
-    return ((preproc.stem(word), tag) for word, tag in tagged_words)
 
 
 def split_tag_content(html):
@@ -36,17 +22,21 @@ def contents_to_sentences(contents, html_tags):
             yield html_tag, sent
 
 
-def extract_words_list(sentences_per_content):
-    for sentences in sentences_per_content:
-        words_list_per_sentence = ((preproc.to_words(sentence)) for sentence in sentences)
-        words_list = [list(preproc.remove_punctuation(words_list)) for words_list in words_list_per_sentence]
-        yield words_list
+def content_sents_to_wordlist(content_sents):
+    for tag, sent in content_sents:
+        words = preproc.to_words(sent)
+        words = preproc.remove_punctuation(words)
+        yield tag, list(words)
 
 
-def extract_pos_tags(words_tokens_list):
-    tagged_words_list = (german_pos_tagger.tag(list(word_tokens)) for word_tokens in words_tokens_list)
-    for tagged_words in tagged_words_list:
-        yield list(pos_tag for (word, pos_tag) in tagged_words)
+def add_pos_tag(content_words):
+    for tag, words in content_words:
+        yield tag, german_pos_tagger.tag(words)
+
+
+def content_words_to_stems(content_words):
+    for tag, words in content_words:
+        yield tag, list(preproc.stem(word) for word in words)
 
 
 class StructuralPreprocessorNVT(Preprocessor):
@@ -54,5 +44,4 @@ class StructuralPreprocessorNVT(Preprocessor):
         super(StructuralPreprocessorNVT, self).__init__()
 
     def preprocess_single(self, row):
-        tags, contents = split_tag_content(row.html)
-        words_list = extract_words_list(contents)
+        pass
