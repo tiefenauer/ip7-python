@@ -3,17 +3,17 @@ import logging
 
 import nltk
 
-from src.classifier.structural_classifier_nv import StructuralClassifierNV
-from src.database.ClassificationResults import StructuralClassificationNVResults
+from src.classifier.structural_classifier_nvt import StructuralClassifierNVT
+from src.database.ClassificationResults import StructuralClassificationNVTResults
 from src.database.X28TestData import X28TestData
 from src.evaluation.evaluation import Evaluation
-from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
+from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from src.util.boot_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)
 
-parser = argparse.ArgumentParser(description="""Classifies data using structural approach (nouns and verbs)""")
+parser = argparse.ArgumentParser(description="""Classifies data using structural approach (nouns/verbs + HTML-Tag)""")
 parser.add_argument('model', nargs='?', help='file with saved model to evaluate')
 parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
                     help='(optional) fraction value of labeled data to use for training/testing')
@@ -30,10 +30,10 @@ if not args.model:
     args.model = 'structural_nv_2017-11-24-14-51-03_19rows.gz'
 
 data_test = X28TestData(args)
-preprocessor = StructuralPreprocessorNV()
-classifier = StructuralClassifierNV(args, preprocessor)
+preprocessor = StructuralPreprocessorNVT()
+classifier = StructuralClassifierNVT(args, preprocessor)
 evaluation = Evaluation(classifier)
-results = StructuralClassificationNVResults(args, classifier)
+results = StructuralClassificationNVTResults(args, classifier)
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')

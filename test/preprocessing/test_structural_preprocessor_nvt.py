@@ -2,6 +2,7 @@ import unittest
 
 from hamcrest import assert_that, contains, empty, is_
 
+from src import preproc
 from src.preprocessing import structural_preprocessor_nvt
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from test.util.test_util import create_dummy_row
@@ -57,8 +58,9 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
         <h1>Dies ist ein Test zum schauen ob es funktioniert. Dies ist ein anderer Satz.</h1>
         <p>Dies ist noch ein Inhalt.</p>
         """
+        relevant_tags = preproc.extract_relevant_tags(markup)
         # act
-        result = structural_preprocessor_nvt.split_words_by_tag(markup)
+        result = structural_preprocessor_nvt.split_words_by_tag(relevant_tags)
         tags, word_lists = zip(*result)
         # assert
         assert_that(tags, contains('h1', 'h1', 'p'))
@@ -74,8 +76,9 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
         <h1>Dies ist ein Test zum schauen, ob es funktioniert. Dies ist ein anderer Satz.</h1>
         <p>Dies ist noch ein Inhalt.</p>
         """
+        relevant_tags = preproc.extract_relevant_tags(markup)
         # act
-        result = structural_preprocessor_nvt.split_words_by_tag(markup)
+        result = structural_preprocessor_nvt.split_words_by_tag(relevant_tags)
         tags, word_lists = zip(*result)
         # assert
         assert_that(tags, contains('h1', 'h1', 'p'))

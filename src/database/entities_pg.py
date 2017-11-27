@@ -64,8 +64,12 @@ class Semantic_Rf_Classification_Results(Classification_Results):
     _discriminator_ = 'semantic_rf'
 
 
-class Structural_Classification_Results(Classification_Results):
+class Structural_Classification_NV_Results(Classification_Results):
     _discriminator_ = 'structural_nv'
+
+
+class Structural_Classification_NVT_Results(Classification_Results):
+    _discriminator_ = 'structural_nvt'
 
 
 pg.bind('postgres', host='127.0.0.1', user='postgres', password='postgres', database='x28')

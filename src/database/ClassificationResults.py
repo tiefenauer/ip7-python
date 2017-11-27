@@ -4,7 +4,7 @@ from abc import abstractmethod
 from pony.orm import commit, db_session
 
 from src.database.entities_pg import Semantic_Avg_Classification_Results, Fts_Classification_Results, X28_HTML, \
-    Semantic_Rf_Classification_Results, Structural_Classification_Results
+    Semantic_Rf_Classification_Results, Structural_Classification_NV_Results, Structural_Classification_NVT_Results
 
 log = logging.getLogger(__name__)
 
@@ -75,13 +75,26 @@ class SemanticRfClassificationResults(ClassificationResults):
                                                   score_linear=sc_lin)
 
 
-class StructuralClassificationResults(ClassificationResults):
+class StructuralClassificationNVResults(ClassificationResults):
     def __init__(self, args, classifier):
-        super(StructuralClassificationResults, self).__init__(classifier, Structural_Classification_Results, args)
+        super(StructuralClassificationNVResults, self).__init__(classifier, Structural_Classification_NV_Results, args)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
-        return Structural_Classification_Results(job=job_entity,
-                                                 job_name=predicted_class,
-                                                 score_strict=sc_str,
-                                                 score_tolerant=sc_tol,
-                                                 score_linear=sc_lin)
+        return Structural_Classification_NV_Results(job=job_entity,
+                                                    job_name=predicted_class,
+                                                    score_strict=sc_str,
+                                                    score_tolerant=sc_tol,
+                                                    score_linear=sc_lin)
+
+
+class StructuralClassificationNVTResults(ClassificationResults):
+    def __init__(self, args, classifier):
+        super(StructuralClassificationNVTResults, self).__init__(classifier, Structural_Classification_NVT_Results,
+                                                                 args)
+
+    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
+        return Structural_Classification_NVT_Results(job=job_entity,
+                                                     job_name=predicted_class,
+                                                     score_strict=sc_str,
+                                                     score_tolerant=sc_tol,
+                                                     score_linear=sc_lin)

@@ -2,8 +2,7 @@ from src import preproc
 from src.preprocessing.preprocessor import Preprocessor
 
 
-def split_words_by_tag(html):
-    tags = preproc.extract_relevant_tags(html)
+def split_words_by_tag(tags):
     for html_tag, content in ((tag.name, tag.getText()) for tag in tags):
         for sent in preproc.to_sentences(content):
             words = preproc.to_words(sent)
@@ -21,10 +20,12 @@ class StructuralPreprocessorNVT(Preprocessor):
         super(StructuralPreprocessorNVT, self).__init__()
 
     def preprocess_single(self, row):
-        # html to map tag-> ['word1', 'word2', '...'] (1 entry per sentence)
-        words_by_tag = list(split_words_by_tag(row.html)) # evaluate generator because markup might not contain any relevant tags
-        if not words_by_tag:
+        # evaluate generator already here because markup might not contain any relevant tags
+        relevant_tags = list(preproc.extract_relevant_tags(row.html))
+        if not relevant_tags:
             return []
+        # html to map tag-> ['word1', 'word2', '...'] (1 entry per sentence)
+        words_by_tag = split_words_by_tag(relevant_tags)
         html_tags, word_lists = zip(*words_by_tag)
         tagged_words_list = preproc.pos_tag(word_lists)
         tagged_stems_lists = content_words_to_stems(tagged_words_list)
