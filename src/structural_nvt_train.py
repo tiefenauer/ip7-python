@@ -7,6 +7,7 @@ from src.util.boot_util import log_setup
 
 parser = argparse.ArgumentParser(description="""Train Structural Classifier (NLTK)""")
 parser.add_argument('source', nargs='?', choices=['fetchflow', 'x28'], default='fetchflow')
+parser.add_argument('id', nargs='?', type=int)
 parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
                     help='(optional) fraction value of labeled data to use for training')
 parser.add_argument('-m', '--model',

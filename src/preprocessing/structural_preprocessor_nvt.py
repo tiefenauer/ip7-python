@@ -10,22 +10,41 @@ with open(german_pos_tagger_path, 'rb') as f:
     german_pos_tagger = pickle.load(f)
 
 
-def create_pos_tags(words_list):
-    tagged_words = (german_pos_tagger.tag(list(words)) for words in words_list)
-    return util.flatten(tagged_words)
+def create_pos_tags(words_list, html_tags):
+    result = []
+    for words, tag in zip(words_list, html_tags):
+        tagged_words = german_pos_tagger.tag(words)
+        for (content, pos) in tagged_words:
+            result.append((content, pos, tag))
+    return result
 
 
 def stem_words(tagged_words):
     return ((preproc.stem(word), tag) for word, tag in tagged_words)
 
 
-def to_html_word_list(html):
+def split_tag_content(html):
     tags = preproc.extract_relevant_tags(html)
-    tag_content = ((tag.name, tag.getText()) for tag in tags)
-    for tag, content in tag_content:
-        words = preproc.to_words(content)
-        for word in words:
-            yield word, tag
+    tags_contents = ((tag.name, tag.getText()) for tag in tags)
+    return zip(*tags_contents)
+
+
+def contents_to_sentences(contents):
+    for content in contents:
+        yield preproc.to_sentences(content)
+
+
+def extract_words_list(sentences_per_content):
+    for sentences in sentences_per_content:
+        words_list_per_sentence = [list(preproc.to_words(sentence)) for sentence in sentences]
+        words_list = [list(preproc.remove_punctuation(words_list)) for words_list in words_list_per_sentence]
+        yield words_list
+
+
+def extract_pos_tags(words_tokens_list):
+    tagged_words_list = (german_pos_tagger.tag(list(word_tokens)) for word_tokens in words_tokens_list)
+    for tagged_words in tagged_words_list:
+        yield list(pos_tag for (word, pos_tag) in tagged_words)
 
 
 class StructuralPreprocessorNVT(Preprocessor):
@@ -33,10 +52,5 @@ class StructuralPreprocessorNVT(Preprocessor):
         super(StructuralPreprocessorNVT, self).__init__()
 
     def preprocess_single(self, row):
-        html_tagged_words = to_html_word_list(row.html)
-        sentences = preproc.to_sentences(row.plaintext)
-        words_list = preproc.sentence_list_to_word_list(sentences)
-        words_list = (preproc.remove_punctuation(word_list) for word_list in words_list)
-        tagged_words = create_pos_tags(words_list)
-        tagged_stems = stem_words(tagged_words)
-        return tagged_stems
+        tags, contents = split_tag_content(row.html)
+        words_list = extract_words_list(contents)
