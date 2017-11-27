@@ -3,23 +3,16 @@ import pickle
 from src import preproc
 from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.preprocessing.preprocessor import Preprocessor
-from src.util import util
 
 german_pos_tagger = None
 with open(german_pos_tagger_path, 'rb') as f:
     german_pos_tagger = pickle.load(f)
 
 
-def split_tag_content(html):
+def split_sentences_by_tag(html):
     tags = preproc.extract_relevant_tags(html)
-    tags_contents = ((tag.name, tag.getText()) for tag in tags)
-    return zip(*tags_contents)
-
-
-def contents_to_sentences(contents, html_tags):
-    for content, html_tag in zip(contents, html_tags):
-        content_sents = preproc.to_sentences(content)
-        for sent in content_sents:
+    for html_tag, content in ((tag.name, tag.getText()) for tag in tags):
+        for sent in preproc.to_sentences(content):
             yield html_tag, sent
 
 
@@ -45,8 +38,7 @@ class StructuralPreprocessorNVT(Preprocessor):
         super(StructuralPreprocessorNVT, self).__init__()
 
     def preprocess_single(self, row):
-        html_tags, contents = split_tag_content(row.html)
-        content_sents = contents_to_sentences(contents, html_tags)
+        content_sents = split_sentences_by_tag(row.html)
         content_words = content_sents_to_wordlist(content_sents)
         content_words_tagged = add_pos_tag(content_words)
         content_words_tagged_stememd = content_words_to_stems(content_words_tagged)
