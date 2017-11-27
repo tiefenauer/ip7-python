@@ -36,7 +36,7 @@ def contents_to_sentences(contents):
 
 def extract_words_list(sentences_per_content):
     for sentences in sentences_per_content:
-        words_list_per_sentence = [list(preproc.to_words(sentence)) for sentence in sentences]
+        words_list_per_sentence = ((preproc.to_words(sentence)) for sentence in sentences)
         words_list = [list(preproc.remove_punctuation(words_list)) for words_list in words_list_per_sentence]
         yield words_list
 
