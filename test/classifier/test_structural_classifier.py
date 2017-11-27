@@ -63,7 +63,7 @@ class TestStructuralClassifier(unittest.TestCase):
                                   """)
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = structural_classifier_nv.extract_features(tagged_words)
+        result = testee.extract_features(tagged_words)
         # assert
         assert_that(result['noun-1'], is_('baum'))
         assert_that(result['noun-2'], is_('haus'))

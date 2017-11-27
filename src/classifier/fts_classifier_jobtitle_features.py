@@ -2,7 +2,6 @@ from src.classifier.fts_classifier import FtsClassifier
 from src.importer.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import count_variant, create_variants
 
-job_name_variants = ((job_name, create_variants(job_name)) for job_name in KnownJobsImporter())
 tag_weight = {
     'h1': 0.6,
     'h2': 0.3,
@@ -17,7 +16,7 @@ tag_weight = {
 #       'job_variant_2': {'h2': 6}
 #    ]
 # }
-def extract_features(tags, job_name_variants=job_name_variants):
+def extract_features(tags, job_name_variants):
     features = {}
     for job_name, variants in job_name_variants:
         for tag in tags:
@@ -41,8 +40,12 @@ def count_variants(string, variants):
 
 
 class FeatureBasedJobTitleClassifier(FtsClassifier):
+    def __init__(self, args, preprocessor):
+        super(FeatureBasedJobTitleClassifier, self).__init__(args, preprocessor)
+        self.job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobsImporter()]
+
     def classify(self, tags):
-        features = extract_features(tags, job_name_variants)
+        features = extract_features(tags, self.job_name_variants)
         best_match = None
         best_job_score = 0
         best_job_diversity = 0
