@@ -4,7 +4,7 @@ from hamcrest import assert_that, contains
 
 from src.preprocessing import structural_preprocessor_nvt
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
-from test.preprocessing.test_structural_preprocessor_nv import create_dummy_row
+from test.util.test_util import create_dummy_row
 
 testee = StructuralPreprocessorNVT()
 

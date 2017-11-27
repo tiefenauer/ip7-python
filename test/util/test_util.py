@@ -1,10 +1,8 @@
 import collections
-import datetime
 import unittest
 
 from hamcrest import *
 
-import src.util.semantic_util
 from src.util import util as testee
 
 lorem_ipsum = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut ' \
@@ -67,3 +65,28 @@ class TestUtil(unittest.TestCase):
         assert_that(result, is_(instance_of(collections.Iterable)))
         for item in result:
             assert_that(item, is_(greater_than(0)))
+
+
+class DummyArgs(object):
+    def __init__(self):
+        self.split = None
+
+
+def create_dummy_args(split=None):
+    args = DummyArgs()
+    args.split = split
+    return args
+
+
+class DummyRow(object):
+    def __init__(self):
+        self.html = None
+        self.plaintext = None
+        self.processed = []
+
+
+def create_dummy_row(plaintext=None, html=None):
+    row = DummyRow()
+    row.html = html
+    row.plaintext = plaintext
+    return row

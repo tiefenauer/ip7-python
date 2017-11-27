@@ -4,9 +4,9 @@ from hamcrest import *
 
 from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification, find_all_matches
 from src.preprocessing.preprocessor_fts import FtsPreprocessor
-from systemtest.test_TestData import create_args
+from test.util.test_util import create_dummy_args
 
-args = create_args()
+args = create_dummy_args()
 preprocessor = FtsPreprocessor()
 testee = CountBasedJobTitleClassification(args, preprocessor)
 

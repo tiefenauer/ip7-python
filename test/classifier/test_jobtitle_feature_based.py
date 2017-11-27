@@ -8,9 +8,9 @@ from src.classifier import fts_classifier_jobtitle_features
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
 from src.preprocessing.preprocessor_fts import FtsPreprocessor
 from src.util.jobtitle_util import create_gender_variants
-from systemtest.test_TestData import create_args
+from test.util.test_util import create_dummy_args
 
-args = create_args()
+args = create_dummy_args()
 preprocessor = FtsPreprocessor()
 testee = FeatureBasedJobTitleClassifier(args, preprocessor)
 

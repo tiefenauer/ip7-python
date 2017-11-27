@@ -7,15 +7,14 @@ from src.classifier import structural_classifier_nv
 from src.classifier.structural_classifier_nv import StructuralClassifierNV, top_n
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
-from systemtest.test_TestData import create_args
-from test.preprocessing.test_structural_preprocessor_nv import create_dummy_row
+from test.util.test_util import create_dummy_args, create_dummy_row
 
-args = create_args()
+args = create_dummy_args()
 preprocessor = StructuralPreprocessorNV()
 testee = StructuralClassifierNV(args, preprocessor)
 
 
-class TestStructuralClassifier(unittest.TestCase):
+class TestStructuralClassifierNV(unittest.TestCase):
     def test_top_n_returns_top_n(self):
         # arrange
         row = create_dummy_row('Baum Baum Baum Baum Baum Haus Haus Haus Haus Maler Maler Maler Bäcker Bäcker')
@@ -78,7 +77,7 @@ class TestStructuralClassifier(unittest.TestCase):
 
     def test_save_load(self):
         # arrange
-        data_train = X28TrainData(create_args(split=0.00001))
+        data_train = X28TrainData(create_dummy_args(split=0.00001))
         testee.train_model(data_train)
         # act
         filename = 'test.pickle'
