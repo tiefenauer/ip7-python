@@ -36,7 +36,7 @@ def add_pos_tag(content_words):
 
 def content_words_to_stems(content_words):
     for tag, words in content_words:
-        yield tag, list(preproc.stem(word) for word in words)
+        yield tag, list((preproc.stem(word), pos_tag) for (word, pos_tag) in words)
 
 
 class StructuralPreprocessorNVT(Preprocessor):

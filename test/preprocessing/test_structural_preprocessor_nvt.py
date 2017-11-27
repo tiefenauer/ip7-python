@@ -1,7 +1,6 @@
 import unittest
 
-from hamcrest import assert_that, contains, contains_inanyorder
-from hamcrest.core.base_matcher import BaseMatcher
+from hamcrest import assert_that, contains
 
 from src.preprocessing import structural_preprocessor_nvt
 
@@ -82,44 +81,26 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
         result = list(result)
         # assert
         assert_that(result, contains(
-            result_item('h1', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
-                               ('schauen', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')]),
-            result_item('h1', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('Satz', 'NN')]),
-            result_item('p', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')])
-            ))
+            ('h1', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
+                    ('schauen', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')]),
+            ('h1', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('Satz', 'NN')]),
+            ('p', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')])
+        ))
 
     def test_content_words_to_stems_converts_words_to_stem(self):
         # arrange
         content_words = [
-            ('h1', ['Dies', 'ist', 'ein', 'Test', 'zum', 'schauen', 'ob', 'es', 'funktioniert']),
-            ('h1', ['Dies', 'ist', 'ein', 'anderer', 'Satz']),
-            ('p', ['Dies', 'ist', 'noch', 'ein', 'Inhalt'])
+            ('h1', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
+                    ('schauen', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')]),
+            ('h1', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('Satz', 'NN')]),
+            ('p', [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')])
         ]
         # act
         result = structural_preprocessor_nvt.content_words_to_stems(content_words)
         # assert
         assert_that(result, contains(
-            ('h1', ['dies', 'ist', 'ein', 'test', 'zum', 'schau', 'ob', 'es', 'funktioniert']),
-            ('h1', ['dies', 'ist', 'ein', 'anderer', 'satz']),
-            ('p', ['dies', 'ist', 'noch', 'ein', 'inhalt'])
+            ('h1', [('dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('test', 'NN'), ('zum', 'APPRART'),
+                    ('schau', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')]),
+            ('h1', [('dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('satz', 'NN')]),
+            ('p', [('dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('inhalt', 'NN')])
         ))
-
-
-def result_item(html_tag, pos_tagged_words):
-    return IsTupleMatching(html_tag, pos_tagged_words)
-
-
-class IsTupleMatching(BaseMatcher):
-    def __init__(self, html_tag, pos_tagged_words):
-        self.html_tag = html_tag
-        self.pos_tagged_words = pos_tagged_words
-
-    def _matches(self, item):
-        return self.html_tag == item[0] \
-               and self.pos_tagged_words == item[1]
-
-    def describe_to(self, description):
-        description.append_text('tuple matching html_tag=\'') \
-            .append_text(self.html_tag) \
-            .append_text(' and pos_tagged_words=') \
-            .append_text(self.pos_tagged_words)
