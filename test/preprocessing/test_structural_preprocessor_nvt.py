@@ -27,12 +27,14 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             'Dies ist ein Test zum schauen ob es funktioniert. Dies ist ein anderer Satz.',
             'Dies ist noch ein Inhalt.'
         ]
+        html_tags = ['h1', 'p']
         # act
-        result = structural_preprocessor_nvt.contents_to_sentences(contents)
+        result = structural_preprocessor_nvt.contents_to_sentences(contents, html_tags)
         # assert
         assert_that(result, contains(
-            ['Dies ist ein Test zum schauen ob es funktioniert.', 'Dies ist ein anderer Satz.'],
-            ['Dies ist noch ein Inhalt.']
+            ('h1', 'Dies ist ein Test zum schauen ob es funktioniert.'),
+            ('h1', 'Dies ist ein anderer Satz.'),
+            ('p', 'Dies ist noch ein Inhalt.')
         ))
 
     def test_extract_words_list_returns_words_lists(self):

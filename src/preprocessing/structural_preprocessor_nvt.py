@@ -29,9 +29,11 @@ def split_tag_content(html):
     return zip(*tags_contents)
 
 
-def contents_to_sentences(contents):
-    for content in contents:
-        yield preproc.to_sentences(content)
+def contents_to_sentences(contents, html_tags):
+    for content, html_tag in zip(contents, html_tags):
+        content_sents = preproc.to_sentences(content)
+        for sent in content_sents:
+            yield html_tag, sent
 
 
 def extract_words_list(sentences_per_content):
