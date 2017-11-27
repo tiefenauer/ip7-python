@@ -3,6 +3,7 @@ import pickle
 from src import preproc
 from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.preprocessing.preprocessor import Preprocessor
+from src.util import util
 
 german_pos_tagger = None
 with open(german_pos_tagger_path, 'rb') as f:
@@ -44,4 +45,13 @@ class StructuralPreprocessorNVT(Preprocessor):
         super(StructuralPreprocessorNVT, self).__init__()
 
     def preprocess_single(self, row):
-        pass
+        html_tags, contents = split_tag_content(row.html)
+        content_sents = contents_to_sentences(contents, html_tags)
+        content_words = content_sents_to_wordlist(content_sents)
+        content_words_tagged = add_pos_tag(content_words)
+        content_words_tagged_stememd = content_words_to_stems(content_words_tagged)
+        processed = []
+        for (html_tag, tagged_words) in content_words_tagged_stememd:
+            for word, pos_tag in tagged_words:
+                processed.append((word, pos_tag, html_tag))
+        return processed
