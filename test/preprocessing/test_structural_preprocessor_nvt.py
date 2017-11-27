@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import assert_that, contains
+from hamcrest import assert_that, contains, empty, is_
 
 from src.preprocessing import structural_preprocessor_nvt
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
@@ -41,6 +41,15 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             ('ein', 'ART', 'p'),
             ('inhalt', 'NN', 'p')
         ))
+
+    def test_preprocess_single_no_relevant_tags(self):
+        # arrange
+        markup = "<img src='foo/bar.jpg'></img>"
+        row = create_dummy_row(html=markup)
+        # act
+        result = testee.preprocess_single(row)
+        # assert
+        assert_that(result, is_(empty()))
 
     def test_split_words_by_tag_splits_into_words(self):
         # arrange

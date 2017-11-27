@@ -22,9 +22,13 @@ class StructuralPreprocessorNVT(Preprocessor):
 
     def preprocess_single(self, row):
         # html to map tag-> ['word1', 'word2', '...'] (1 entry per sentence)
-        html_tags, word_lists = zip(*split_words_by_tag(row.html))
+        words_by_tag = list(split_words_by_tag(row.html)) # evaluate generator because markup might not contain any relevant tags
+        if not words_by_tag:
+            return []
+        html_tags, word_lists = zip(*words_by_tag)
         tagged_words_list = preproc.pos_tag(word_lists)
         tagged_stems_lists = content_words_to_stems(tagged_words_list)
+
         processed = []
         for tagged_stem_list, html_tag in zip(tagged_stems_lists, html_tags):
             for stem, pos_tag in tagged_stem_list:
