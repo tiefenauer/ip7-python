@@ -23,10 +23,10 @@ class StructuralPreprocessorNVT(Preprocessor):
     def preprocess_single(self, row):
         # html to map tag-> ['word1', 'word2', '...'] (1 entry per sentence)
         html_tags, word_lists = zip(*split_words_by_tag(row.html))
-        tagged_word_lists = preproc.pos_tag(word_lists)
-        tagged_stem_lists = content_words_to_stems(tagged_word_lists)
+        tagged_words_list = preproc.pos_tag(word_lists)
+        tagged_stems_lists = content_words_to_stems(tagged_words_list)
         processed = []
-        for tagged_stem_list, html_tag in zip(tagged_stem_lists, html_tags):
+        for tagged_stem_list, html_tag in zip(tagged_stems_lists, html_tags):
             for stem, pos_tag in tagged_stem_list:
                 processed.append((stem, pos_tag, html_tag))
         return processed
