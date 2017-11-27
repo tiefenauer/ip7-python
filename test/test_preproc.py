@@ -125,6 +125,34 @@ class TestPreprocessing(unittest.TestCase):
         assert_that(sentence_stemmed, is_('aufeinand kategori'))
         assert_that(list(words_stemmed), is_(['aufeinand', 'kategori']))
 
+    def test_pos_tag_with_single_list_adds_pos_tag_to_words(self):
+        # arrange
+        word_list = ['Dies', 'ist', 'ein', 'Test', 'zum', 'schauen', 'ob', 'es', 'funktioniert']
+        # act
+        result = testee.pos_tag(word_list)
+        # assert
+        assert_that(result, is_(
+            [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
+             ('schauen', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')]
+        ))
+
+    def test_pos_tag_with_multiple_list_adds_pos_tag_to_words(self):
+        # arrange
+        word_lists = [
+            ['Dies', 'ist', 'ein', 'Test', 'zum', 'schauen', 'ob', 'es', 'funktioniert'],
+            ['Dies', 'ist', 'ein', 'anderer', 'Satz'],
+            ['Dies', 'ist', 'noch', 'ein', 'Inhalt']
+        ]
+        # act
+        result = testee.pos_tag(word_lists)
+        # assert
+        assert_that(result, contains(
+            [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
+             ('schauen', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')],
+            [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('Satz', 'NN')],
+            [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')]
+        ))
+
     def test_text_list_to_sentence_list_returns_one_sentence_list_per_text(self):
         # arrange
         text_list = [
@@ -158,6 +186,27 @@ class TestPreprocessing(unittest.TestCase):
     def test_is_iterable_and_not_string(self):
         assert_that(testee.is_iterable_and_not_string('foo bar'), is_(False))
         assert_that(testee.is_iterable_and_not_string(['foo', 'bar']), is_(True))
+
+    def test_is_nested_list(self):
+        # arrange
+        nested_list = [[1, 2, 3], ['foo', 'bar']]
+        simple_list = [1, 2, 3]
+        # act/assert
+        assert_that(testee.is_nested_list(nested_list), is_(True))
+        assert_that(testee.is_nested_list(simple_list), is_(False))
+
+    def test_is_nested_list_with_generator_does_not_evaluate_generator(self):
+        # arrange
+        generator = (i for i in [1, 2, 3])
+        # act
+        result = testee.is_nested_list(generator)
+        # assert
+        assert_that(result, is_(False))
+        assert_that(len(list(generator)), is_(3))
+
+    def test_is_generator(self):
+        assert_that(testee.is_generator((i for i in [1, 2, 3])), is_(True))
+        assert_that(testee.is_generator([1, 2, 3]), is_(False))
 
     @unittest.skip("removing CDATA is performed automatically atm by using a lxml-parser")
     def test_remove_cdata_removes_cdata(self):

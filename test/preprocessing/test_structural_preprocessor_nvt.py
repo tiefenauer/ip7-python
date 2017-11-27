@@ -76,24 +76,6 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             ['Dies', 'ist', 'noch', 'ein', 'Inhalt']
         ))
 
-    def test_add_pos_tag_adds_pos_tag_to_list(self):
-        # arrange
-        word_lists = [
-            ['Dies', 'ist', 'ein', 'Test', 'zum', 'schauen', 'ob', 'es', 'funktioniert'],
-            ['Dies', 'ist', 'ein', 'anderer', 'Satz'],
-            ['Dies', 'ist', 'noch', 'ein', 'Inhalt']
-        ]
-        # act
-        result = structural_preprocessor_nvt.add_pos_tag(word_lists)
-        result = list(result)
-        # assert
-        assert_that(result, contains(
-            [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
-             ('schauen', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')],
-            [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('Satz', 'NN')],
-            [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')]
-        ))
-
     def test_content_words_to_stems_converts_words_to_stem(self):
         # arrange
         word_lists = [

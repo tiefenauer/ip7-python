@@ -1,12 +1,5 @@
-import pickle
-
 from src import preproc
-from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.preprocessing.preprocessor import Preprocessor
-
-german_pos_tagger = None
-with open(german_pos_tagger_path, 'rb') as f:
-    german_pos_tagger = pickle.load(f)
 
 
 def split_words_by_tag(html):
@@ -16,10 +9,6 @@ def split_words_by_tag(html):
             words = preproc.to_words(sent)
             words = preproc.remove_punctuation(words)
             yield html_tag, list(words)
-
-
-def add_pos_tag(word_list):
-    return (german_pos_tagger.tag(words) for words in word_list)
 
 
 def content_words_to_stems(tagged_word_lists):
@@ -33,9 +22,8 @@ class StructuralPreprocessorNVT(Preprocessor):
 
     def preprocess_single(self, row):
         # html to map tag-> ['word1', 'word2', '...'] (1 entry per sentence)
-        tag_wordlist = split_words_by_tag(row.html)
-        html_tags, word_lists = zip(*tag_wordlist)
-        tagged_word_lists = add_pos_tag(word_lists)
+        html_tags, word_lists = zip(*split_words_by_tag(row.html))
+        tagged_word_lists = preproc.pos_tag(word_lists)
         tagged_stem_lists = content_words_to_stems(tagged_word_lists)
         processed = []
         for tagged_stem_list, html_tag in zip(tagged_stem_lists, html_tags):

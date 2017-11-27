@@ -1,5 +1,7 @@
 import collections
+import pickle
 import re
+import types
 
 import nltk
 from bs4 import BeautifulSoup
@@ -7,9 +9,14 @@ from lxml import etree
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
+from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.util import html_util
 from src.util.html_util import remove_all_attrs, strip_content
 from src.util.util import flatten
+
+# german POS tagger
+with open(german_pos_tagger_path, 'rb') as f:
+    german_pos_tagger = pickle.load(f)
 
 stopwords_de = set(stopwords.words('german'))
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
@@ -75,17 +82,37 @@ def remove_stop_words(text):
 
 
 def stem(text):
+    """stem a text string or a list of strings"""
     if is_iterable_and_not_string(text):
         return (stem_word(word) for word in text)
     return ' '.join(stem_word(word) for word in text.split(' '))
 
 
 def stem_word(word):
+    """stem a single word string"""
     return stemmer.stem(word)
+
+
+def pos_tag(word_list):
+    if is_generator(word_list):
+        return (german_pos_tagger.tag(list(words)) for words in word_list)
+    if is_nested_list(word_list):
+        return (german_pos_tagger.tag(words) for words in word_list)
+    return german_pos_tagger.tag(word_list)
 
 
 def is_iterable_and_not_string(text):
     return isinstance(text, collections.Iterable) and not isinstance(text, str)
+
+
+def is_generator(obj):
+    return isinstance(obj, types.GeneratorType)
+
+
+def is_nested_list(lst):
+    if is_generator(lst):
+        return False
+    return any(isinstance(i, list) for i in lst)
 
 
 def remove_punctuation(words):
