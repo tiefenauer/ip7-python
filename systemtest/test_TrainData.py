@@ -1,5 +1,6 @@
 import unittest
 
+import math
 from hamcrest import assert_that, is_
 from pony.orm import db_session
 
@@ -31,9 +32,9 @@ class TestTrainData(unittest.TestCase):
         # arrange
         split = 0.1
         # act
-        testee = TrainData(create_args(split=split), X28_HTML)
+        testee = TrainData(test_util.create_dummy_args(split=split), X28_HTML)
         # assert
-        assert_that(count_items(testee), is_(int(train_data_count * split)))
+        assert_that(count_items(testee), is_(math.ceil(train_data_count * split)))
         assert_that(testee.split, is_(int(train_data_count * split)))
         assert_that(testee.num_total, is_(train_data_count))
-        assert_that(testee.num_rows, is_(testee.split))
+        assert_that(testee.num_rows, is_(math.ceil(train_data_count * split)))
