@@ -1,6 +1,6 @@
 import re
 
-from src.importer.known_jobs_tsv_importer import KnownJobsImporter
+from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 
 pattern_hyphenated = re.compile('(?=\S*[-])([a-zA-Z-]+)')
 pattern_suffix = r"{}((in)|(euse)|(frau))"

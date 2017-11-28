@@ -6,7 +6,7 @@ from hamcrest.core.base_matcher import BaseMatcher
 
 from src.classifier import fts_classifier_jobtitle_features
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
-from src.preprocessing.preprocessor_fts import FtsPreprocessor
+from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.jobtitle_util import create_gender_variants
 from test.util.test_util import create_dummy_args
 

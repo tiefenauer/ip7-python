@@ -3,7 +3,7 @@ import json
 
 from tqdm import tqdm
 
-from src.importer.x28_json_importer import X28JsonImporter
+from src.dataimport.x28_json_importer import X28JsonImporter
 from src.util.log_util import log_setup
 
 log_setup()

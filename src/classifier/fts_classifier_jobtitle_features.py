@@ -1,5 +1,5 @@
 from src.classifier.fts_classifier import FtsClassifier
-from src.importer.known_jobs_tsv_importer import KnownJobsImporter
+from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import count_variant, create_variants
 
 tag_weight = {

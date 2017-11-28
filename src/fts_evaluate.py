@@ -6,7 +6,7 @@ from src.database.ClassificationResults import FtsClassificationResults
 from src.database.X28TestData import X28TestData
 from src.evaluation.evaluation import Evaluation
 from src.evaluation.evaluation_fts import FtsEvaluation
-from src.preprocessing.preprocessor_fts import FtsPreprocessor
+from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup
 
 log_setup()

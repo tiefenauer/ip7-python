@@ -8,7 +8,7 @@ from src.database.ClassificationResults import SemanticRfClassificationResults
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.evaluation import Evaluation
-from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
+from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
 
 log_setup()

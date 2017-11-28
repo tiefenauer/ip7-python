@@ -3,7 +3,7 @@ import unittest
 from hamcrest import *
 
 from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification, find_all_matches
-from src.preprocessing.preprocessor_fts import FtsPreprocessor
+from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from test.util.test_util import create_dummy_args
 
 args = create_dummy_args()

@@ -9,7 +9,7 @@ from lxml import etree
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
-from src.preprocessing.create_nltk_pos_tagger_german import german_pos_tagger_path
+from src.dataimport.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.util import html_util
 from src.util.html_util import remove_all_attrs, strip_content
 from src.util.util import flatten

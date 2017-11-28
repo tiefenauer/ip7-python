@@ -53,45 +53,26 @@ def create_gender_variants(job_name):
 def create_write_variants(job_name):
     write_variants = set()
     write_variants.add(job_name)
-    if is_hyphenated(job_name):
+    if jobtitle_util.is_hyphenated(job_name):
         job_name_parts = re.findall('([a-zA-Z]+)', job_name)
         part1 = job_name_parts[0]
         part2 = job_name_parts[1]
-        job_concatenated = create_job_name_concatenated(part1, part2.lower())
-        job_spaced = create_job_name_spaced(part1, part2)
+        job_concatenated = jobtitle_util.to_concatenated_form(part1, part2)
+        job_spaced = jobtitle_util.to_spaced_form(part1, part2)
         write_variants.add(job_concatenated)
         write_variants.add(job_spaced)
     else:
         for known_job in known_jobs:
             if known_job.lower() in job_name:
                 part1 = job_name.split(known_job.lower())[0].strip()
-                job_concatenated = create_job_name_concatenated(part1, known_job.lower())
-                job_spaced = create_job_name_spaced(part1, known_job)
-                job_hyphenated = create_job_name_hyphenated(part1, known_job)
+                job_concatenated = jobtitle_util.to_concatenated_form(part1, known_job)
+                job_spaced = jobtitle_util.to_spaced_form(part1, known_job)
+                job_hyphenated = jobtitle_util.to_hyphenated_form(part1, known_job)
                 write_variants.add(job_concatenated)
                 write_variants.add(job_spaced)
                 write_variants.add(job_hyphenated)
 
     return write_variants
-
-
-def create_job_name_spaced(job_name_1, job_name_2):
-    return job_name_1 + ' ' + job_name_2
-
-
-def create_job_name_concatenated(job_name_1, job_name_2):
-    return job_name_1 + job_name_2
-
-
-def create_job_name_hyphenated(job_name_1, job_name_2):
-    return job_name_1 + '-' + job_name_2
-
-
-hyphenated_pattern = re.compile('(?=\S*[-])([a-zA-Z-]+)')
-
-
-def is_hyphenated(job_name):
-    return hyphenated_pattern.match(job_name)
 
 
 def add_job_class(job_class):

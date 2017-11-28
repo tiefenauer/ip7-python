@@ -5,7 +5,7 @@ import numpy
 from gensim.models import word2vec
 
 from src.classifier.classifier import Classifier
-from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
+from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 

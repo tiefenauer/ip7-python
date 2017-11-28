@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 from src.classifier.classifier import data_dir
 from src.classifier.semantic_classifier import SemanticClassifier
 from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
-from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
+from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
