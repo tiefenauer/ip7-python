@@ -42,7 +42,8 @@ class StructuralClassifier(Classifier):
         return '{}rows'.format(self.num_rows)
 
     def _save_model(self, model, path):
-        pickle.dump(model, open(path, 'wb'))
+        with open(path, 'wb') as f:
+            pickle.dump(model, f)
         return path
 
     def _load_model(self, path):
