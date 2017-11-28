@@ -2,6 +2,7 @@
 A simple example of an animated plot
 """
 import datetime
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +10,7 @@ import numpy as np
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
+from src.util import util
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
@@ -53,7 +55,9 @@ def update_title(num_processed, num_total, num_classified):
 class Evaluation(object):
     num_classified = 0
 
-    def __init__(self, classifier):
+    def __init__(self, classifier, results):
+        self.classifier = classifier
+        self.results = results
         self.start_time = datetime.datetime.today()
         create_figure(classifier)
         self.evaluator_strict = StrictEvaluator()
@@ -61,6 +65,12 @@ class Evaluation(object):
         self.evaluator_linear = LinearJobTitleEvaluator()
         self.evaluators = [self.evaluator_strict, self.evaluator_tolerant, self.evaluator_linear]
         self.acc1_plots, self.acc2_plots, self.labels = create_plots(self.evaluators)
+
+    def evaluate(self, data_test):
+        for i, row in enumerate(self.classifier.classify(data_test), 1):
+            sc_str, sc_tol, sc_lin = self.update(row.title, row.predicted_class, i, data_test.num_rows)
+            self.results.update_classification(row, row.predicted_class, sc_str, sc_tol, sc_lin)
+        self.stop()
 
     def update(self, expected_class, predicted_class, i, num_total):
         if predicted_class and len(predicted_class) > 0:
@@ -96,5 +106,6 @@ class Evaluation(object):
         self.labels[i] = ax.text(x, y, text, ha='center', va='bottom', color='black', fontsize=10)
 
     def stop(self):
-        filename = self.start_time.strftime('%Y-%m-%d-%H-%M-%S')
+        filename = self.classifier.model_file
+        filename += '_' + time.strftime(util.DATE_PATTERN)
         plt.savefig(filename)

@@ -9,7 +9,6 @@ from src.database.X28TestData import X28TestData
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from src.util.log_util import log_setup
-from src.util.util import gen2it
 
 log_setup()
 log = logging.getLogger(__name__)
@@ -33,20 +32,15 @@ if not args.model:
 if not args.id:
     args.id = 353090
 
-data_test = X28TestData(args)
 preprocessor = StructuralPreprocessorNVT()
 classifier = StructuralClassifierNVT(args, preprocessor)
-evaluation = Evaluation(classifier)
-results = StructuralClassificationNVTResults(args, classifier)
+results = StructuralClassificationNVTResults(args)
+evaluation = Evaluation(classifier, results)
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')
-
-    for i, row in enumerate(preprocessor.preprocess(data_test, data_test.num_rows), 1):
-        predicted_class = classifier.classify(row.processed)
-        sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
-        results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
-    evaluation.stop()
+    data_test = X28TestData(args)
+    evaluation.evaluate(data_test)
     log.info('evaluate_avg: done!')
 
     # some more evaluation with NLTK

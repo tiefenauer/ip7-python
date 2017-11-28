@@ -35,5 +35,5 @@ class FtsClassifier(Classifier):
         """to be implemented in subclass"""
 
     @abstractmethod
-    def classify(self, processed_data):
+    def _classify(self, data_test):
         """to be implemented in subclass"""

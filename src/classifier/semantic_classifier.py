@@ -12,11 +12,11 @@ log = logging.getLogger(__name__)
 
 class SemanticClassifier(Classifier):
     def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
-        super(SemanticClassifier, self).__init__(args, preprocessor)
         self.num_features = 300
         self.min_word_count = 40
-        self.num_workers = 6
         self.context = 10
+        super(SemanticClassifier, self).__init__(args, preprocessor)
+        self.num_workers = 6
         self.downsampling = 1e-3
 
     def train_w2v_model(self, processed_data):
@@ -53,7 +53,7 @@ class SemanticClassifier(Classifier):
         """to be implemented in subclass"""
 
     @abstractmethod
-    def classify(self, processed_data):
+    def _classify(self, data_test):
         """to be implemented in subclass"""
 
     @abstractmethod

@@ -44,7 +44,7 @@ class FeatureBasedJobTitleClassifier(FtsClassifier):
         super(FeatureBasedJobTitleClassifier, self).__init__(args, preprocessor)
         self.job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobsImporter()]
 
-    def classify(self, tags):
+    def _classify(self, tags):
         features = extract_features(tags, self.job_name_variants)
         best_match = None
         best_job_score = 0
@@ -105,4 +105,4 @@ class FeatureBasedJobTitleClassifier(FtsClassifier):
         as the job name with the highest occurrence from the tag with the highest score."""
 
     def label(self):
-        return 'feature-based'
+        return 'fts_feature_based'

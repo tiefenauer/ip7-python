@@ -17,7 +17,7 @@ class TestJobtitleStrategyCount(unittest.TestCase):
         dom = '<p>Schneider Schneider Schneider Koch Koch Koch Koch Sekretär</p>'
         testee.job_names = ['Schneider', 'Koch', 'Sekretär']
         # act
-        (result, count, score) = testee.classify(dom)
+        (result, count, score) = testee._classify(dom)
         # assert
         assert_that(result, is_('Koch'))
         assert_that(count, is_(4))

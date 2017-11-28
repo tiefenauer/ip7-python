@@ -19,7 +19,7 @@ class CountBasedJobTitleClassification(FtsClassifier):
         super(CountBasedJobTitleClassification, self).__init__(args, preprocessor)
         self.job_names = KnownJobsImporter()
 
-    def classify(self, tags):
+    def _classify(self, tags):
         best_count = 0
         best_match = None
         for (count, name) in self.find_all(tags, self.job_names):

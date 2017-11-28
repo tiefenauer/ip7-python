@@ -22,11 +22,11 @@ def clean_labels(labels_list):
 
 class StructuralClassifier(Classifier):
     def __init__(self, args, preprocessor):
-        super(StructuralClassifier, self).__init__(args, preprocessor)
         self.num_rows = 0
+        super(StructuralClassifier, self).__init__(args, preprocessor)
 
-    def classify(self, processed_data):
-        features = self.extract_features(processed_data)
+    def _classify(self, data_test):
+        features = self.extract_features(data_test)
         result = self.model.classify(features)
         return result
 

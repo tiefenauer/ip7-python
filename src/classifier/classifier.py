@@ -1,6 +1,7 @@
 import gzip
 import logging
 import os
+import re
 import shutil
 import time
 from abc import ABC, abstractmethod
@@ -17,8 +18,15 @@ class Classifier(ABC):
         self.preprocessor = preprocessor
         model_file = args.model if hasattr(args, 'model') and args.model else None
         self.model = None
+        self.model_file = self.get_model_path()
         if model_file:
             self.model = self.load_model(model_file)
+            self.model_file = self.get_model_path(re.sub('(\.gz)$', '', model_file))
+
+    def classify(self, data_test):
+        for row in self.preprocessor.preprocess(data_test, data_test.num_rows):
+            row.predicted_class = self._classify(row.processed)
+            yield row
 
     def train_model(self, train_data):
         if self.model:
@@ -43,6 +51,7 @@ class Classifier(ABC):
         with open(path, 'rb') as f_in, gzip.open(path_gz, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
         os.remove(path)
+        self.model_file = path
         return path_gz
 
     def load_model(self, filename=None):
@@ -67,10 +76,9 @@ class Classifier(ABC):
     def get_model_path(self, filename=None):
         if filename is None:
             filename = self.default_filename()
-        path = os.path.join(data_dir, self.label())
-        if not os.path.isdir(path):
-            os.makedirs(path)
-        return os.path.join(path, filename)
+        if not os.path.isdir(data_dir):
+            os.makedirs(data_dir)
+        return os.path.join(data_dir, filename)
 
     @abstractmethod
     def _get_filename_postfix(self):
@@ -89,7 +97,7 @@ class Classifier(ABC):
         """train classifier with some given data"""
 
     @abstractmethod
-    def classify(self, processed_data):
+    def _classify(self, data_test):
         """classify some new data and return the class label"""
 
     @abstractmethod

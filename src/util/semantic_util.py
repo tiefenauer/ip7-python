@@ -24,7 +24,7 @@ def parse_filename(filename):
     for i, match in enumerate(match for match in matches[0] if matches):
         if i == 0:
             str = re.match(patterns['datetime'], match).string
-            parms['datetime'] = datetime.datetime.strptime(str, util.DATE_PATTERN)
+            parms['datetime'] = datetime.datetime.strptime(str, util.DATE_PATTERN_HYPHENATED)
         elif i == 2:
             parms['num_words'] = int(match)
         elif i == 4:

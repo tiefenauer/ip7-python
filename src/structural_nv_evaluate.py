@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Classifies data using structural approach (nouns and verbs)""")
 parser.add_argument('model', nargs='?', help='file with saved model to evaluate')
+parser.add_argument('id', nargs='?', type=int)
 parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
                     help='(optional) fraction value of labeled data to use for training/testing')
 parser.add_argument('-t', '--truncate', action='store_true',
@@ -27,27 +28,23 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if not args.model:
-    args.model = 'structural_nv_2017-11-24-14-51-03_19rows.gz'
+    args.model = 'structural_nv_2017-11-24-14-29-31.gz'
 
-data_test = X28TestData(args)
 preprocessor = StructuralPreprocessorNV()
 classifier = StructuralClassifierNV(args, preprocessor)
-evaluation = Evaluation(classifier)
-results = StructuralClassificationNVResults(args, classifier)
+results = StructuralClassificationNVResults(args)
+evaluation = Evaluation(classifier, results)
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')
-
-    for i, row in enumerate(preprocessor.preprocess(data_test, data_test.num_rows), 1):
-        predicted_class = classifier.classify(row.processed)
-        sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
-        results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
-    evaluation.stop()
+    data_test = X28TestData(args)
+    evaluation.evaluate(data_test)
     log.info('evaluate_avg: done!')
 
     # some more evaluation with NLTK
     data_test = X28TestData(args)
-    test_set = preprocessor.preprocess(data_test, data_test.num_rows)
+    data_test_processed = preprocessor.preprocess(data_test, data_test.num_rows)
+    test_set = ((classifier.extract_features(row.processed), row.title) for row in data_test_processed)
     nltk_accuracy = nltk.classify.accuracy(classifier.model, test_set)
     log.info('nltk.classify.accuracy: {}'.format(nltk_accuracy))
     log.info('classifier.show_most_informative_features(5):')

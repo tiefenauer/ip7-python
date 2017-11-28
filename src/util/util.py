@@ -3,7 +3,8 @@ import re
 
 log = logging.getLogger(__name__)
 
-DATE_PATTERN = '%Y-%m-%d-%H-%M-%S'
+DATE_PATTERN_HYPHENATED = '%Y-%m-%d-%H-%M-%S'
+DATE_PATTERN = '%Y%m%d%H%M%S'
 
 
 def find_str1_in_str2(str1, str2):

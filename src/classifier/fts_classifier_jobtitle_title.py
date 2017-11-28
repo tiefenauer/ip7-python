@@ -2,7 +2,7 @@ from src.classifier.fts_classifier import FtsClassifier
 
 
 class TitleBasedJobTitleClassifier(FtsClassifier):
-    def classify(self, tags):
+    def _classify(self, tags):
         title = None
         for tag in (tag for tag in tags if tag.name and tag.name == 'title'):
             title = tag.getText()

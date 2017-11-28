@@ -60,7 +60,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Wir suchen eine/n Polymechaniker/-in mit Freude an der Arbeit.')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Polymechaniker/-in'))
 
@@ -70,7 +70,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Polymechaniker/-in Polymechaniker')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Polymechaniker/-in'))
 
@@ -80,7 +80,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Polymechaniker/-in Polymechaniker Polymechaniker')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
@@ -90,7 +90,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Koch Koch Polymechaniker Polymechaniker Polymechaniker Priester'),
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
@@ -100,7 +100,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Koch Priester Priester/in'),
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Priester/in'))
 
@@ -110,7 +110,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Koch Priester Priester Priester/in'),
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Priester'))
 
@@ -121,7 +121,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Coiffeur')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Coiffeur'))
 
@@ -132,7 +132,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Coiffeuse')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Coiffeuse'))
 
@@ -143,7 +143,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h2', 'Coiffeuse')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Coiffeur'))
 
@@ -154,7 +154,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Coiffeuse')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Coiffeuse'))
 
@@ -165,7 +165,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Priester Priester')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Priester'))
 
@@ -176,7 +176,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Priester/in Priester')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Priester/in'))
 
@@ -187,7 +187,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Priester/in Priester')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Priester/-in'))
 
@@ -198,7 +198,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Priester Priester/in Priester/in')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Priester/in'))
 
@@ -209,7 +209,7 @@ class TestFeatureBasedJobtitleClassification(unittest.TestCase):
             create_tag('h1', 'Polymechaniker/in')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee._classify(tags)
         # assert
         assert_that(result, is_('Polymechaniker/in'))
 

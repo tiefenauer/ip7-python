@@ -21,7 +21,7 @@ class SemanticClassifierRF(SemanticClassifier):
             self.w2v_model = SemanticClassifierAvg(args).load_model(args.w2vmodel)
             log.info('loaded pre-trained Word2Vec-Model')
 
-    def classify(self, processed_data):
+    def _classify(self, data_test):
         # TODO: predict a single item, not the whole matrix!
         pass
 
