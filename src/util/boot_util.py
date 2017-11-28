@@ -1,5 +1,4 @@
 import logging
-import sys
 
 from src.classifier.fts_classifier_jobtitle_count import CountBasedJobTitleClassification
 from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
@@ -9,12 +8,6 @@ from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 
 log = logging.getLogger(__name__)
-
-
-def log_setup():
-    logger = logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s',
-                                 level=logging.INFO)
-    return logger
 
 
 def choose_evaluation(args, classifier):
@@ -28,7 +21,7 @@ def choose_evaluation(args, classifier):
     log.info('================================================')
     log.info('Evaluation method(s): ' + ', '.join(e.title() for e in evaluators))
     log.info('================================================')
-    return Evaluation(classifier, evaluators)
+    return Evaluation(classifier)
 
 
 def choose_classifier(args):

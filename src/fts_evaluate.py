@@ -12,7 +12,8 @@ from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 from src.preprocessing.preprocessor_fts import FtsPreprocessor
-from src.util.boot_util import choose_classifier, choose_evaluation, log_setup
+from src.util.boot_util import choose_classifier, choose_evaluation
+from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)

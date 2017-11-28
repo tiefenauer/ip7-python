@@ -10,7 +10,7 @@ from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)

@@ -2,7 +2,7 @@ import argparse
 
 from src.classifier.semantic_classifier_rf import SemanticClassifierRF
 from src.database.X28TrainData import X28TrainData
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 
 log_setup()
 

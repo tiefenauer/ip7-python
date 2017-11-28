@@ -5,7 +5,7 @@ import pickle
 import nltk
 
 from src.preprocessing.classifier_based_german_tagger import ClassifierBasedGermanTagger
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)

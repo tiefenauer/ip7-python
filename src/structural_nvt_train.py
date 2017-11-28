@@ -3,7 +3,7 @@ import argparse
 from src.classifier.structural_classifier_nvt import StructuralClassifierNVT
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 
 parser = argparse.ArgumentParser(description="""Train Structural Classifier (NLTK)""")
 parser.add_argument('source', nargs='?', choices=['fetchflow', 'x28'], default='fetchflow')

@@ -15,7 +15,7 @@ from src.database.X28TrainData import X28TrainData
 from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)

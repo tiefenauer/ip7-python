@@ -8,7 +8,7 @@ from src.database.ClassificationResults import StructuralClassificationNVResults
 from src.database.X28TestData import X28TestData
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)

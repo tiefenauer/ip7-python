@@ -28,7 +28,7 @@ def top_n(tagged_words, pos_tag, n):
     words_with_pos_tag = [(word, htag) for (word, ptag, htag) in tagged_words
                           if ptag.startswith(pos_tag)]
 
-    # group words by POS tag
+    # group by word
     words_grouped = itertools.groupby(words_with_pos_tag, operator.itemgetter(0))
     # to dict with highest tag as value
     dct = {}

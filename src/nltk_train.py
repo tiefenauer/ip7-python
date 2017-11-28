@@ -1,7 +1,7 @@
 import logging
 
 from src.importer import import_all
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 from src.util.stats import print_stats
 
 log_setup()

@@ -12,7 +12,7 @@ from tqdm import tqdm
 from src import db, preproc
 from src.db import Database
 from src.util import jobtitle_util
-from src.util.boot_util import log_setup
+from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)
