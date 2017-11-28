@@ -4,9 +4,8 @@ import logging
 import nltk
 
 from src.classifier.structural_classifier_nvt import StructuralClassifierNVT
-from src.database.ClassificationResults import StructuralClassificationNVTResults
 from src.database.X28TestData import X28TestData
-from src.evaluation.evaluation import Evaluation
+from src.evaluation.evaluation_structural_nvt import StructuralNVTEvaluation
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from src.util.log_util import log_setup
 
@@ -34,8 +33,7 @@ if not args.id:
 
 preprocessor = StructuralPreprocessorNVT()
 classifier = StructuralClassifierNVT(args, preprocessor)
-results = StructuralClassificationNVTResults(args)
-evaluation = Evaluation(classifier, results)
+evaluation = StructuralNVTEvaluation(args, classifier)
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')

@@ -11,6 +11,7 @@ from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.preprocessor_semantic import SemanticPreprocessor
 from src.util.log_util import log_setup
+from src.evaluation.evaluation_semantic_avg import SemanticAVGEvaluation
 
 log_setup()
 log = logging.getLogger(__name__)
@@ -70,8 +71,7 @@ if not args.model:
 
 preprocessor = SemanticPreprocessor(remove_stopwords=True)  # remove stopwords for evaluation
 classifier = SemanticClassifierAvg(args, preprocessor)
-results = SemanticAvgClassificationResults(args)
-evaluation = Evaluation(classifier, results)
+evaluation = SemanticAVGEvaluation(args, classifier)
 
 if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
