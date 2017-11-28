@@ -9,6 +9,7 @@ from src.database.X28TestData import X28TestData
 from src.evaluation.evaluation import Evaluation
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from src.util.log_util import log_setup
+from src.util.util import gen2it
 
 log_setup()
 log = logging.getLogger(__name__)
@@ -50,7 +51,8 @@ if __name__ == '__main__':
 
     # some more evaluation with NLTK
     data_test = X28TestData(args)
-    test_set = preprocessor.preprocess(data_test, data_test.num_rows)
+    data_test_processed = preprocessor.preprocess(data_test, data_test.num_rows)
+    test_set = ((classifier.extract_features(row.processed), row.title) for row in data_test_processed)
     nltk_accuracy = nltk.classify.accuracy(classifier.model, test_set)
     log.info('nltk.classify.accuracy: {}'.format(nltk_accuracy))
     log.info('classifier.show_most_informative_features(5):')
