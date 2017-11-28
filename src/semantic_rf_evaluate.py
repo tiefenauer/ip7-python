@@ -38,8 +38,8 @@ args.split = 0.999
 data_test = X28TestData(args)
 preprocessor = SemanticPreprocessor(remove_stopwords=True)  # remove stopwords for evaluation
 classifier = SemanticClassifierRF(args.model)
-evaluation = Evaluation(classifier)
-results = SemanticRfClassificationResults(args)
+evaluation = Evaluation(args, classifier)
+results = SemanticRfClassificationResults()
 model = classifier.model
 
 if __name__ == '__main__':

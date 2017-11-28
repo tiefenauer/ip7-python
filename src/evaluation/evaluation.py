@@ -2,6 +2,7 @@
 A simple example of an animated plot
 """
 import datetime
+import logging
 import time
 
 import matplotlib.pyplot as plt
@@ -11,6 +12,8 @@ from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
 from src.evaluation.strict_evaluator import StrictEvaluator
 from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
 from src.util import util
+
+log = logging.getLogger(__name__)
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
@@ -55,7 +58,13 @@ def update_title(num_processed, num_total, num_classified):
 class Evaluation(object):
     num_classified = 0
 
-    def __init__(self, classifier, results):
+    def __init__(self, args, classifier, results):
+        self.write = args.write if hasattr(args, 'write') else False
+        if hasattr(args, 'truncate') and args.truncate:
+            log.info('truncating target tables...')
+            results.truncate()
+            log.info('done')
+
         self.classifier = classifier
         self.results = results
         self.start_time = datetime.datetime.today()
@@ -69,7 +78,9 @@ class Evaluation(object):
     def evaluate(self, data_test):
         for i, row in enumerate(self.classifier.classify(data_test), 1):
             sc_str, sc_tol, sc_lin = self.update(row.title, row.predicted_class, i, data_test.num_rows)
-            self.results.update_classification(row, row.predicted_class, sc_str, sc_tol, sc_lin)
+            if self.write and row.predicted_class:
+                # only write results if not dry run and class could be predicted
+                self.results.update_classification(row, row.predicted_class, sc_str, sc_tol, sc_lin)
         self.stop()
 
     def update(self, expected_class, predicted_class, i, num_total):

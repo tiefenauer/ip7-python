@@ -4,4 +4,4 @@ from src.evaluation.evaluation import Evaluation
 
 class StructuralNVEvaluation(Evaluation):
     def __init__(self, args, classifier):
-        super(StructuralNVEvaluation, self).__init__(classifier, StructuralClassificationNVResults(args))
+        super(StructuralNVEvaluation, self).__init__(args, classifier, StructuralClassificationNVResults())

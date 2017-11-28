@@ -11,19 +11,11 @@ log = logging.getLogger(__name__)
 
 class ClassificationResults(object):
     @db_session
-    def __init__(self, Entity, args):
+    def __init__(self, Entity):
         self.Entity = Entity
-        self.write = args.write if hasattr(args, 'write') else False
-        if hasattr(args, 'truncate') and args.truncate:
-            log.info('truncating target tables...')
-            self.truncate()
-            commit()
 
     @db_session
     def update_classification(self, entity, predicted_class, sc_str, sc_tol, sc_lin):
-        if not self.write or not predicted_class:
-            # do not write results if dry run or class could not be predicted
-            return
         job_row = X28_HTML.get(lambda d: d.id == entity.id)
         classification_result = self.create_entity(job_row, predicted_class, sc_str, sc_tol, sc_lin)
         commit()
@@ -31,7 +23,8 @@ class ClassificationResults(object):
 
     @db_session
     def truncate(self):
-        self.Entity.select().delete()
+        self.Entity.select().delete(bulk=True)
+        commit()
 
     @abstractmethod
     def create_entity(self, job_class, predicted_class, sc_str, sc_tol, sc_lin):
@@ -39,8 +32,8 @@ class ClassificationResults(object):
 
 
 class FtsClassificationResults(ClassificationResults):
-    def __init__(self, args):
-        super(FtsClassificationResults, self).__init__(Fts_Classification_Results, args)
+    def __init__(self):
+        super(FtsClassificationResults, self).__init__(Fts_Classification_Results)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Fts_Classification_Results(job=job_entity,
@@ -51,8 +44,8 @@ class FtsClassificationResults(ClassificationResults):
 
 
 class SemanticAvgClassificationResults(ClassificationResults):
-    def __init__(self, args):
-        super(SemanticAvgClassificationResults, self).__init__(Semantic_Avg_Classification_Results, args)
+    def __init__(self):
+        super(SemanticAvgClassificationResults, self).__init__(Semantic_Avg_Classification_Results)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Semantic_Avg_Classification_Results(job=job_entity,
@@ -63,8 +56,8 @@ class SemanticAvgClassificationResults(ClassificationResults):
 
 
 class SemanticRfClassificationResults(ClassificationResults):
-    def __init__(self, args):
-        super(SemanticRfClassificationResults, self).__init__(Semantic_Rf_Classification_Results, args)
+    def __init__(self):
+        super(SemanticRfClassificationResults, self).__init__(Semantic_Rf_Classification_Results)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Semantic_Rf_Classification_Results(job=job_entity,
@@ -75,8 +68,8 @@ class SemanticRfClassificationResults(ClassificationResults):
 
 
 class StructuralClassificationNVResults(ClassificationResults):
-    def __init__(self, args):
-        super(StructuralClassificationNVResults, self).__init__(Structural_Classification_NV_Results, args)
+    def __init__(self):
+        super(StructuralClassificationNVResults, self).__init__(Structural_Classification_NV_Results)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Structural_Classification_NV_Results(job=job_entity,
@@ -87,8 +80,8 @@ class StructuralClassificationNVResults(ClassificationResults):
 
 
 class StructuralClassificationNVTResults(ClassificationResults):
-    def __init__(self, args):
-        super(StructuralClassificationNVTResults, self).__init__(Structural_Classification_NVT_Results, args)
+    def __init__(self):
+        super(StructuralClassificationNVTResults, self).__init__(Structural_Classification_NVT_Results)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Structural_Classification_NVT_Results(job=job_entity,
