@@ -4,7 +4,7 @@ import os
 import re
 import shutil
 import time
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from src.core.data_processor import DataProcessor
 from src.util import util
@@ -16,7 +16,9 @@ data_dir = 'D:/code/ip7-python/resource/models'
 
 class Classifier(DataProcessor):
     def __init__(self, args, preprocessor):
-        self.preprocessor = preprocessor
+        super(Classifier, self).__init__(args, preprocessor)
+        self._process = self.classify
+
         model_file = args.model if hasattr(args, 'model') and args.model else None
         self.model = None
         self.model_file = self.get_model_path()
@@ -24,10 +26,14 @@ class Classifier(DataProcessor):
             self.model = self.load_model(model_file)
             self.model_file = self.get_model_path(re.sub('(\.gz)$', '', model_file))
 
-    def classify(self, data_test):
-        for row in self.preprocessor.preprocess(data_test, data_test.num_rows):
+    def classify(self, processed_data):
+        for row in processed_data:
             row.predicted_class = self._classify(row.processed)
             yield row
+
+    @abstractmethod
+    def _classify(self, data_test):
+        """classify some new data and return the class label"""
 
     def train_model(self, train_data):
         if self.model:
@@ -96,7 +102,3 @@ class Classifier(DataProcessor):
     @abstractmethod
     def _load_model(self, path):
         """train classifier with some given data"""
-
-    @abstractmethod
-    def _classify(self, data_test):
-        """classify some new data and return the class label"""

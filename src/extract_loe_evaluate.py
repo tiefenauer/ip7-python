@@ -1,7 +1,7 @@
 import argparse
 
-from src.classifier.structural_classifier_nvt import StructuralClassifierNVT
 from src.database.X28TrainData import X28TrainData
+from src.extractor.loe_extractor import LoeExtractor
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup
 
@@ -24,7 +24,7 @@ logging = log_setup()
 
 x28_data = X28TrainData(args)
 preprocessor = FtsPreprocessor()
-classifier = StructuralClassifierNVT(args, preprocessor)
+extractor = LoeExtractor(args, preprocessor)
 
 if __name__ == '__main__':
-    classifier.train_model(x28_data)
+    extractor.process(x28_data)
