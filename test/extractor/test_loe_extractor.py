@@ -1,10 +1,13 @@
-import random
 import unittest
+from unittest import skip
 
 from bs4 import BeautifulSoup
-from hamcrest import assert_that, contains
+from hamcrest import assert_that, contains, is_
 
 from src.extractor import loe_extractor
+from src.extractor.loe_extractor import LoeExtractor
+from src.preprocessing.fts_preprocessor import FtsPreprocessor
+from test.util.test_util import create_dummy_args
 
 """
 Anstellung 100% als Maurer
@@ -27,7 +30,38 @@ def create_tags(param):
     return [create_tag(tag_name, tag_content) for (tag_name, tag_content) in param]
 
 
+args = create_dummy_args()
+preprocessor = FtsPreprocessor()
+testee = LoeExtractor(args, preprocessor)
+
+
 class TestLoeExtractor(unittest.TestCase):
+
+    def test_extract_with_multiple_patterns_returns_most_frequent_pattern(self):
+        # arrange
+        tags = create_tags([
+            ('h1', 'Anstellung 80%-100% als Maurer'),
+            ('h1', 'Anstellung 80%-100% als Maurer'),
+            ('h2', 'Anstellung 80%-100% als Maurer'),
+            ('h1', 'Anstellung 80% als Maurer'),
+            ('h2', 'Anstellung 60-80% als Maurer'),
+            ('h2', 'Anstellung 60-80% als Maurer')
+        ])
+        # act
+        result = testee.extract(tags)
+        # assert
+        assert_that(result, is_('80%-100%'))
+
+    def test_extract_without_patterns_returns_none(self):
+        # arrange
+        tags = create_tags([
+            ('h1', 'Anstellung als Maurer'),
+            ('h1', 'Anstellung als Baggeführer')
+        ])
+        # act
+        result = testee.extract(tags)
+        # assert
+        assert_that(result, is_(None))
 
     def test_find_loe_patterns_3digits_returns_loe_patterns(self):
         # arrange
@@ -93,6 +127,26 @@ class TestLoeExtractor(unittest.TestCase):
             ('80-100%', 'p')
         ))
 
+    def test_group_patterns_by_count_returns_list_sorted_by_count_desc(self):
+        # arrange
+        tags = create_tags([
+            ('h1', 'Anstellung 80%-100% als Maurer'),
+            ('h1', 'Anstellung 80%-100% als Maurer'),
+            ('h2', 'Anstellung 80%-100% als Maurer'),
+            ('h1', 'Anstellung 80% als Maurer'),
+            ('h2', 'Anstellung 60-80% als Maurer'),
+            ('h2', 'Anstellung 60-80% als Maurer')
+        ])
+        # act
+        result = loe_extractor.group_loe_patterns_by_count(tags)
+        # assert
+        assert_that(result, contains(
+            ('80%-100%', 3),
+            ('60-80%', 2),
+            ('80%', 1)
+        ))
+
+    @skip("find a way to sort list by html tag and occurrence while preserving grouping")
     def test_group_loe_patterns_by_tag_returns_list_sorted_by_tag_and_count(self):
         # arrange
         tags = create_tags([
