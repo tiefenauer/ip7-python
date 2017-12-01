@@ -1,3 +1,4 @@
+import random
 import unittest
 
 from bs4 import BeautifulSoup
@@ -76,7 +77,7 @@ class TestLoeExtractor(unittest.TestCase):
         # assert
         assert_that(result, contains('80%-100%'))
 
-    def test_group_tags_with_loe_patterns(self):
+    def test_find_loe_patterns_by_tag_returns_tags_and_results(self):
         # arrange
         tags = create_tags([
             ('h1', 'Anstellung 80%-100% als Maurer'),
@@ -84,10 +85,31 @@ class TestLoeExtractor(unittest.TestCase):
             ('p', 'Anstellung 80-100% als Schreiner')
         ])
         # act
-        result = loe_extractor.group_tags_with_loe_patterns(tags)
+        result = loe_extractor.find_loe_patterns_by_tag(tags)
         # assert
         assert_that(result, contains(
             ('80%-100%', 'h1'),
             ('80%', 'h2'),
             ('80-100%', 'p')
+        ))
+
+    def test_group_loe_patterns_by_tag_returns_list_sorted_by_tag_and_count(self):
+        # arrange
+        tags = create_tags([
+            ('h1', 'Anstellung 80%-100% als Maurer'),
+            ('h1', 'Anstellung 80%-100% als Maurer'),
+            ('h2', 'Anstellung 80%-100% als Maurer'),
+            ('h1', 'Anstellung 80% als Maurer'),
+            ('h2', 'Anstellung 60-80% als Maurer'),
+            ('h2', 'Anstellung 60-80% als Maurer')
+        ])
+        # random.shuffle(tags) # shuffle to check if sorting works
+        # act
+        result = loe_extractor.group_loe_patterns_by_tag(tags)
+        # assert
+        assert_that(result, contains(
+            ('80%-100%', 'h1', 2),
+            ('80%-100%', 'h2', 1),
+            ('80%', 'h1', 1),
+            ('60-80%', 'h2', 2)
         ))
