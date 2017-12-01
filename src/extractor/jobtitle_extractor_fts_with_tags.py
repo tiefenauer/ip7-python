@@ -1,5 +1,5 @@
-from src.classifier.fts_classifier import FtsClassifier
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
+from src.extractor.jobtitle_extractor import JobtitleExtractor
 from src.util.jobtitle_util import count_variant, create_variants
 
 tag_weight = {
@@ -39,12 +39,12 @@ def count_variants(string, variants):
             yield (variant, count)
 
 
-class FeatureBasedJobTitleClassifier(FtsClassifier):
+class FeatureBasedJobTitleClassifier(JobtitleExtractor):
     def __init__(self, args, preprocessor):
         super(FeatureBasedJobTitleClassifier, self).__init__(args, preprocessor)
         self.job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobsImporter()]
 
-    def _classify(self, tags):
+    def extract(self, tags):
         features = extract_features(tags, self.job_name_variants)
         best_match = None
         best_job_score = 0
@@ -80,9 +80,6 @@ class FeatureBasedJobTitleClassifier(FtsClassifier):
             return score
         return 1 / score
 
-    def _get_filename_postfix(self):
-        return ''
-
     def calculate_score(self, tag, count):
         score = 0
         key = tag if tag in tag_weight else 'default'
@@ -92,17 +89,17 @@ class FeatureBasedJobTitleClassifier(FtsClassifier):
         # return self.normalize(score)
 
     def title(self):
-        return 'Feature based classification'
+        return 'Jobtitle Extractor: FTS (html-tag-based)'
 
     def description(self):
-        return """Feature-Based classification: classifies a vacancy according to the features of the
-        individual tags. Each tag is analyzed in isolation. Only tags which contain known job names (from a whitelist)
-        or variants of them are considered. A tag can contain several job names or variants.
-        For each tag the relevant features are extracted. Relevant features can be:
-        - the name of the tag
-        - the number of occurrences for the individual matches
-        Classification is then made by calculating a score based on the extracted features. The vacancy is classified
-        as the job name with the highest occurrence from the tag with the highest score."""
+        return """Extract a jobtitle by performing a full text search (FTS) on the DOM. The text of the DOM is searched
+        for occurrences of known job titles, including variants (such as male/female form, hyphenated forms etc...).
+        The found results are then weighted according to the following criteria:
+        - what HTML tag does the result appear in (h1 tags are considered more important than h2 tags and so on)
+        - How often does the job title (including variants) appear in the DOM? Higher occurrence means higher probability
+        that the result is the actual job title of the vacancy
+        - in how many variants does the job title appear?
+        """
 
     def label(self):
-        return 'fts_feature_based'
+        return 'jobtitle-fts-html-tags'

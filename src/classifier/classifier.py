@@ -6,6 +6,7 @@ import shutil
 import time
 from abc import ABC, abstractmethod
 
+from src.core.data_processor import DataProcessor
 from src.util import util
 
 log = logging.getLogger(__name__)
@@ -13,7 +14,7 @@ log = logging.getLogger(__name__)
 data_dir = 'D:/code/ip7-python/resource/models'
 
 
-class Classifier(ABC):
+class Classifier(DataProcessor):
     def __init__(self, args, preprocessor):
         self.preprocessor = preprocessor
         model_file = args.model if hasattr(args, 'model') and args.model else None
@@ -99,15 +100,3 @@ class Classifier(ABC):
     @abstractmethod
     def _classify(self, data_test):
         """classify some new data and return the class label"""
-
-    @abstractmethod
-    def title(self):
-        """a short title of the classification strategy"""
-
-    @abstractmethod
-    def description(self):
-        """describe how the classification is done"""
-
-    @abstractmethod
-    def label(self):
-        """short label for visualisation"""

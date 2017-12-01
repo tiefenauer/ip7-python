@@ -1,10 +1,8 @@
 import argparse
 import logging
 
-from src.classifier.fts_classifier_jobtitle_features import FeatureBasedJobTitleClassifier
-from src.database.ClassificationResults import FtsClassificationResults
+from src.extractor.jobtitle_extractor_fts_with_tags import FeatureBasedJobTitleClassifier
 from src.database.X28TestData import X28TestData
-from src.evaluation.evaluation import Evaluation
 from src.evaluation.evaluation_fts import FtsEvaluation
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup

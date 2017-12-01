@@ -1,5 +1,5 @@
-from src.classifier.fts_classifier import FtsClassifier
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
+from src.extractor.jobtitle_extractor import JobtitleExtractor
 from src.util.jobtitle_util import create_gender_variants, count_variant
 
 
@@ -14,12 +14,12 @@ def find_all_matches(tags, job_names):
             yield (count, job_name)
 
 
-class CountBasedJobTitleClassification(FtsClassifier):
+class CountBasedJobTitleClassification(JobtitleExtractor):
     def __init__(self, args, preprocessor):
         super(CountBasedJobTitleClassification, self).__init__(args, preprocessor)
         self.job_names = KnownJobsImporter()
 
-    def _classify(self, tags):
+    def extract(self, tags):
         best_count = 0
         best_match = None
         for (count, name) in self.find_all(tags, self.job_names):
@@ -34,16 +34,13 @@ class CountBasedJobTitleClassification(FtsClassifier):
         for match in find_all_matches(tags, job_names):
             yield match
 
-    def _get_filename_postfix(self):
-        return ''
-
     def title(self):
-        return 'Count-based classification'
+        return 'Jobtitle Extractor: FTS (count-based)'
 
     def description(self):
-        return """Classify a vacancy based on the number of occurrences of a certain word. The words are jobs
-        taken from a whitelist of known job names. The occurrence of each job name is counted and the vacancy is then
-        classified as the job name with the highest occurrence."""
+        return """Extract a jobtitle by performing a full text search (FTS) on the DOM. The text of the DOM is searched
+        for occurrences of known job names, including variants (such as male/female form, hyphenated forms etc...).
+        The job name with the highest occurrence is used as extracted job title."""
 
     def label(self):
-        return 'count-based'
+        return 'jobtitle-fts-count'
