@@ -14,6 +14,8 @@ class X28_HTML(pg.Entity):
     url = Optional(str)
     title = Optional(str)
     x28_id = Required(int)
+    workquota_min = Optional(int)
+    workquota_max = Optional(int)
     cls_fts = Set('Classification_Results')
 
 
