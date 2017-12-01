@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 import nltk
 
-from src.classifier.classifier import Classifier
+from src.classifier.core.model_classifier import ModelClassifier
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 from src.util import jobtitle_util
 
@@ -20,13 +20,13 @@ def clean_labels(labels_list):
         yield label
 
 
-class StructuralClassifier(Classifier):
+class StructuralClassifier(ModelClassifier):
     def __init__(self, args, preprocessor):
         self.num_rows = 0
         super(StructuralClassifier, self).__init__(args, preprocessor)
 
-    def _classify(self, data_test):
-        features = self.extract_features(data_test)
+    def classify(self, processed_row):
+        features = self.extract_features(processed_row)
         result = self.model.classify(features)
         return result
 
@@ -38,7 +38,7 @@ class StructuralClassifier(Classifier):
         model = nltk.NaiveBayesClassifier.train(train_set)
         return model
 
-    def _get_filename_postfix(self):
+    def get_filename_postfix(self):
         return '{}rows'.format(self.num_rows)
 
     def _save_model(self, model, path):

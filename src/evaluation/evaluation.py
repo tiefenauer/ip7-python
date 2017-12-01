@@ -58,17 +58,17 @@ def update_title(num_processed, num_total, num_classified):
 class Evaluation(object):
     num_classified = 0
 
-    def __init__(self, args, classifier, results):
+    def __init__(self, args, data_processor, results):
         self.write = args.write if hasattr(args, 'write') else False
         if hasattr(args, 'truncate') and args.truncate:
             log.info('truncating target tables...')
             results.truncate()
             log.info('done')
 
-        self.classifier = classifier
+        self.data_processor = data_processor
         self.results = results
         self.start_time = datetime.datetime.today()
-        create_figure(classifier)
+        create_figure(data_processor)
         self.evaluator_strict = StrictEvaluator()
         self.evaluator_tolerant = TolerantJobtitleEvaluator()
         self.evaluator_linear = LinearJobTitleEvaluator()
@@ -76,7 +76,7 @@ class Evaluation(object):
         self.acc1_plots, self.acc2_plots, self.labels = create_plots(self.evaluators)
 
     def evaluate(self, data_test):
-        for i, row in enumerate(self.classifier.classify(data_test), 1):
+        for i, row in enumerate(self.data_processor.process(data_test), 1):
             sc_str, sc_tol, sc_lin = self.update(row.title, row.predicted_class, i, data_test.num_rows)
             if self.write and row.predicted_class:
                 # only write results if not dry run and class could be predicted
@@ -117,6 +117,6 @@ class Evaluation(object):
         self.labels[i] = ax.text(x, y, text, ha='center', va='bottom', color='black', fontsize=10)
 
     def stop(self):
-        filename = self.classifier.model_file
+        filename = self.data_processor.model_file
         filename += '_' + time.strftime(util.DATE_PATTERN)
         plt.savefig(filename)

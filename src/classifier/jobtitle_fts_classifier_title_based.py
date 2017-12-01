@@ -1,7 +1,7 @@
-from src.extractor.jobtitle_extractor import JobtitleExtractor
+from src.classifier.jobtitle_fts_classifier import JobtitleFtsClassifier
 
 
-class TitleBasedJobTitleClassifier(JobtitleExtractor):
+class TitleBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
     def extract(self, tags):
         title = None
         for tag in (tag for tag in tags if tag.name and tag.name == 'title'):

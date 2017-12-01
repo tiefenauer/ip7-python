@@ -1,10 +1,9 @@
 import collections
-import itertools
 import logging
 import operator
 import re
 
-from src.extractor.extractor import Extractor
+from src.classifier.core.fts_classifier import FtsClassifier
 
 log = logging.getLogger(__name__)
 
@@ -58,7 +57,8 @@ def find_loe_patterns(text):
     return LOE_PATTERN.findall(text)
 
 
-class LoeExtractor(Extractor):
+class LoeFtsClassifier(FtsClassifier):
+
     def extract(self, tags):
         tags_with_numbers = group_loe_patterns_by_count(tags)
         if len(tags_with_numbers) > 0:
@@ -72,4 +72,4 @@ class LoeExtractor(Extractor):
         return 'extract level of employment by performing a full text search (FTS) for certain patterns'
 
     def label(self):
-        return 'loe-extractor'
+        return 'extract_loe'

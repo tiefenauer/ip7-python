@@ -28,8 +28,6 @@ args = parser.parse_args()
 
 if not args.model:
     args.model = 'structural_nvt_2017-11-27-18-05-11_19441rows.gz'
-if not args.id:
-    args.id = 353090
 
 preprocessor = StructuralPreprocessorNVT()
 classifier = StructuralClassifierNVT(args, preprocessor)

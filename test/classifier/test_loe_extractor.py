@@ -4,8 +4,8 @@ from unittest import skip
 from bs4 import BeautifulSoup
 from hamcrest import assert_that, contains, is_
 
-from src.extractor import loe_extractor
-from src.extractor.loe_extractor import LoeExtractor
+from src.classifier import loe_fts_classifier
+from src.classifier.loe_fts_classifier import LoeFtsClassifier
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from test.util.test_util import create_dummy_args
 
@@ -32,7 +32,7 @@ def create_tags(param):
 
 args = create_dummy_args()
 preprocessor = FtsPreprocessor()
-testee = LoeExtractor(args, preprocessor)
+testee = LoeFtsClassifier(args, preprocessor)
 
 
 class TestLoeExtractor(unittest.TestCase):
@@ -67,7 +67,7 @@ class TestLoeExtractor(unittest.TestCase):
         # arrange
         text = 'Anstellung 100% als Maurer'
         # act
-        result = loe_extractor.find_loe_patterns(text)
+        result = loe_fts_classifier.find_loe_patterns(text)
         # assert
         assert_that(result, contains('100%'))
 
@@ -75,7 +75,7 @@ class TestLoeExtractor(unittest.TestCase):
         # arrange
         text = 'Anstellung 60% als Maurer'
         # act
-        result = loe_extractor.find_loe_patterns(text)
+        result = loe_fts_classifier.find_loe_patterns(text)
         # assert
         assert_that(result, contains('60%'))
 
@@ -83,7 +83,7 @@ class TestLoeExtractor(unittest.TestCase):
         # arrange
         text = 'Anstellung 60-80% als Maurer'
         # act
-        result = loe_extractor.find_loe_patterns(text)
+        result = loe_fts_classifier.find_loe_patterns(text)
         # assert
         assert_that(result, contains('60-80%'))
 
@@ -91,7 +91,7 @@ class TestLoeExtractor(unittest.TestCase):
         # arrange
         text = 'Anstellung 80-100% als Maurer'
         # act
-        result = loe_extractor.find_loe_patterns(text)
+        result = loe_fts_classifier.find_loe_patterns(text)
         # assert
         assert_that(result, contains('80-100%'))
 
@@ -99,7 +99,7 @@ class TestLoeExtractor(unittest.TestCase):
         # arrange
         text = 'Anstellung 60%-80% als Maurer'
         # act
-        result = loe_extractor.find_loe_patterns(text)
+        result = loe_fts_classifier.find_loe_patterns(text)
         # assert
         assert_that(result, contains('60%-80%'))
 
@@ -107,7 +107,7 @@ class TestLoeExtractor(unittest.TestCase):
         # arrange
         text = 'Anstellung 80%-100% als Maurer'
         # act
-        result = loe_extractor.find_loe_patterns(text)
+        result = loe_fts_classifier.find_loe_patterns(text)
         # assert
         assert_that(result, contains('80%-100%'))
 
@@ -119,7 +119,7 @@ class TestLoeExtractor(unittest.TestCase):
             ('p', 'Anstellung 80-100% als Schreiner')
         ])
         # act
-        result = loe_extractor.find_loe_patterns_by_tag(tags)
+        result = loe_fts_classifier.find_loe_patterns_by_tag(tags)
         # assert
         assert_that(result, contains(
             ('80%-100%', 'h1'),
@@ -138,7 +138,7 @@ class TestLoeExtractor(unittest.TestCase):
             ('h2', 'Anstellung 60-80% als Maurer')
         ])
         # act
-        result = loe_extractor.group_loe_patterns_by_count(tags)
+        result = loe_fts_classifier.group_loe_patterns_by_count(tags)
         # assert
         assert_that(result, contains(
             ('80%-100%', 3),
@@ -159,7 +159,7 @@ class TestLoeExtractor(unittest.TestCase):
         ])
         # random.shuffle(tags) # shuffle to check if sorting works
         # act
-        result = loe_extractor.group_loe_patterns_by_tag(tags)
+        result = loe_fts_classifier.group_loe_patterns_by_tag(tags)
         # assert
         assert_that(result, contains(
             ('80%-100%', 'h1', 2),

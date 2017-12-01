@@ -4,13 +4,13 @@ from abc import abstractmethod
 import numpy
 from gensim.models import word2vec
 
-from src.classifier.classifier import Classifier
+from src.classifier.core.model_classifier import ModelClassifier
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
 
-class SemanticClassifier(Classifier):
+class SemanticClassifier(ModelClassifier):
     def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
         self.num_features = 300
         self.min_word_count = 40
@@ -43,7 +43,7 @@ class SemanticClassifier(Classifier):
             feature_vec = numpy.divide(feature_vec, num_words)
         return feature_vec
 
-    def _get_filename_postfix(self):
+    def get_filename_postfix(self):
         return '{features}features_{minwords}minwords_{context}context'.format(features=self.num_features,
                                                                                minwords=self.min_word_count,
                                                                                context=self.context)
@@ -53,7 +53,7 @@ class SemanticClassifier(Classifier):
         """to be implemented in subclass"""
 
     @abstractmethod
-    def _classify(self, data_test):
+    def classify(self, processed_row):
         """to be implemented in subclass"""
 
     @abstractmethod

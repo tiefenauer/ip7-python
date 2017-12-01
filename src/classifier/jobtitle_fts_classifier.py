@@ -1,12 +1,12 @@
 import logging
 from abc import abstractmethod
 
-from src.extractor.extractor import Extractor
+from src.classifier.core.fts_classifier import FtsClassifier
 
 log = logging.getLogger(__name__)
 
 
-class JobtitleExtractor(Extractor):
+class JobtitleFtsClassifier(FtsClassifier):
 
     @abstractmethod
     def title(self):
@@ -20,5 +20,5 @@ class JobtitleExtractor(Extractor):
     def label(self):
         """to be implemented in subclass"""
 
-    def _get_filename_postfix(self):
+    def get_filename_postfix(self):
         return ''

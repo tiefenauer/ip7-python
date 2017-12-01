@@ -5,7 +5,7 @@ import pickle
 import numpy
 from sklearn.ensemble import RandomForestClassifier
 
-from src.classifier.classifier import data_dir
+from src.classifier.core.classifier import data_dir
 from src.classifier.semantic_classifier import SemanticClassifier
 from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
@@ -21,7 +21,7 @@ class SemanticClassifierRF(SemanticClassifier):
             self.w2v_model = SemanticClassifierAvg(args).load_model(args.w2vmodel)
             log.info('loaded pre-trained Word2Vec-Model')
 
-    def _classify(self, data_test):
+    def classify(self, processed_row):
         # TODO: predict a single item, not the whole matrix!
         pass
 

@@ -3,36 +3,31 @@ import logging
 import os
 import re
 import shutil
-import time
 from abc import abstractmethod
 
-from src.core.data_processor import DataProcessor
-from src.util import util
+from src.classifier.core.classifier import Classifier
 
 log = logging.getLogger(__name__)
 
-data_dir = 'D:/code/ip7-python/resource/models'
 
-
-class Classifier(DataProcessor):
+class ModelClassifier(Classifier):
     def __init__(self, args, preprocessor):
-        super(Classifier, self).__init__(args, preprocessor)
-        self._process = self.classify
-
-        model_file = args.model if hasattr(args, 'model') and args.model else None
+        super(ModelClassifier, self).__init__(args, preprocessor)
         self.model = None
-        self.model_file = self.get_model_path()
+
+        # try to load model from model file (if specified)
+        model_file = args.model if hasattr(args, 'model') and args.model else None
         if model_file:
             self.model = self.load_model(model_file)
+            # adjust model filename
             self.model_file = self.get_model_path(re.sub('(\.gz)$', '', model_file))
 
-    def classify(self, processed_data):
-        for row in processed_data:
-            row.predicted_class = self._classify(row.processed)
-            yield row
+    def _process(self, row_preprocessed):
+        row_preprocessed.predicted_class = self.classify(row_preprocessed.processed)
+        return row_preprocessed
 
     @abstractmethod
-    def _classify(self, data_test):
+    def classify(self, processed_row):
         """classify some new data and return the class label"""
 
     def train_model(self, train_data):
@@ -71,34 +66,17 @@ class Classifier(DataProcessor):
             log.info('load_model: Could not load model from {}'.format(path))
         return model
 
-    def default_filename(self):
-        time_str = time.strftime(util.DATE_PATTERN)
-        label = self.label()
-        postfix = self._get_filename_postfix()
-        filename = '{label}_{time}'.format(label=label, time=time_str)
-        if postfix:
-            filename += '_{postfix}'.format(postfix=postfix)
-        return filename
-
-    def get_model_path(self, filename=None):
-        if filename is None:
-            filename = self.default_filename()
-        if not os.path.isdir(data_dir):
-            os.makedirs(data_dir)
-        return os.path.join(data_dir, filename)
-
-    @abstractmethod
-    def _get_filename_postfix(self):
-        """return a custom string to append to the default filename pattern"""
-
     @abstractmethod
     def _train_model(self, processed_data, labels, num_rows):
         """train classifier with some given data"""
+        return
 
     @abstractmethod
     def _save_model(self, model, path):
         """train classifier with some given data"""
+        return
 
     @abstractmethod
     def _load_model(self, path):
         """train classifier with some given data"""
+        return

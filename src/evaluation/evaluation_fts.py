@@ -3,5 +3,5 @@ from src.evaluation.evaluation import Evaluation
 
 
 class FtsEvaluation(Evaluation):
-    def __init__(self, args, classifier):
-        super(FtsEvaluation, self).__init__(args, classifier, FtsClassificationResults())
+    def __init__(self, args, data_processor):
+        super(FtsEvaluation, self).__init__(args, data_processor, FtsClassificationResults())

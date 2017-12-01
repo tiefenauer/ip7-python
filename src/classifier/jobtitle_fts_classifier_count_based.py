@@ -1,5 +1,5 @@
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
-from src.extractor.jobtitle_extractor import JobtitleExtractor
+from src.classifier.jobtitle_fts_classifier import JobtitleFtsClassifier
 from src.util.jobtitle_util import create_gender_variants, count_variant
 
 
@@ -14,9 +14,9 @@ def find_all_matches(tags, job_names):
             yield (count, job_name)
 
 
-class CountBasedJobTitleClassification(JobtitleExtractor):
+class CountBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
     def __init__(self, args, preprocessor):
-        super(CountBasedJobTitleClassification, self).__init__(args, preprocessor)
+        super(CountBasedJobtitleFtsClassifier, self).__init__(args, preprocessor)
         self.job_names = KnownJobsImporter()
 
     def extract(self, tags):

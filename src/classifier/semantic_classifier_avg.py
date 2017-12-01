@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 
 class SemanticClassifierAvg(SemanticClassifier):
-    def _classify(self, processed_row):
+    def classify(self, processed_row):
         feature_vec = self.to_average_vector(processed_row, self.model)
         # query w2v model
         top10 = self.model.similar_by_vector(feature_vec, 1)

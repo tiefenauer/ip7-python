@@ -1,7 +1,8 @@
 import argparse
 
 from src.database.X28TrainData import X28TrainData
-from src.extractor.loe_extractor import LoeExtractor
+from src.evaluation.evaluation_loe import LoeEvaluation
+from src.classifier.loe_fts_classifier import LoeFtsClassifier
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup
 
@@ -22,9 +23,10 @@ args = parser.parse_args()
 
 logging = log_setup()
 
-x28_data = X28TrainData(args)
 preprocessor = FtsPreprocessor()
-extractor = LoeExtractor(args, preprocessor)
+extractor = LoeFtsClassifier(args, preprocessor)
+evaluation = LoeEvaluation(args, extractor)
 
 if __name__ == '__main__':
-    extractor.process(x28_data)
+    x28_data = X28TrainData(args)
+    evaluation.evaluate(x28_data)

@@ -4,10 +4,9 @@ import logging
 from sklearn.ensemble import RandomForestClassifier
 
 from src.classifier.semantic_classifier_rf import SemanticClassifierRF
-from src.database.ClassificationResults import SemanticRfClassificationResults
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
-from src.evaluation.evaluation import Evaluation
+from src.evaluation.evaluation_semantic_rf import SemanticRFEvaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
 
@@ -36,17 +35,12 @@ args.split = 0.001
 data_train = X28TrainData(args)
 args.split = 0.999
 data_test = X28TestData(args)
+
 preprocessor = SemanticPreprocessor(remove_stopwords=True)  # remove stopwords for evaluation
-classifier = SemanticClassifierRF(args.model)
-evaluation = Evaluation(args, classifier)
-results = SemanticRfClassificationResults()
-model = classifier.model
+classifier = SemanticClassifierRF(args, preprocessor)
+evaluation = SemanticRFEvaluation(args, classifier)
 
 if __name__ == '__main__':
-    if args.truncate:
-        log.info('Truncating previous results...')
-        results.truncate()
-
     processed_train_data = preprocessor.preprocess(data_train, data_train.num_rows)
     processed_test_data = preprocessor.preprocess(data_test, data_test.num_rows)
     trainDataVecs = classifier.create_average_vectors(processed_train_data, data_train.num_rows)

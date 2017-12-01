@@ -4,7 +4,8 @@ from abc import abstractmethod
 from pony.orm import commit, db_session
 
 from src.database.entities_pg import Semantic_Avg_Classification_Results, Fts_Classification_Results, X28_HTML, \
-    Semantic_Rf_Classification_Results, Structural_Classification_NV_Results, Structural_Classification_NVT_Results
+    Semantic_Rf_Classification_Results, Structural_Classification_NV_Results, Structural_Classification_NVT_Results, \
+    Loe_Classification_Result
 
 log = logging.getLogger(__name__)
 
@@ -89,3 +90,16 @@ class StructuralClassificationNVTResults(ClassificationResults):
                                                      score_strict=sc_str,
                                                      score_tolerant=sc_tol,
                                                      score_linear=sc_lin)
+
+
+class LoeClassificationResults(ClassificationResults):
+
+    def __init__(self):
+        super(LoeClassificationResults, self).__init__(Loe_Classification_Result)
+
+    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
+        return Loe_Classification_Result(job=job_entity,
+                                         job_name=predicted_class,
+                                         score_strict=sc_str,
+                                         score_tolerant=sc_tol,
+                                         score_linear=sc_lin)
