@@ -3,9 +3,9 @@ import logging
 
 import nltk
 
-from src.classifier.structural_classifier_nvt import StructuralClassifierNVT
+from src.classifier.jobtitle.structural_classifier_nvt import StructuralClassifierNVT
 from src.database.X28TestData import X28TestData
-from src.evaluation.evaluation_structural_nvt import StructuralNVTEvaluation
+from src.evaluation.jobtitle.evaluator_jobtitle_structural_nvt import StructuralNVTEvaluation
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from src.util.log_util import log_setup
 

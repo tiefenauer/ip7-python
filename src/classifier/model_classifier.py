@@ -5,7 +5,7 @@ import re
 import shutil
 from abc import abstractmethod
 
-from src.classifier.core.classifier import Classifier
+from src.classifier.classifier import Classifier
 
 log = logging.getLogger(__name__)
 

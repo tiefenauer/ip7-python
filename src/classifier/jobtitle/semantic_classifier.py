@@ -4,7 +4,7 @@ from abc import abstractmethod
 import numpy
 from gensim.models import word2vec
 
-from src.classifier.core.model_classifier import ModelClassifier
+from src.classifier.model_classifier import ModelClassifier
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)

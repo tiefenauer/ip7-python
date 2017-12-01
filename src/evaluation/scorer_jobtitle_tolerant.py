@@ -1,10 +1,7 @@
-from src.evaluation.abstract_evaluator import AbstractEvaluator
+from src.evaluation.scorer import Scorer
 
 
-class TolerantJobtitleEvaluator(AbstractEvaluator):
-    TITLE = """tolerant evaluation"""
-    DESCRIPTION = """allows for some tolerance between predicted and actual class. The evaluation result
-                    of a single item is 1 if the prediction is within the tolerance or 0 if not."""
+class TolerantJobtitleScorer(Scorer):
 
     def calculate_similarity(self, actual_class, predicted_class):
         similarity = 0

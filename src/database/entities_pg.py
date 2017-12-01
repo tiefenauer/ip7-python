@@ -55,27 +55,27 @@ class Classification_Results(pg.Entity):
 
 
 class Fts_Classification_Results(Classification_Results):
-    _discriminator_ = 'fts'
+    _discriminator_ = 'jobtitle-fts'
 
 
 class Semantic_Avg_Classification_Results(Classification_Results):
-    _discriminator_ = 'semantic_avg'
+    _discriminator_ = 'jobtitle-semantic-avg'
 
 
 class Semantic_Rf_Classification_Results(Classification_Results):
-    _discriminator_ = 'semantic_rf'
+    _discriminator_ = 'jobtitle-semantic-rf'
 
 
 class Structural_Classification_NV_Results(Classification_Results):
-    _discriminator_ = 'structural_nv'
+    _discriminator_ = 'jobtitle-structural-nv'
 
 
 class Structural_Classification_NVT_Results(Classification_Results):
-    _discriminator_ = 'structural_nvt'
+    _discriminator_ = 'jobtitle-structural-nvt'
 
 
 class Loe_Classification_Result(Classification_Results):
-    _discriminator_ = 'extract_loe'
+    _discriminator_ = 'loe-fts'
 
 
 pg.bind('postgres', host='127.0.0.1', user='postgres', password='postgres', database='x28')

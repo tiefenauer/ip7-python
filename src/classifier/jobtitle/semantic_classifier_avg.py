@@ -2,7 +2,7 @@ import logging
 
 import gensim
 
-from src.classifier.semantic_classifier import SemanticClassifier
+from src.classifier.jobtitle.semantic_classifier import SemanticClassifier
 
 log = logging.getLogger(__name__)
 

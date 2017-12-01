@@ -36,7 +36,7 @@ def import_job_name_from_fts():
     sql = """SELECT a.title actual, p.job_name AS prediction
             FROM classification_results p
             LEFT OUTER JOIN x28_data a ON a.id = p.job_id
-            WHERE clf_method='fts'
+            WHERE clf_method=jobtitleitle'
             """
     cursor.execute(sql)
     for row in cursor:
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     fts_jobs = import_job_name_from_fts()
     for job_name in tqdm(fts_jobs):
         if job_name.lower() not in new_jobs:
-            write_job_name_to_db(job_name, 'fts')
+            write_job_name_to_db(job_name, 'jobtitle')
             new_jobs.add(job_name.lower())
 
     write_known_jobs_to_file()

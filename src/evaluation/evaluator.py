@@ -8,9 +8,9 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
-from src.evaluation.strict_evaluator import StrictEvaluator
-from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
+from src.evaluation.scorer_jobtitle_linear import LinearJobTitleScorer
+from src.evaluation.scorer_jobtitle_strict import StrictJobtitleScorer
+from src.evaluation.scorer_jobtitle_tolerant import TolerantJobtitleScorer
 from src.util import util
 
 log = logging.getLogger(__name__)
@@ -26,15 +26,15 @@ def create_figure(classifier):
     plt.show(block=False)
 
 
-def create_plots(evaluators):
-    num_plots = len(evaluators)
+def create_plots(scorers):
+    num_plots = len(scorers)
     ind = np.arange(num_plots)
     acc1_plots = ax.bar(ind, [0] * num_plots, bar_width, color='b')
     acc2_plots = ax.bar(ind + bar_width, [0] * num_plots, bar_width, color='g')
     labels = [0] * num_plots * 2
 
     ax.set_xticks(ind + bar_width / 2)
-    ax.set_xticklabels([evaluator.label() for evaluator in evaluators])
+    ax.set_xticklabels([scorer.label() for scorer in scorers])
     ax.set_xlabel('Evaluation methods')
     ax.set_ylim([0, 1])
     ax.set_ylabel('Average accuracy')
@@ -55,28 +55,30 @@ def update_title(num_processed, num_total, num_classified):
     ax.set_title(title)
 
 
-class Evaluation(object):
+class Evaluator(object):
     num_classified = 0
 
-    def __init__(self, args, data_processor, results):
+    def __init__(self, args, classifier, results):
         self.write = args.write if hasattr(args, 'write') else False
         if hasattr(args, 'truncate') and args.truncate:
             log.info('truncating target tables...')
             results.truncate()
             log.info('done')
 
-        self.data_processor = data_processor
+        self.classifier = classifier
+
+        self.scorer_strict = StrictJobtitleScorer()
+        self.scorer_tolerant = TolerantJobtitleScorer()
+        self.scorer_linear = LinearJobTitleScorer()
+        self.scorers = [self.scorer_strict, self.scorer_tolerant, self.scorer_linear]
+
         self.results = results
         self.start_time = datetime.datetime.today()
-        create_figure(data_processor)
-        self.evaluator_strict = StrictEvaluator()
-        self.evaluator_tolerant = TolerantJobtitleEvaluator()
-        self.evaluator_linear = LinearJobTitleEvaluator()
-        self.evaluators = [self.evaluator_strict, self.evaluator_tolerant, self.evaluator_linear]
-        self.acc1_plots, self.acc2_plots, self.labels = create_plots(self.evaluators)
+        create_figure(classifier)
+        self.acc1_plots, self.acc2_plots, self.labels = create_plots(self.scorers)
 
     def evaluate(self, data_test):
-        for i, row in enumerate(self.data_processor.process(data_test), 1):
+        for i, row in enumerate(self.classifier.process(data_test), 1):
             sc_str, sc_tol, sc_lin = self.update(row.title, row.predicted_class, i, data_test.num_rows)
             if self.write and row.predicted_class:
                 # only write results if not dry run and class could be predicted
@@ -87,9 +89,10 @@ class Evaluation(object):
         if predicted_class and len(predicted_class) > 0:
             self.num_classified += 1
 
-        score_strict = self.evaluator_strict.evaluate(expected_class, predicted_class)
-        score_tolerant = self.evaluator_tolerant.evaluate(expected_class, predicted_class)
-        score_linear = self.evaluator_linear.evaluate(expected_class, predicted_class)
+        score_strict = self.scorer_strict.score(expected_class, predicted_class)
+        score_tolerant = self.scorer_tolerant.score(expected_class, predicted_class)
+        score_linear = self.scorer_linear.score(expected_class, predicted_class)
+
         update_title(i, num_total, self.num_classified)
         self.update_plots(expected_class, predicted_class)
         fig.canvas.draw_idle()
@@ -100,7 +103,7 @@ class Evaluation(object):
         return score_strict, score_tolerant, score_linear
 
     def update_plots(self, expected_class, predicted_class):
-        for i, evaluator in enumerate(self.evaluators):
+        for i, evaluator in enumerate(self.scorers):
             acc = evaluator.accuracy
             overall_acc = evaluator.overall_accuracy
             self.acc1_plots[i].set_height(acc)
@@ -117,6 +120,6 @@ class Evaluation(object):
         self.labels[i] = ax.text(x, y, text, ha='center', va='bottom', color='black', fontsize=10)
 
     def stop(self):
-        filename = self.data_processor.model_file
+        filename = self.classifier.model_file
         filename += '_' + time.strftime(util.DATE_PATTERN)
         plt.savefig(filename)

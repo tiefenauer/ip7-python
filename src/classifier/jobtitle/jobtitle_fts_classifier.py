@@ -1,7 +1,7 @@
 import logging
 from abc import abstractmethod
 
-from src.classifier.core.fts_classifier import FtsClassifier
+from src.classifier.fts_classifier import FtsClassifier
 
 log = logging.getLogger(__name__)
 

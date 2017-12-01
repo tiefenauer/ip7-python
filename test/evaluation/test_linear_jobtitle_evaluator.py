@@ -2,9 +2,9 @@ import unittest
 
 from hamcrest import *
 
-from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
+from src.evaluation.scorer_jobtitle_linear import LinearJobTitleScorer
 
-testee = LinearJobTitleEvaluator(0.7)
+testee = LinearJobTitleScorer(0.7)
 
 
 class TestLinearJobTitleEvaluator(unittest.TestCase):

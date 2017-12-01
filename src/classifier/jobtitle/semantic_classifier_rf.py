@@ -5,9 +5,9 @@ import pickle
 import numpy
 from sklearn.ensemble import RandomForestClassifier
 
-from src.classifier.core.classifier import data_dir
-from src.classifier.semantic_classifier import SemanticClassifier
-from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
+from src.classifier.classifier import data_dir
+from src.classifier.jobtitle.semantic_classifier import SemanticClassifier
+from src.classifier.jobtitle.semantic_classifier_avg import SemanticClassifierAvg
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)

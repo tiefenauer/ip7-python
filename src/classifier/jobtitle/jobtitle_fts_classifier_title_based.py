@@ -1,4 +1,4 @@
-from src.classifier.jobtitle_fts_classifier import JobtitleFtsClassifier
+from src.classifier.jobtitle.jobtitle_fts_classifier import JobtitleFtsClassifier
 
 
 class TitleBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
@@ -16,4 +16,4 @@ class TitleBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
         information."""
 
     def label(self):
-        return 'jobtitle-fts-title'
+        return 'jobtitle-jobtitle-title'

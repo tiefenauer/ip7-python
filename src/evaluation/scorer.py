@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 
 
-class AbstractEvaluator(ABC):
-    def __init__(self, threshold=0):
+class Scorer(ABC):
+    def __init__(self, classifier, threshold=0):
+        self.classifier = classifier
         self.threshold = threshold
         self.total_classified = 0
         self.total_unclassified = 0
@@ -12,10 +13,10 @@ class AbstractEvaluator(ABC):
 
     def evaluate_all(self, ground_truth, predictions):
         for expected_class, predicted_class in zip(ground_truth, predictions):
-            self.evaluate(expected_class, predicted_class)
+            self.score(expected_class, predicted_class)
         return self.accuracy
 
-    def evaluate(self, actual_class, predicted_class):
+    def score(self, actual_class, predicted_class):
         score = self.calculate_similarity(actual_class, predicted_class)
         if score > self.threshold:
             self.total_classified += 1
@@ -29,20 +30,12 @@ class AbstractEvaluator(ABC):
         self.accuracy = self.overall_accuracy
 
     def status(self):
-        return self.desc_pattern.format(self.total_classified, self.total_unclassified, "{:1.4f}".format(self.overall_accuracy))
+        return self.desc_pattern.format(self.total_classified, self.total_unclassified,
+                                        "{:1.4f}".format(self.overall_accuracy))
 
     @abstractmethod
     def calculate_similarity(self, actual_class, predicted_class):
         """calculate how closely the predicted class matches the expected class"""
 
-    @abstractmethod
-    def title(self):
-        """return a short title of the evaluator"""
-
-    @abstractmethod
-    def description(self):
-        """describe method of evaluation"""
-
-    @abstractmethod
     def label(self):
-        """label for visualisaiton"""
+        return self.classifier.label()

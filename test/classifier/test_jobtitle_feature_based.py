@@ -4,8 +4,8 @@ import bs4
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
-from src.classifier import jobtitle_fts_classifier_htmltag_based
-from src.classifier.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
+from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based
+from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.jobtitle_util import create_gender_variants
 from test.util.test_util import create_dummy_args

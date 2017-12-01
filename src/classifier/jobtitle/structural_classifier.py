@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 import nltk
 
-from src.classifier.core.model_classifier import ModelClassifier
+from src.classifier.model_classifier import ModelClassifier
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 from src.util import jobtitle_util
 

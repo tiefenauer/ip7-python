@@ -1,6 +1,6 @@
 import argparse
 
-from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
+from src.classifier.jobtitle.semantic_classifier_avg import SemanticClassifierAvg
 from src.database.X28TrainData import X28TrainData
 from src.util.log_util import log_setup
 

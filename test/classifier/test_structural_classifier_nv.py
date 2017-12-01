@@ -3,8 +3,8 @@ import unittest
 import os
 from hamcrest import assert_that, contains, is_, not_
 
-from src.classifier import structural_classifier_nv
-from src.classifier.structural_classifier_nv import StructuralClassifierNV, top_n
+from src.classifier.jobtitle import structural_classifier_nv
+from src.classifier.jobtitle.structural_classifier_nv import StructuralClassifierNV
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from test.util.test_util import create_dummy_args, create_dummy_row

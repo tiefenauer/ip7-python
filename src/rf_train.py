@@ -2,7 +2,6 @@ import argparse
 import logging
 import os
 import pickle
-import sys
 
 import nltk
 from sklearn.ensemble import RandomForestClassifier
@@ -12,9 +11,9 @@ from tqdm import tqdm
 from src import preproc
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
-from src.evaluation.linear_jobtitle_evaluator import LinearJobTitleEvaluator
-from src.evaluation.strict_evaluator import StrictEvaluator
-from src.evaluation.tolerant_jobtitle_evaluator import TolerantJobtitleEvaluator
+from src.evaluation.scorer_jobtitle_linear import LinearJobTitleScorer
+from src.evaluation.scorer_jobtitle_strict import StrictJobtitleScorer
+from src.evaluation.scorer_jobtitle_tolerant import TolerantJobtitleScorer
 from src.util.log_util import log_setup
 
 log_setup()
@@ -145,9 +144,9 @@ if __name__ == '__main__':
 
     # evaluate_avg predictions
     log.info('measuring accuracy of predictions')
-    e_strict = StrictEvaluator()
-    e_tolerant = TolerantJobtitleEvaluator()
-    e_linear = LinearJobTitleEvaluator()
+    e_strict = StrictJobtitleScorer()
+    e_tolerant = TolerantJobtitleScorer()
+    e_linear = LinearJobTitleScorer()
     acc_strict = e_strict.evaluate_all(test_labels, predictions)
     acc_tolerant = e_tolerant.evaluate_all(test_labels, predictions)
     acc_linear = e_linear.evaluate_all(test_labels, predictions)

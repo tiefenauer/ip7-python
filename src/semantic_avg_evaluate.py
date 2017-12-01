@@ -4,14 +4,12 @@ import logging
 from pony.orm import commit, db_session
 from tqdm import tqdm
 
-from src.classifier.semantic_classifier_avg import SemanticClassifierAvg
-from src.database.ClassificationResults import SemanticAvgClassificationResults
+from src.classifier.jobtitle.semantic_classifier_avg import SemanticClassifierAvg
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
-from src.evaluation.evaluation import Evaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
-from src.evaluation.evaluation_semantic_avg import SemanticAVGEvaluation
+from src.evaluation.jobtitle.evaluator_jobtitle_semantic_avg import SemanticAVGEvaluation
 
 log_setup()
 log = logging.getLogger(__name__)

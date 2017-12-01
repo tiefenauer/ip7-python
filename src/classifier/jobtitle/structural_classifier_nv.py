@@ -1,7 +1,7 @@
 import itertools
 import operator
 
-from src.classifier.structural_classifier import StructuralClassifier
+from src.classifier.jobtitle.structural_classifier import StructuralClassifier
 
 # number of nouns/verbs to use as features (i.e. the top n nouns and the top n features)
 # --> size of the featureset will be 2n

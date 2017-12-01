@@ -2,8 +2,8 @@ import unittest
 
 from hamcrest import assert_that, is_, contains, less_than
 
-from src.classifier import structural_classifier_nvt
-from src.classifier.structural_classifier_nvt import StructuralClassifierNVT
+from src.classifier.jobtitle import structural_classifier_nvt
+from src.classifier.jobtitle.structural_classifier_nvt import StructuralClassifierNVT
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from test.util.test_util import create_dummy_args
 

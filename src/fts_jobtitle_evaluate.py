@@ -1,9 +1,9 @@
 import argparse
 import logging
 
-from src.classifier.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
+from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
 from src.database.X28TestData import X28TestData
-from src.evaluation.evaluation_fts import FtsEvaluation
+from src.evaluation.jobtitle.evaluator_jobtitle_fts import JobtitleFtsEvaluator
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup
 
@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 preprocessor = FtsPreprocessor()
 classifier = FeatureBasedJobtitleFtsClassifier(args, preprocessor)
-evaluation = FtsEvaluation(args, classifier)
+evaluation = JobtitleFtsEvaluator(args, classifier)
 
 if __name__ == '__main__':
     data_train = X28TestData(args)

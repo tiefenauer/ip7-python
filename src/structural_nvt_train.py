@@ -1,6 +1,6 @@
 import argparse
 
-from src.classifier.structural_classifier_nvt import StructuralClassifierNVT
+from src.classifier.jobtitle.structural_classifier_nvt import StructuralClassifierNVT
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from src.util.log_util import log_setup

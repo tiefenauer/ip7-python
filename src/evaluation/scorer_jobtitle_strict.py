@@ -1,7 +1,7 @@
-from src.evaluation.abstract_evaluator import AbstractEvaluator
+from src.evaluation.scorer import Scorer
 
 
-class StrictEvaluator(AbstractEvaluator):
+class StrictJobtitleScorer(Scorer):
     TITLE = "strict evaluation"
     DESCRIPTION = """requires an exact match between the predicted and the actual class (i.e. 1:1). 
     The evaluation result of a single item is 1 if the prediction was correct or 0 if the prediction was false"""

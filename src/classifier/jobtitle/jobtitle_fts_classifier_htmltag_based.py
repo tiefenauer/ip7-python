@@ -1,5 +1,5 @@
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
-from src.classifier.jobtitle_fts_classifier import JobtitleFtsClassifier
+from src.classifier.jobtitle.jobtitle_fts_classifier import JobtitleFtsClassifier
 from src.util.jobtitle_util import count_variant, create_variants
 
 tag_weight = {
@@ -102,4 +102,4 @@ class FeatureBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
         """
 
     def label(self):
-        return 'jobtitle-fts-html-tags'
+        return 'jobtitle-jobtitle-html-tags'

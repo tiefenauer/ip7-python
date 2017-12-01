@@ -1,9 +1,9 @@
 from src import preproc
-from src.evaluation.abstract_evaluator import AbstractEvaluator
+from src.evaluation.scorer import Scorer
 from src.util import jobtitle_util
 
 
-class LinearJobTitleEvaluator(AbstractEvaluator):
+class LinearJobTitleScorer(Scorer):
     TITLE = """linear Evaluation"""
     DESCRIPTION = """the evaluation result is measured as a degree of similarity between predicted and actual
                     class"""

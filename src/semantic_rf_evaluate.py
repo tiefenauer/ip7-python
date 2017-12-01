@@ -3,10 +3,10 @@ import logging
 
 from sklearn.ensemble import RandomForestClassifier
 
-from src.classifier.semantic_classifier_rf import SemanticClassifierRF
+from src.classifier.jobtitle.semantic_classifier_rf import SemanticClassifierRF
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
-from src.evaluation.evaluation_semantic_rf import SemanticRFEvaluation
+from src.evaluation.jobtitle.evaluator_jobtitle_semantic_rf import SemanticRFEvaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
 
