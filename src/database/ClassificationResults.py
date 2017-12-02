@@ -16,16 +16,24 @@ class ClassificationResults(object):
         self.Entity = Entity
 
     @db_session
-    def update_classification(self, entity, predicted_class, sc_str, sc_tol, sc_lin):
-        job_row = X28_HTML.get(lambda d: d.id == entity.id)
+    def update_classification(self, row, scores):
+        rowid = row.id
+        predicted_class = row.predicted_class
+        sc_str = scores[0]
+        sc_tol = scores[1]
+        sc_lin = scores[2]
+
+        job_row = X28_HTML.get(lambda d: d.id == rowid)
         classification_result = self.create_entity(job_row, predicted_class, sc_str, sc_tol, sc_lin)
         commit()
         return classification_result
 
     @db_session
     def truncate(self):
+        log.info('Truncating target tables...')
         self.Entity.select().delete(bulk=True)
         commit()
+        log.info('...done!')
 
     @abstractmethod
     def create_entity(self, job_class, predicted_class, sc_str, sc_tol, sc_lin):

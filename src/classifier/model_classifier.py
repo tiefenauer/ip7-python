@@ -5,7 +5,7 @@ import re
 import shutil
 from abc import abstractmethod
 
-from src.classifier.classifier import Classifier
+from src.classifier.classifier import Classifier, path_to_file
 
 log = logging.getLogger(__name__)
 
@@ -18,17 +18,13 @@ class ModelClassifier(Classifier):
         # try to load model from model file (if specified)
         model_file = args.model if hasattr(args, 'model') and args.model else None
         if model_file:
-            self.model = self.load_model(model_file)
-            # adjust model filename
-            self.model_file = self.get_model_path(re.sub('(\.gz)$', '', model_file))
-
-    def _process(self, row_preprocessed):
-        row_preprocessed.predicted_class = self.classify(row_preprocessed.processed)
-        return row_preprocessed
+            self.filename = model_file
+            self.model = self.load_model()
+            self.filename = re.sub('(\.gz)$', '', model_file)
 
     @abstractmethod
-    def classify(self, processed_row):
-        """classify some new data and return the class label"""
+    def classify(self, processed_data):
+        """get class for a single item of """
 
     def train_model(self, train_data):
         if self.model:
@@ -43,9 +39,9 @@ class ModelClassifier(Classifier):
         self.save_model()
         return self.model
 
-    def save_model(self, filename=None):
+    def save_model(self):
         log.info('save_model: Saving model...')
-        path = self.get_model_path(filename)
+        path = path_to_file(self.filename)
         # save
         self._save_model(self.model, path)
         # compress
@@ -53,11 +49,10 @@ class ModelClassifier(Classifier):
         with open(path, 'rb') as f_in, gzip.open(path_gz, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
         os.remove(path)
-        self.model_file = path
         return path_gz
 
-    def load_model(self, filename=None):
-        path = self.get_model_path(filename)
+    def load_model(self):
+        path = path_to_file(self.filename)
         log.info('load_model: Trying to load model from {}'.format(path))
         model = self._load_model(path)
         if model:

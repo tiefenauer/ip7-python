@@ -4,55 +4,14 @@ A simple example of an animated plot
 import datetime
 import logging
 import time
+from abc import abstractmethod
 
 import matplotlib.pyplot as plt
-import numpy as np
 
-from src.evaluation.scorer_jobtitle_linear import LinearJobTitleScorer
-from src.evaluation.scorer_jobtitle_strict import StrictJobtitleScorer
-from src.evaluation.scorer_jobtitle_tolerant import TolerantJobtitleScorer
+from src.evaluation.evaluation_plotter import EvaluationPlotter
 from src.util import util
 
 log = logging.getLogger(__name__)
-
-colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
-
-fig, ax = plt.subplots(figsize=(8, 8))
-bar_width = 0.35
-
-
-def create_figure(classifier):
-    fig.suptitle('Classification: ' + classifier.label())
-    plt.show(block=False)
-
-
-def create_plots(scorers):
-    num_plots = len(scorers)
-    ind = np.arange(num_plots)
-    acc1_plots = ax.bar(ind, [0] * num_plots, bar_width, color='b')
-    acc2_plots = ax.bar(ind + bar_width, [0] * num_plots, bar_width, color='g')
-    labels = [0] * num_plots * 2
-
-    ax.set_xticks(ind + bar_width / 2)
-    ax.set_xticklabels([scorer.label() for scorer in scorers])
-    ax.set_xlabel('Evaluation methods')
-    ax.set_ylim([0, 1])
-    ax.set_ylabel('Average accuracy')
-    ax.legend((acc1_plots[0], acc2_plots[0]), ('Accuracy if classifiable', 'Overall accuracy'))
-    return acc1_plots, acc2_plots, labels
-
-
-def update_title(num_processed, num_total, num_classified):
-    percent_classified = 100 * num_classified / num_processed
-    title = """
-    after {num_processed}/{num_total} processed items
-    {num_classified}/{num_processed} ({percent_classified}) items classified
-    """.format(num_classified=num_classified,
-               num_processed=num_processed,
-               num_total=num_total,
-               percent_classified="{:1.2f}%".format(percent_classified)
-               )
-    ax.set_title(title)
 
 
 class Evaluator(object):
@@ -61,65 +20,47 @@ class Evaluator(object):
     def __init__(self, args, classifier, results):
         self.write = args.write if hasattr(args, 'write') else False
         if hasattr(args, 'truncate') and args.truncate:
-            log.info('truncating target tables...')
             results.truncate()
-            log.info('done')
 
         self.classifier = classifier
-
-        self.scorer_strict = StrictJobtitleScorer()
-        self.scorer_tolerant = TolerantJobtitleScorer()
-        self.scorer_linear = LinearJobTitleScorer()
-        self.scorers = [self.scorer_strict, self.scorer_tolerant, self.scorer_linear]
-
         self.results = results
         self.start_time = datetime.datetime.today()
-        create_figure(classifier)
-        self.acc1_plots, self.acc2_plots, self.labels = create_plots(self.scorers)
+
+        # show plot
+        self.plotter = EvaluationPlotter(self)
 
     def evaluate(self, data_test):
-        for i, row in enumerate(self.classifier.process(data_test), 1):
-            sc_str, sc_tol, sc_lin = self.update(row.title, row.predicted_class, i, data_test.num_rows)
+        num_total = data_test.num_total
+        num_processed = 0
+        num_classified = 0
+
+        for row in self.classifier.classify_all(data_test):
+            num_processed += 1
+            if self.is_classified(row):
+                num_classified += 1
+            self.plotter.update_plots(num_total, num_processed, num_classified)
+
+            # only write results if not dry run and class could be predicted
             if self.write and row.predicted_class:
-                # only write results if not dry run and class could be predicted
-                self.results.update_classification(row, row.predicted_class, sc_str, sc_tol, sc_lin)
+                scores = self.calculate_scores(row)
+                self.results.update_classification(row, scores)
         self.stop()
 
-    def update(self, expected_class, predicted_class, i, num_total):
-        if predicted_class and len(predicted_class) > 0:
-            self.num_classified += 1
-
-        score_strict = self.scorer_strict.score(expected_class, predicted_class)
-        score_tolerant = self.scorer_tolerant.score(expected_class, predicted_class)
-        score_linear = self.scorer_linear.score(expected_class, predicted_class)
-
-        update_title(i, num_total, self.num_classified)
-        self.update_plots(expected_class, predicted_class)
-        fig.canvas.draw_idle()
-        try:
-            fig.canvas.flush_events()
-        except NotImplementedError:
-            pass
-        return score_strict, score_tolerant, score_linear
-
-    def update_plots(self, expected_class, predicted_class):
-        for i, evaluator in enumerate(self.scorers):
-            acc = evaluator.accuracy
-            overall_acc = evaluator.overall_accuracy
-            self.acc1_plots[i].set_height(acc)
-            self.acc2_plots[i].set_height(overall_acc)
-            self.update_label(i, acc)
-            self.update_label(i + 1, overall_acc)
-
-    def update_label(self, i, height):
-        if self.labels[i]:
-            self.labels[i].remove()
-        x = i + (i % 2) * 0.5 * bar_width
-        y = 1.01 * height
-        text = str("{:1.4f}".format(height))
-        self.labels[i] = ax.text(x, y, text, ha='center', va='bottom', color='black', fontsize=10)
-
     def stop(self):
-        filename = self.classifier.model_file
-        filename += '_' + time.strftime(util.DATE_PATTERN)
+        filename = self.classifier.filename + '_' + time.strftime(util.DATE_PATTERN)
         plt.savefig(filename)
+
+    @abstractmethod
+    def get_scorers(self):
+        """return list of scorers for evaluation"""
+        return []
+
+    @abstractmethod
+    def calculate_scores(self, row):
+        """return scores"""
+        return ()
+
+    @abstractmethod
+    def is_classified(self, row):
+        """update number of classified rows depending on result"""
+        pass

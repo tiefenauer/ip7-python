@@ -18,10 +18,11 @@ class SemanticClassifierRF(SemanticClassifier):
         super(SemanticClassifierRF, self).__init__(args, preprocessor)
         self.w2v_model = None
         if hasattr(args, 'w2vmodel') and args.w2vmodel:
-            self.w2v_model = SemanticClassifierAvg(args).load_model(args.w2vmodel)
+            self.filename = args.w2vmodel
+            self.w2v_model = SemanticClassifierAvg(args).load_model()
             log.info('loaded pre-trained Word2Vec-Model')
 
-    def classify(self, processed_row):
+    def classify_all(self, processed_row):
         # TODO: predict a single item, not the whole matrix!
         pass
 

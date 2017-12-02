@@ -53,10 +53,6 @@ class SemanticClassifier(ModelClassifier):
         """to be implemented in subclass"""
 
     @abstractmethod
-    def classify(self, processed_row):
-        """to be implemented in subclass"""
-
-    @abstractmethod
     def _load_model(self, path):
         """to be implemented in subclass"""
 

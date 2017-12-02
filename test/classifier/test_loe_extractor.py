@@ -4,8 +4,8 @@ from unittest import skip
 from bs4 import BeautifulSoup
 from hamcrest import assert_that, contains, is_
 
-from src.classifier.levelofemployment import loe_fts_classifier
-from src.classifier.levelofemployment.loe_fts_classifier import LoeFtsClassifier
+from src.classifier.loe import loe_fts_classifier
+from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from test.util.test_util import create_dummy_args
 

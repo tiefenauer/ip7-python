@@ -26,7 +26,7 @@ class StructuralClassifier(ModelClassifier):
         super(StructuralClassifier, self).__init__(args, preprocessor)
 
     def classify(self, processed_row):
-        features = self.extract_features(processed_row)
+        features = self.extract_features(processed_row.processed)
         result = self.model.classify(features)
         return result
 

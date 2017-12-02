@@ -1,7 +1,7 @@
 from src.database.ClassificationResults import StructuralClassificationNVResults
-from src.evaluation.evaluator import Evaluator
+from src.evaluation.jobtitle.evaluator_jobtitle import JobtitleEvaluator
 
 
-class StructuralNVEvaluation(Evaluator):
+class StructuralNVEvaluator(JobtitleEvaluator):
     def __init__(self, args, classifier):
-        super(StructuralNVEvaluation, self).__init__(args, classifier, StructuralClassificationNVResults())
+        super(StructuralNVEvaluator, self).__init__(args, classifier, StructuralClassificationNVResults())

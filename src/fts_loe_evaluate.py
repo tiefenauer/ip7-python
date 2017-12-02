@@ -2,7 +2,7 @@ import argparse
 
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.loe.evaluation_loe import LoeEvaluation
-from src.classifier.levelofemployment.loe_fts_classifier import LoeFtsClassifier
+from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup
 
