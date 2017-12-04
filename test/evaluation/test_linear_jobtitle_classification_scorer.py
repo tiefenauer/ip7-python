@@ -7,7 +7,7 @@ from src.evaluation.jobtitle.jobtitle_classification_scorer_linear import Linear
 testee = LinearJobtitleClassificationScorer(0.7)
 
 
-class TestLinearClassificationScorer(unittest.TestCase):
+class TestLinearJobtitleClassificationScorer(unittest.TestCase):
     def test_calculate_similarity_no_prediction_returns_zero(self):
         # arrange/act
         result = testee.calculate_similarity('Schichtleiter Maschinenbau', None)

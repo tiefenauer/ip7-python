@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.font_manager import FontProperties
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 fig, ax = plt.subplots(figsize=(8, 8))
@@ -17,12 +18,16 @@ def create_plots(xlabels):
     plots1 = ax.bar(ind, [0] * num_plots, bar_width, color='b')
     plots2 = ax.bar(ind + bar_width, [0] * num_plots, bar_width, color='g')
 
+    fontP = FontProperties()
+    fontP.set_size('small')
+
     ax.set_xticks(ind + bar_width / 2)
     ax.set_xticklabels(xlabels)
     ax.set_xlabel('Evaluation methods')
     ax.set_ylim([0, 1])
     ax.set_ylabel('Average accuracy')
-    ax.legend((plots1[0], plots2[0]), ('Accuracy if classifiable', 'Overall accuracy'))
+    ax.legend((plots1[0], plots2[0]), ('Accuracy if classifiable', 'Overall accuracy'), prop=fontP, loc='upper center',
+              bbox_to_anchor=(0.5, -0.1), ncol=2)
     return plots1, plots2
 
 

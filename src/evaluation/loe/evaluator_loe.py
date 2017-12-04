@@ -1,15 +1,15 @@
 from src.database.ClassificationResults import LoeClassificationResults
 from src.evaluation.evaluator import Evaluator
-from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
 from src.evaluation.loe.loe_classification_scorer_linear import LinearLoeClassificationScorer
 from src.evaluation.loe.loe_classification_scorer_strict import StrictLoeClassificationScorer
+from src.evaluation.loe.loe_classification_scorer_tolerant import TolerantLoeClassificationScorer
 
 
 class LoeEvaluator(Evaluator):
 
     def __init__(self, args, classifier):
         self.scorer_strict = StrictLoeClassificationScorer(classifier.label())
-        self.scorer_tolerant = TolerantJobtitleClassificationScorer(classifier.label())
+        self.scorer_tolerant = TolerantLoeClassificationScorer(classifier.label())
         self.scorer_linear = LinearLoeClassificationScorer(classifier.label())
         super(LoeEvaluator, self).__init__(args, classifier, LoeClassificationResults())
 

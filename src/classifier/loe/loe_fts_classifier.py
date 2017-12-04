@@ -58,7 +58,12 @@ def group_loe_patterns_by_count(tags):
             c = dct[p][t]
             lst.append(LoeOccurrence(p, t, c))
 
-    # step 4: sort list by pattern suffix ASC (percentages first), tag weight ASC (according to tag_order), count DESC
+    # step 4a: perform some filtering
+    # filter out items without percent in pattern (those are unlikely to be LOE)
+    lst = (loe for loe in lst if '%' in loe.pattern)
+    # filter out items that occur in lists (those are more likely to belong to skills etc.)
+    lst = (loe for loe in lst if loe.tag not in ['li', 'ul', 'ol'])
+    # step 4b: sort list by pattern suffix ASC (percentages first), tag weight ASC (according to tag_order), count DESC
     sorted_lst = sorted(lst, key=lambda x: (x.ends_with_percent, x.tag_weight, -x.count))
     # step 5: convert list to 3-tupel
     result = []
