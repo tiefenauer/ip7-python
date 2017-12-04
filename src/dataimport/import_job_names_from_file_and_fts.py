@@ -9,10 +9,10 @@ import re
 import nltk
 import numpy as np
 import pandas
+from pony.orm import commit
 from tqdm import tqdm
 
-from src import db
-from src.db import Database
+from src.database.entities_pg import Classification_Results, Job_Class
 from src.util import jobtitle_util
 from src.util.log_util import log_setup
 
@@ -24,6 +24,8 @@ job_titles_tsv = os.path.join(resource_dir, 'job_titles.tsv')
 known_jobs_dirty = os.path.join(resource_dir, 'known_jobs_dirty.tsv')
 
 slashed_jobname_pattern = re.compile('(?<=[a-z])\/(?=[A-Z])')
+trailing_special_chars_pattern = re.compile(r'[\s\/\-_]+$')
+leading_special_chars_pattern = re.compile(r'^[\s\/\-_]')
 
 
 def import_job_names_from_file():
@@ -34,15 +36,10 @@ def import_job_names_from_file():
 
 def import_job_name_from_fts():
     log.info('importing job names from Full Text Search results')
-    cursor = conn.cursor()
-    sql = """SELECT a.title actual, p.job_name AS prediction
-            FROM classification_results p
-            LEFT OUTER JOIN x28_data a ON a.id = p.job_id
-            WHERE clf_method=jobtitleitle'
-            """
-    cursor.execute(sql)
-    for row in cursor:
-        for job_name in merge(row['actual'], row['prediction']):
+    for result in Classification_Results.select(lambda c: c.clf_method == 'jobtitle-fts'):
+        actual = result.job.title
+        predicted = result.job_name
+        for job_name in merge(actual, predicted):
             yield job_name
 
 
@@ -73,23 +70,21 @@ def merge(actual, prediction):
 
 def trim_and_remove_special_chars(str):
     # remove trailing special chars
-    str = re.sub(r'[\s\/\-_]+$', '', str)
+    str = re.sub(trailing_special_chars_pattern, '', str)
     # remove leading special chars
-    str = re.sub(r'^[\s\/\-_]', '', str)
+    str = re.sub(leading_special_chars_pattern, '', str)
     return str
 
 
-def write_job_name_to_db(name, origin):
-    cursor = conn.cursor()
-    cursor.execute("""INSERT INTO known_jobs (job_name, origin) VALUES (%s, %s)""", (name, origin))
-    conn.commit()
+def write_job_name_to_db(job_name):
+    Job_Class(job_name=job_name)
+    commit()
 
 
 def truncate_target_table():
     log.info('truncating target tables')
-    cursor = conn.cursor()
-    cursor.execute("""TRUNCATE TABLE known_jobs""")
-    conn.commit()
+    Job_Class.select().delete(bulk=True)
+    commit()
 
 
 def write_known_jobs_to_file():
@@ -98,30 +93,26 @@ def write_known_jobs_to_file():
     df = pandas.read_csv(known_jobs_dirty, delimiter='\t', names=['job_name'])
     log.info('entries in {} before: {}'.format(known_jobs_dirty, df.shape[0]))
 
-    sql = """SELECT DISTINCT job_name FROM known_jobs ORDER BY job_name ASC"""
-    conn = db.connect_to(Database.X28_PG)
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    data = cursor.fetchall()
-    all_jobs = pandas.DataFrame(np.array(data))
+    job_names = list(row.job_name for row in Job_Class.select().order_by(Job_Class.job_name))
+    all_jobs = pandas.DataFrame(np.array(job_names))
 
     log.info('entries in {} after: {}'.format(known_jobs_dirty, all_jobs.shape[0]))
     all_jobs[0].to_csv(known_jobs_dirty, encoding='utf-8', index=False)
 
 
-conn = db.connect_to(Database.X28_PG)
-
 if __name__ == '__main__':
     truncate_target_table()
     new_jobs = set()
+
     known_jobs = import_job_names_from_file()
     for job_name in tqdm(known_jobs):
-        write_job_name_to_db(job_name, 'job_titles.tsv')
+        write_job_name_to_db(job_name)
         new_jobs.add(job_name.lower())
+
     fts_jobs = import_job_name_from_fts()
     for job_name in tqdm(fts_jobs):
         if job_name.lower() not in new_jobs:
-            write_job_name_to_db(job_name, 'jobtitle')
+            write_job_name_to_db(job_name)
             new_jobs.add(job_name.lower())
 
     write_known_jobs_to_file()
