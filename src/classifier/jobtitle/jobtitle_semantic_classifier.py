@@ -4,18 +4,19 @@ from abc import abstractmethod
 import numpy
 from gensim.models import word2vec
 
+from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.model_classifier import ModelClassifier
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
 
-class SemanticClassifier(ModelClassifier):
+class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
     def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
         self.num_features = 300
         self.min_word_count = 40
         self.context = 10
-        super(SemanticClassifier, self).__init__(args, preprocessor)
+        super(JobtitleSemanticClassifier, self).__init__(args, preprocessor)
         self.num_workers = 6
         self.downsampling = 1e-3
 

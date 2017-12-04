@@ -4,7 +4,7 @@ import logging
 from pony.orm import commit, db_session
 from tqdm import tqdm
 
-from src.classifier.jobtitle.semantic_classifier_avg import SemanticClassifierAvg
+from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
@@ -68,7 +68,7 @@ if not args.model:
     args.model = 'semantic_avg_2017-11-21-12-38-54_300features_40minwords_10context.gz'
 
 preprocessor = SemanticPreprocessor(remove_stopwords=True)  # remove stopwords for evaluation
-classifier = SemanticClassifierAvg(args, preprocessor)
+classifier = JobtitleSemanticClassifierAvg(args, preprocessor)
 evaluation = SemanticAVGEvaluation(args, classifier)
 
 if __name__ == '__main__':

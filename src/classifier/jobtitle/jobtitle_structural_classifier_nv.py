@@ -1,10 +1,11 @@
 import itertools
 import operator
 
-from src.classifier.jobtitle.structural_classifier import StructuralClassifier
-
+from src.classifier.jobtitle.jobtitle_structural_classifier import JobtitleStructuralClassifier
 # number of nouns/verbs to use as features (i.e. the top n nouns and the top n features)
 # --> size of the featureset will be 2n
+from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
+
 n = 5
 
 
@@ -16,7 +17,12 @@ def top_n(tagged_words, tag, n):
     return top[:n]
 
 
-class StructuralClassifierNV(StructuralClassifier):
+class JobtitleStructuralClassifierNV(JobtitleStructuralClassifier):
+
+    def __init__(self, args):
+        preprocessor = StructuralPreprocessorNV()
+        super(JobtitleStructuralClassifierNV, self).__init__(args, preprocessor)
+
     def extract_features(self, tagged_words):
         # convert to list because of two passes!
         tagged_words = list(tagged_words)

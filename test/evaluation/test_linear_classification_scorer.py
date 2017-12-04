@@ -2,12 +2,12 @@ import unittest
 
 from hamcrest import *
 
-from src.evaluation.scorer_jobtitle_linear import LinearJobTitleScorer
+from src.evaluation.classification_scorer_linear import LinearClassificationScorer
 
-testee = LinearJobTitleScorer(0.7)
+testee = LinearClassificationScorer(0.7)
 
 
-class TestLinearJobTitleEvaluator(unittest.TestCase):
+class TestLinearClassificationScorer(unittest.TestCase):
     def test_calculate_similarity_no_prediction_returns_zero(self):
         # arrange/act
         result = testee.calculate_similarity('Schichtleiter Maschinenbau', None)

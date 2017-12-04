@@ -5,9 +5,9 @@ from src.classifier.classifier import Classifier
 
 class FtsClassifier(Classifier):
 
-    def classify(self, row_preprocessed):
-        row_preprocessed.predicted_class = self.extract(row_preprocessed.processed)
-        return row_preprocessed
+    def classify(self, processed_data):
+        predicted_class = self.extract(processed_data)
+        return predicted_class
 
     @abstractmethod
     def extract(self, processed_row):

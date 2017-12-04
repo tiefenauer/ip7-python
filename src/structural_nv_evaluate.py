@@ -3,7 +3,7 @@ import logging
 
 import nltk
 
-from src.classifier.jobtitle.structural_classifier_nv import StructuralClassifierNV
+from src.classifier.jobtitle.jobtitle_structural_classifier_nv import JobtitleStructuralClassifierNV
 from src.database.X28TestData import X28TestData
 from src.evaluation.jobtitle.evaluator_jobtitle_structural_nv import StructuralNVEvaluator
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
@@ -29,8 +29,7 @@ args = parser.parse_args()
 if not args.model:
     args.model = 'structural_nv_2017-11-24-14-29-31.gz'
 
-preprocessor = StructuralPreprocessorNV()
-classifier = StructuralClassifierNV(args, preprocessor)
+classifier = JobtitleStructuralClassifierNV(args)
 evaluation = StructuralNVEvaluator(args, classifier)
 
 if __name__ == '__main__':

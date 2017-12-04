@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 import nltk
 
+from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.model_classifier import ModelClassifier
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 from src.util import jobtitle_util
@@ -20,13 +21,13 @@ def clean_labels(labels_list):
         yield label
 
 
-class StructuralClassifier(ModelClassifier):
+class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
     def __init__(self, args, preprocessor):
         self.num_rows = 0
-        super(StructuralClassifier, self).__init__(args, preprocessor)
+        super(JobtitleStructuralClassifier, self).__init__(args, preprocessor)
 
-    def classify(self, processed_row):
-        features = self.extract_features(processed_row.processed)
+    def classify(self, tagged_words):
+        features = self.extract_features(tagged_words)
         result = self.model.classify(features)
         return result
 

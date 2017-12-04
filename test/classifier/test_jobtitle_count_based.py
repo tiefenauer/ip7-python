@@ -2,25 +2,26 @@ import unittest
 
 from hamcrest import *
 
-from src.classifier.jobtitle.jobtitle_fts_classifier_count_based import CountBasedJobtitleFtsClassifier, find_all_matches
+from src.classifier.jobtitle.jobtitle_fts_classifier_count_based import CountBasedJobtitleFtsClassifier, \
+    find_all_matches
 from src.preprocessing.fts_preprocessor import FtsPreprocessor
-from test.util.test_util import create_dummy_args
+from test.util.test_util import create_dummy_args, create_dummy_row
 
 args = create_dummy_args()
 preprocessor = FtsPreprocessor()
 testee = CountBasedJobtitleFtsClassifier(args, preprocessor)
 
 
-class TestJobtitleStrategyCount(unittest.TestCase):
+class TestCountBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_should_return_best_match(self):
         # arrange
-        dom = '<p>Schneider Schneider Schneider Koch Koch Koch Koch Sekretär</p>'
+        row = create_dummy_row(html='<p>Schneider Schneider Schneider Koch Koch Koch Koch Sekretär</p>')
+        processed_data = preprocessor.preprocess_single(row)
         testee.job_names = ['Schneider', 'Koch', 'Sekretär']
         # act
-        (result, count, score) = testee.classify(dom)
+        result = testee.classify(processed_data)
         # assert
         assert_that(result, is_('Koch'))
-        assert_that(count, is_(4))
 
     def test_find_all_should_return_matches(self):
         # arrange

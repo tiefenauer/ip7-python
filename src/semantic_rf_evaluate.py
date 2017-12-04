@@ -3,7 +3,7 @@ import logging
 
 from sklearn.ensemble import RandomForestClassifier
 
-from src.classifier.jobtitle.semantic_classifier_rf import SemanticClassifierRF
+from src.classifier.jobtitle.jobtitle_semantic_classifier_rf import JobtitleSemanticClassifierRF
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.jobtitle.evaluator_jobtitle_semantic_rf import SemanticRFEvaluation
@@ -37,7 +37,7 @@ args.split = 0.999
 data_test = X28TestData(args)
 
 preprocessor = SemanticPreprocessor(remove_stopwords=True)  # remove stopwords for evaluation
-classifier = SemanticClassifierRF(args, preprocessor)
+classifier = JobtitleSemanticClassifierRF(args, preprocessor)
 evaluation = SemanticRFEvaluation(args, classifier)
 
 if __name__ == '__main__':

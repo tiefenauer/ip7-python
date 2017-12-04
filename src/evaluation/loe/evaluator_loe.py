@@ -1,16 +1,17 @@
+from src.database.ClassificationResults import LoeClassificationResults
 from src.evaluation.classification_scorer_linear import LinearClassificationScorer
 from src.evaluation.classification_scorer_strict import StrictClassificationScorer
 from src.evaluation.classification_scorer_tolerant import TolerantClassificationScorer
 from src.evaluation.evaluator import Evaluator
 
 
-class JobtitleEvaluator(Evaluator):
+class LoeEvaluator(Evaluator):
 
-    def __init__(self, args, classifier, results):
+    def __init__(self, args, classifier):
         self.scorer_strict = StrictClassificationScorer(classifier.label())
         self.scorer_tolerant = TolerantClassificationScorer(classifier.label())
         self.scorer_linear = LinearClassificationScorer(classifier.label())
-        super(JobtitleEvaluator, self).__init__(args, classifier, results)
+        super(LoeEvaluator, self).__init__(args, classifier, LoeClassificationResults())
 
     def get_scorers(self):
         return [self.scorer_strict, self.scorer_tolerant, self.scorer_linear]
@@ -23,3 +24,5 @@ class JobtitleEvaluator(Evaluator):
 
     def is_classified(self, predicted_class):
         return predicted_class and len(predicted_class) > 0
+
+

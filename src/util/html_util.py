@@ -9,6 +9,8 @@ RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol'}
 # these tags will be filtered out without replacement
 IRRELEVANT_TAGS = {'meta', 'link', 'style', 'script', 'noscript', 'iframe', 'form', 'input', 'img'}
 
+relevant_tag_pattern = re.compile("(" + ")|(".join(RELEVANT_TAGS) + ")")
+
 
 def extract_tags(soup, tags=[]):
     if is_nested(soup):
@@ -34,10 +36,8 @@ def is_nested(el):
     return contains_children(el)
 
 
-def is_relevant(tag, relevant_rags=RELEVANT_TAGS):
-    # make a regex that matches if any of the relevant tags
-    combined = "(" + ")|(".join(relevant_rags) + ")"
-    return tag.name and re.match(combined, tag.name)
+def is_relevant(tag):
+    return tag.name and re.match(relevant_tag_pattern, tag.name)
 
 
 def strip_content(tag):

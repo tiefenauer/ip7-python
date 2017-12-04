@@ -53,7 +53,7 @@ def create_job_name_tuple(*job_names):
         yield job_name, create_gender_variants(job_name)
 
 
-class TestFeatureBasedJobtitleClassification(unittest.TestCase):
+class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_one_job_one_variant_returns_correct_variant(self):
         # arrange
         tags = [

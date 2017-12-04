@@ -26,8 +26,10 @@ class Classifier(ABC):
         num_rows = raw_data.num_rows if hasattr(raw_data, 'num_rows') else -1
         rows_preprocessed = self.preprocessor.preprocess(raw_data, num_rows)
         for row in rows_preprocessed:
-            row.predicted_class = self.classify(row)
-            yield row
+            rowid = row.id
+            actual_class = self.get_actual_class(row)
+            predicted_class = self.classify(row.processed)
+            yield rowid, actual_class, predicted_class
 
     def default_filename(self):
         time_str = time.strftime(util.DATE_PATTERN)
@@ -41,6 +43,11 @@ class Classifier(ABC):
     @abstractmethod
     def classify(self, row_preprocessed):
         """process single preprocessed row returning the result for each item"""
+        return
+
+    @abstractmethod
+    def get_actual_class(self, row):
+        """return the actual class for a given row"""
         return
 
     @abstractmethod

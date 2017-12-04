@@ -34,16 +34,16 @@ class Evaluator(object):
         num_processed = 0
         num_classified = 0
 
-        for row in self.classifier.classify_all(data_test):
+        for rowid, actual_class, predicted_class in self.classifier.classify_all(data_test):
             num_processed += 1
-            if self.is_classified(row):
+            if self.is_classified(predicted_class):
                 num_classified += 1
             self.plotter.update_plots(num_total, num_processed, num_classified)
 
             # only write results if not dry run and class could be predicted
-            if self.write and row.predicted_class:
-                scores = self.calculate_scores(row)
-                self.results.update_classification(row, scores)
+            if self.write and predicted_class:
+                scores = self.calculate_scores(actual_class, predicted_class)
+                self.results.update_classification(rowid, predicted_class, scores)
         self.stop()
 
     def stop(self):
@@ -56,7 +56,7 @@ class Evaluator(object):
         return []
 
     @abstractmethod
-    def calculate_scores(self, row):
+    def calculate_scores(self, actual_class, predicated_class):
         """return scores"""
         return ()
 

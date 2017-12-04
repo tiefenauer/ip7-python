@@ -2,11 +2,17 @@ import logging
 from abc import abstractmethod
 
 from src.classifier.fts_classifier import FtsClassifier
+from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.preprocessing.fts_preprocessor import FtsPreprocessor
 
 log = logging.getLogger(__name__)
 
 
-class JobtitleFtsClassifier(FtsClassifier):
+class JobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
+
+    def __init__(self, args):
+        preprocessor = FtsPreprocessor()
+        super(JobtitleFtsClassifier, self).__init__(args, preprocessor)
 
     @abstractmethod
     def title(self):

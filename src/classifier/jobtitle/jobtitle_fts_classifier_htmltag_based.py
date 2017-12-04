@@ -1,5 +1,5 @@
-from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 from src.classifier.jobtitle.jobtitle_fts_classifier import JobtitleFtsClassifier
+from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 from src.util.jobtitle_util import count_variant, create_variants
 
 tag_weight = {
@@ -39,13 +39,12 @@ def count_variants(string, variants):
             yield (variant, count)
 
 
-class FeatureBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
-    def __init__(self, args, preprocessor):
-        super(FeatureBasedJobtitleFtsClassifier, self).__init__(args, preprocessor)
-        self.job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobsImporter()]
+job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobsImporter()]
 
+
+class FeatureBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
     def extract(self, tags):
-        features = extract_features(tags, self.job_name_variants)
+        features = extract_features(tags, job_name_variants)
         best_match = None
         best_job_score = 0
         best_job_diversity = 0

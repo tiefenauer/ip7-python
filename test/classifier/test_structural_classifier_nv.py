@@ -3,15 +3,15 @@ import unittest
 import os
 from hamcrest import assert_that, contains, is_, not_
 
-from src.classifier.jobtitle import structural_classifier_nv
-from src.classifier.jobtitle.structural_classifier_nv import StructuralClassifierNV
+from src.classifier.jobtitle import jobtitle_structural_classifier_nv
+from src.classifier.jobtitle.jobtitle_structural_classifier_nv import JobtitleStructuralClassifierNV
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from test.util.test_util import create_dummy_args, create_dummy_row
 
 args = create_dummy_args()
 preprocessor = StructuralPreprocessorNV()
-testee = StructuralClassifierNV(args, preprocessor)
+testee = JobtitleStructuralClassifierNV(args, preprocessor)
 
 
 class TestStructuralClassifierNV(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestStructuralClassifierNV(unittest.TestCase):
         row = create_dummy_row('Baum Baum Baum Baum Baum Haus Haus Haus Haus Maler Maler Maler Bäcker Bäcker')
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = structural_classifier_nv.top_n(tagged_words, 'N', 3)
+        result = jobtitle_structural_classifier_nv.top_n(tagged_words, 'N', 3)
         # assert
         assert_that(result, contains(
             ('baum', 5),
@@ -37,7 +37,7 @@ class TestStructuralClassifierNV(unittest.TestCase):
                                 """)
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = structural_classifier_nv.top_n(tagged_words, 'V', 3)
+        result = jobtitle_structural_classifier_nv.top_n(tagged_words, 'V', 3)
         # assert
         assert_that(result, contains(
             ('seh', 5),
@@ -80,9 +80,10 @@ class TestStructuralClassifierNV(unittest.TestCase):
         data_train = X28TrainData(create_dummy_args(split=0.00001))
         testee.train_model(data_train)
         # act
-        filename = 'test.pickle'
-        path = testee.save_model(filename)
-        model = testee.load_model(path)
+        testee.filename = 'test.pickle'
+        path = testee.save_model()
+        testee.filename = path
+        model = testee.load_model()
         os.remove(path)
         # assert
         assert_that(model, is_(not_(None)))

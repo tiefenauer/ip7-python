@@ -6,20 +6,20 @@ import numpy
 from sklearn.ensemble import RandomForestClassifier
 
 from src.classifier.classifier import data_dir
-from src.classifier.jobtitle.semantic_classifier import SemanticClassifier
-from src.classifier.jobtitle.semantic_classifier_avg import SemanticClassifierAvg
+from src.classifier.jobtitle.jobtitle_semantic_classifier import JobtitleSemanticClassifier
+from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
 
-class SemanticClassifierRF(SemanticClassifier):
+class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
     def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
-        super(SemanticClassifierRF, self).__init__(args, preprocessor)
+        super(JobtitleSemanticClassifierRF, self).__init__(args, preprocessor)
         self.w2v_model = None
         if hasattr(args, 'w2vmodel') and args.w2vmodel:
             self.filename = args.w2vmodel
-            self.w2v_model = SemanticClassifierAvg(args).load_model()
+            self.w2v_model = JobtitleSemanticClassifierAvg(args).load_model()
             log.info('loaded pre-trained Word2Vec-Model')
 
     def classify_all(self, processed_row):

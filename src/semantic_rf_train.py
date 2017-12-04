@@ -1,6 +1,6 @@
 import argparse
 
-from src.classifier.jobtitle.semantic_classifier_rf import SemanticClassifierRF
+from src.classifier.jobtitle.jobtitle_semantic_classifier_rf import JobtitleSemanticClassifierRF
 from src.database.X28TrainData import X28TrainData
 from src.util.log_util import log_setup
 
@@ -20,6 +20,6 @@ if not args.w2vmodel:
     args.w2vmodel = 'semantic_avg_2017-11-23-17-08-20_300features_40minwords_10context.gz'
 
 data_train = X28TrainData(args)
-classifier = SemanticClassifierRF(args)
+classifier = JobtitleSemanticClassifierRF(args)
 if __name__ == '__main__':
     classifier.train_model(data_train)

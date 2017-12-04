@@ -9,6 +9,8 @@ from src.classifier.classifier import Classifier, path_to_file
 
 log = logging.getLogger(__name__)
 
+gzip_filename_pattern = re.compile('(\.gz)$')
+
 
 class ModelClassifier(Classifier):
     def __init__(self, args, preprocessor):
@@ -20,7 +22,7 @@ class ModelClassifier(Classifier):
         if model_file:
             self.filename = model_file
             self.model = self.load_model()
-            self.filename = re.sub('(\.gz)$', '', model_file)
+            self.filename = re.sub(gzip_filename_pattern, '', model_file)
 
     @abstractmethod
     def classify(self, processed_data):

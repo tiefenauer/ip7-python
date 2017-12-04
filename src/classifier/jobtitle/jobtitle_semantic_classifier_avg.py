@@ -2,14 +2,14 @@ import logging
 
 import gensim
 
-from src.classifier.jobtitle.semantic_classifier import SemanticClassifier
+from src.classifier.jobtitle.jobtitle_semantic_classifier import JobtitleSemanticClassifier
 
 log = logging.getLogger(__name__)
 
 
-class SemanticClassifierAvg(SemanticClassifier):
-    def classify(self, row):
-        feature_vec = self.to_average_vector(row.processed, self.model)
+class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
+    def classify(self, word_list):
+        feature_vec = self.to_average_vector(word_list, self.model)
         # query w2v model
         top10 = self.model.similar_by_vector(feature_vec, 1)
         if top10:

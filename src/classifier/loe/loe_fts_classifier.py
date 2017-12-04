@@ -4,6 +4,8 @@ import operator
 import re
 
 from src.classifier.fts_classifier import FtsClassifier
+from src.classifier.loe.loe_classifier import LoeClassifier
+from src.preprocessing.fts_preprocessor import FtsPreprocessor
 
 log = logging.getLogger(__name__)
 
@@ -57,7 +59,11 @@ def find_loe_patterns(text):
     return LOE_PATTERN.findall(text)
 
 
-class LoeFtsClassifier(FtsClassifier):
+class LoeFtsClassifier(FtsClassifier, LoeClassifier):
+
+    def __init__(self, args):
+        preprocessor = FtsPreprocessor()
+        super(LoeFtsClassifier, self).__init__(args, preprocessor)
 
     def extract(self, tags):
         tags_with_numbers = group_loe_patterns_by_count(tags)

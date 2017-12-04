@@ -23,6 +23,8 @@ resource_dir = 'D:/code/ip7-python/resource'
 job_titles_tsv = os.path.join(resource_dir, 'job_titles.tsv')
 known_jobs_dirty = os.path.join(resource_dir, 'known_jobs_dirty.tsv')
 
+slashed_jobname_pattern = re.compile('(?<=[a-z])\/(?=[A-Z])')
+
 
 def import_job_names_from_file():
     log.info('importing job names from {}'.format(job_titles_tsv))
@@ -47,7 +49,7 @@ def import_job_name_from_fts():
 def merge(actual, prediction):
     merged_job_names = set()
     # split on slashes but not if slash denotss a male/female form
-    actual_job_names = re.split('(?<=[a-z])\/(?=[A-Z])', actual)
+    actual_job_names = re.split(slashed_jobname_pattern, actual)
     for actual_job_name in actual_job_names:
         actual_n = jobtitle_util.to_male_form(actual_job_name)
         actual_n = trim_and_remove_special_chars(actual_n)

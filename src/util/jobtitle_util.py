@@ -2,9 +2,23 @@ import re
 
 from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
 
-pattern_hyphenated = re.compile('(?=\S*[-])([a-zA-Z-]+)')
-pattern_suffix = r"{}((in)|(euse)|(frau))"
-pattern_slashed = r"{}((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
+# job title patterns
+pattern_hyphenated = re.compile(r'(?=\S*[-])([a-zA-Z-]+)')
+# dynamic patterns
+pattern_suffix = "{}((in)|(euse)|(frau))"
+pattern_slashed = "{}((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
+
+# job title suffix patterns: general
+suffix_pattern_eur_euse = re.compile(r'(eur)?\/?-?(euse)$')
+suffix_pattern_mann_frau = re.compile(r'(mann)?\/?-?(frau)$')
+suffix_pattern_in = re.compile('\/?-?(\(?[iI]n\)?)$')
+suffix_pattern_mw = re.compile('\s?(\(?m\/?w\)?)')
+suffix_pattern_wm = re.compile('\s?(\(?w\/?m\)?)')
+
+# job title suffix patterns: male forms
+suffix_pattern_eur = re.compile(r'(eur)$')
+suffix_pattern_mann = re.compile(r'(mann)$')
+suffix_pattern_er = re.compile(r'(er)$')
 
 
 def find(string, job_name):
@@ -21,42 +35,42 @@ def find(string, job_name):
 
 
 def to_male_form(job_name):
-    jn = re.sub('(eur)?\/?-?(euse)$', 'eur', job_name)
-    jn = re.sub('(mann)?\/?-?(frau)$', 'mann', jn)
-    jn = re.sub('\/?-?(\(?[iI]n\)?)$', '', jn)
-    jn = re.sub('\s?(\(?m\/?w\)?)', '', jn)
-    jn = re.sub('\s?(\(?w\/?m\)?)', '', jn)
+    jn = re.sub(suffix_pattern_eur_euse, 'eur', job_name)
+    jn = re.sub(suffix_pattern_mann_frau, 'mann', jn)
+    jn = re.sub(suffix_pattern_in, '', jn)
+    jn = re.sub(suffix_pattern_mw, '', jn)
+    jn = re.sub(suffix_pattern_wm, '', jn)
     return jn
 
 
 def to_female_form(job_name):
-    jn = re.sub('(eur)$', 'euse', job_name)
-    jn = re.sub('(mann)$', 'frau', jn)
-    jn = re.sub('(er)$', 'erin', jn)
+    jn = re.sub(suffix_pattern_eur, 'euse', job_name)
+    jn = re.sub(suffix_pattern_mann, 'frau', jn)
+    jn = re.sub(suffix_pattern_er, 'erin', jn)
     return jn
 
 
 def to_female_form_camel_cased(job_name):
-    jn = re.sub('(er)$', 'erIn', job_name)
+    jn = re.sub(suffix_pattern_er, 'erIn', job_name)
     return jn
 
 
 def to_female_form_brackets(job_name):
-    jn = re.sub('(er)$', 'er(in)', job_name)
+    jn = re.sub(suffix_pattern_er, 'er(in)', job_name)
     return jn
 
 
 def to_slashed_form(job_name):
-    jn = re.sub('(eur)$', 'eur/euse', job_name)
-    jn = re.sub('(mann)$', 'mann/frau', jn)
-    jn = re.sub('(er)$', 'er/in', jn)
+    jn = re.sub(suffix_pattern_eur, 'eur/euse', job_name)
+    jn = re.sub(suffix_pattern_mann, 'mann/frau', jn)
+    jn = re.sub(suffix_pattern_er, 'er/in', jn)
     return jn
 
 
 def to_slashed_hyphen_form(job_name):
-    jn = re.sub('(eur)$', 'eur/-euse', job_name)
-    jn = re.sub('(mann)$', 'mann/-frau', jn)
-    jn = re.sub('(er)$', 'er/-in', jn)
+    jn = re.sub(suffix_pattern_eur, 'eur/-euse', job_name)
+    jn = re.sub(suffix_pattern_mann, 'mann/-frau', jn)
+    jn = re.sub(suffix_pattern_er, 'er/-in', jn)
     return jn
 
 

@@ -16,9 +16,7 @@ class ClassificationResults(object):
         self.Entity = Entity
 
     @db_session
-    def update_classification(self, row, scores):
-        rowid = row.id
-        predicted_class = row.predicted_class
+    def update_classification(self, rowid, predicted_class, scores):
         sc_str = scores[0]
         sc_tol = scores[1]
         sc_lin = scores[2]

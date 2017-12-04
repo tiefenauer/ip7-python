@@ -1,6 +1,6 @@
 import argparse
 
-from src.classifier.jobtitle.structural_classifier_nv import StructuralClassifierNV
+from src.classifier.jobtitle.jobtitle_structural_classifier_nv import JobtitleStructuralClassifierNV
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from src.util.log_util import log_setup
@@ -17,7 +17,7 @@ logging = log_setup()
 
 data_train = X28TrainData(args)
 preprocessor = StructuralPreprocessorNV()
-classifier = StructuralClassifierNV(args, preprocessor)
+classifier = JobtitleStructuralClassifierNV(args, preprocessor)
 
 if __name__ == '__main__':
     classifier.train_model(data_train)

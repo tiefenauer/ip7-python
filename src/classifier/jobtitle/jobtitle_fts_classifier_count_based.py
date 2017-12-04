@@ -26,7 +26,7 @@ class CountBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
             if count > best_count:
                 best_count = count
                 best_match = name
-        return best_match, best_count, 1
+        return best_match
 
     def find_all(self, tags, job_names=None):
         if job_names is None:

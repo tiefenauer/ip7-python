@@ -25,6 +25,8 @@ punctuation_tokens = ['.', '..', '...', ',', ';', ':', '(', ')', '"', '\'', '[',
                       '{', '}', '?', '!', '-', '–', '+', '*', '--', '\'\'', '``']
 punctuation = '?.!/;:()&+'
 
+special_chars_pattern = re.compile('([^A-Za-zäöüéèà\/\- ]*)')
+
 
 def extract_relevant_tags(markup):
     soup = parse(markup)
@@ -72,7 +74,7 @@ def remove_special_chars(text):
 
 
 def _replace_special_chars(word):
-    return re.sub('([^A-Za-zäöüéèà\/\- ]*)', '', word)
+    return re.sub(special_chars_pattern, '', word)
 
 
 def remove_stop_words(text):
