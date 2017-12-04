@@ -2,10 +2,8 @@ import argparse
 import logging
 
 from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
-from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.jobtitle.evaluator_jobtitle_fts import JobtitleFtsEvaluator
-from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup
 
 log_setup()
