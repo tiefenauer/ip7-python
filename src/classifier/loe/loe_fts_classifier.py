@@ -8,10 +8,12 @@ from src.classifier.loe.loe_classifier import LoeClassifier
 
 log = logging.getLogger(__name__)
 
-p1 = '(\d\d\d?%?)-?(\d\d\d?%?)?'
-p2 = '(\d\d\d?%?-\d\d\d?%?)|(\d\d\d?%?)'
-p3 = '\d\d\d?%?-\d\d\d?%?|\d\d\d?%?'
-LOE_PATTERN = re.compile(p3)
+# matches any pattern, hyphenated or not
+LOE_PATTERN = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%?|\d\d\d?\s*%?')
+# matches single LOE: 80%, 100%, ... (arbitrary number of spaces before percent sign
+LOE_PATTERN_SINGLE = re.compile('\d\d\d?\s*%')
+# matches LOE range: 60(%)-80%, 70(%)-100% ... (first percent symbol is optional)
+LOE_PATTERN_RANGE = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%')
 
 tag_order = ['h1', 'h2', 'h3', 'p']
 
@@ -63,10 +65,20 @@ class LoeFtsClassifier(FtsClassifier, LoeClassifier):
     information."""
 
     def classify(self, tags):
-        tags_with_numbers = group_loe_patterns_by_count(tags)
-        if len(tags_with_numbers) > 0:
-            return tags_with_numbers[0][0]
-        return None
+        matches = group_loe_patterns_by_count(tags)
+        workquota_min = 100
+        workquota_max = 100
+        if matches:
+            loe = matches[0][0]
+            if re.match(LOE_PATTERN_SINGLE, loe):
+                workquota_min = re.sub('\s*%', '', loe)
+                workquota_max = workquota_min
+            if re.match(LOE_PATTERN_RANGE, loe):
+                workquota_min, workquota_max = loe.split('-')
+            workquota_min = re.sub('\s*%', '', workquota_min)
+            workquota_max = re.sub('\s*%', '', workquota_max)
+
+        return int(workquota_min), int(workquota_max)
 
     def title(self):
         return 'LoE Extractor'

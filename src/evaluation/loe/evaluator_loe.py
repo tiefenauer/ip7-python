@@ -1,16 +1,16 @@
 from src.database.ClassificationResults import LoeClassificationResults
-from src.evaluation.classification_scorer_linear import LinearClassificationScorer
-from src.evaluation.classification_scorer_strict import StrictClassificationScorer
-from src.evaluation.classification_scorer_tolerant import TolerantClassificationScorer
 from src.evaluation.evaluator import Evaluator
+from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
+from src.evaluation.loe.loe_classification_scorer_linear import LinearLoeClassificationScorer
+from src.evaluation.loe.loe_classification_scorer_strict import StrictLoeClassificationScorer
 
 
 class LoeEvaluator(Evaluator):
 
     def __init__(self, args, classifier):
-        self.scorer_strict = StrictClassificationScorer(classifier.label())
-        self.scorer_tolerant = TolerantClassificationScorer(classifier.label())
-        self.scorer_linear = LinearClassificationScorer(classifier.label())
+        self.scorer_strict = StrictLoeClassificationScorer(classifier.label())
+        self.scorer_tolerant = TolerantJobtitleClassificationScorer(classifier.label())
+        self.scorer_linear = LinearLoeClassificationScorer(classifier.label())
         super(LoeEvaluator, self).__init__(args, classifier, LoeClassificationResults())
 
     def get_scorers(self):
@@ -24,5 +24,3 @@ class LoeEvaluator(Evaluator):
 
     def is_classified(self, predicted_class):
         return predicted_class and len(predicted_class) > 0
-
-

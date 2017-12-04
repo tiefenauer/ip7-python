@@ -1,9 +1,8 @@
 import argparse
 
+from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.loe.evaluator_loe import LoeEvaluator
-from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
-from src.preprocessing.fts_preprocessor import FtsPreprocessor
 from src.util.log_util import log_setup
 
 parser = argparse.ArgumentParser(description="""Extract level of employment (LOE) - including evaluation""")

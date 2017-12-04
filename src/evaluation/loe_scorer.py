@@ -1,4 +1,4 @@
-from src.evaluation.scorer import Scorer
+from src.evaluation.score import Scorer
 
 
 class LoeScorer(Scorer):

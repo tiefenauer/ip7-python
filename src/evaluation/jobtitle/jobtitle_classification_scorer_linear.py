@@ -3,7 +3,7 @@ from src.evaluation.classification_scorer import ClassificationScorer
 from src.util import jobtitle_util
 
 
-class LinearClassificationScorer(ClassificationScorer):
+class LinearJobtitleClassificationScorer(ClassificationScorer):
     scores = 0
 
     def calculate_similarity(self, actual_class, predicted_class):

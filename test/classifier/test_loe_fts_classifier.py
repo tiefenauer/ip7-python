@@ -35,6 +35,75 @@ testee = LoeFtsClassifier(args)
 
 class TestLoeFtsClassifier(unittest.TestCase):
 
+    def test_classify_without_patterns_returns_none(self):
+        # arrange
+        tags = create_tags([
+            ('h1', 'Anstellung als Maurer'),
+            ('h1', 'Anstellung als Baggeführer')
+        ])
+        # act
+        result_min, result_max = testee.classify(tags)
+        # assert
+        assert_that(result_min, is_(100))
+        assert_that(result_max, is_(100))
+
+    def test_classify_xxxP_returns_xxx_for_min_and_max(self):
+        # arrange
+        tags1 = create_tags([('h1', 'Anstellung 80% als Maurer')])
+        tags2 = create_tags([('h1', 'Anstellung 80 % als Maurer')])
+        # act / Assert
+        assert_that(testee.classify(tags1), is_((80, 80)))
+        assert_that(testee.classify(tags2), is_((80, 80)))
+
+    def test_classify_xxx_yyyP_returns_xxx_for_min_and_yyy_max(self):
+        # arrange
+        tags1 = create_tags([('h1', 'Anstellung 80-100% als Maurer')])
+        tags2 = create_tags([('h1', 'Anstellung 80 -100% als Maurer')])
+        tags3 = create_tags([('h1', 'Anstellung 80- 100% als Maurer')])
+        tags4 = create_tags([('h1', 'Anstellung 80-100 % als Maurer')])
+        tags5 = create_tags([('h1', 'Anstellung 80 - 100 % als Maurer')])
+        # act/assert
+        assert_that(testee.classify(tags1), is_((80, 100)))
+        assert_that(testee.classify(tags2), is_((80, 100)))
+        assert_that(testee.classify(tags3), is_((80, 100)))
+        assert_that(testee.classify(tags4), is_((80, 100)))
+        assert_that(testee.classify(tags5), is_((80, 100)))
+
+    def test_classify_xxxP_yyyP_returns_xxx_for_min_and_yyy_max(self):
+        # arrange
+        tags1 = create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
+        tags5 = create_tags([('h1', 'Anstellung 80 %-100% als Maurer')])
+        tags2 = create_tags([('h1', 'Anstellung 80% -100% als Maurer')])
+        tags3 = create_tags([('h1', 'Anstellung 80%- 100% als Maurer')])
+        tags4 = create_tags([('h1', 'Anstellung 80%-100 % als Maurer')])
+        tags5 = create_tags([('h1', 'Anstellung 80 % - 100 % als Maurer')])
+        tags6 = create_tags([('h1', 'Anstellung 80% - 100% als Maurer')])
+        tags7 = create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
+        # act/assert
+        assert_that(testee.classify(tags1), is_((80, 100)))
+        assert_that(testee.classify(tags2), is_((80, 100)))
+        assert_that(testee.classify(tags3), is_((80, 100)))
+        assert_that(testee.classify(tags4), is_((80, 100)))
+        assert_that(testee.classify(tags5), is_((80, 100)))
+        assert_that(testee.classify(tags6), is_((80, 100)))
+        assert_that(testee.classify(tags7), is_((80, 100)))
+
+    def test_classify_xxx_P_yyy_P_returns_xxx_for_min_and_yyy_max(self):
+        # arrange
+        tags1 = create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
+        tags2 = create_tags([('h1', 'Anstellung 80 %-100% als Maurer')])
+        tags3 = create_tags([('h1', 'Anstellung 80% -100% als Maurer')])
+        tags4 = create_tags([('h1', 'Anstellung 80%- 100% als Maurer')])
+        tags5 = create_tags([('h1', 'Anstellung 80%-100 % als Maurer')])
+        tags6 = create_tags([('h1', 'Anstellung 80 % - 100 % als Maurer')])
+        # act/assert
+        assert_that(testee.classify(tags1), is_((80, 100)))
+        assert_that(testee.classify(tags2), is_((80, 100)))
+        assert_that(testee.classify(tags3), is_((80, 100)))
+        assert_that(testee.classify(tags4), is_((80, 100)))
+        assert_that(testee.classify(tags5), is_((80, 100)))
+        assert_that(testee.classify(tags6), is_((80, 100)))
+
     def test_classify_with_multiple_patterns_returns_most_frequent_pattern(self):
         # arrange
         tags = create_tags([
@@ -46,20 +115,10 @@ class TestLoeFtsClassifier(unittest.TestCase):
             ('h2', 'Anstellung 60-80% als Maurer')
         ])
         # act
-        result = testee.classify(tags)
+        loe_min, loe_max = testee.classify(tags)
         # assert
-        assert_that(result, is_('80%-100%'))
-
-    def test_classify_without_patterns_returns_none(self):
-        # arrange
-        tags = create_tags([
-            ('h1', 'Anstellung als Maurer'),
-            ('h1', 'Anstellung als Baggeführer')
-        ])
-        # act
-        result = testee.classify(tags)
-        # assert
-        assert_that(result, is_(None))
+        assert_that(loe_min, is_(80))
+        assert_that(loe_max, is_(100))
 
     def test_find_loe_patterns_3digits_returns_loe_patterns(self):
         # arrange

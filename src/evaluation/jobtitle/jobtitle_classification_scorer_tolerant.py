@@ -1,7 +1,7 @@
 from src.evaluation.classification_scorer import ClassificationScorer
 
 
-class TolerantClassificationScorer(ClassificationScorer):
+class TolerantJobtitleClassificationScorer(ClassificationScorer):
 
     def calculate_similarity(self, actual_class, predicted_class):
         similarity = 0

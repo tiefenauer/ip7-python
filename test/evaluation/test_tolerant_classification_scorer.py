@@ -2,9 +2,9 @@ import unittest
 
 from hamcrest import *
 
-from src.evaluation.classification_scorer_tolerant import TolerantClassificationScorer
+from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
 
-testee = TolerantClassificationScorer()
+testee = TolerantJobtitleClassificationScorer()
 
 
 class TestTolerantClassificationScorer(unittest.TestCase):
