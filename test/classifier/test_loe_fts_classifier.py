@@ -203,6 +203,22 @@ class TestLoeFtsClassifier(unittest.TestCase):
             ('80%', 1)
         ))
 
+    def test_group_patterns_by_count_returns_percentage_before_other(self):
+        # arrange
+        tags = create_tags([
+            ('h1', 'Anstellung 80-100 als Maurer'),
+            ('h1', 'Anstellung 80-100 als Maurer'),
+            ('h2', 'Anstellung 80-100 als Maurer'),
+            ('h1', 'Anstellung 80% als Maurer')
+        ])
+        # act
+        result = loe_fts_classifier.group_loe_patterns_by_count(tags)
+        # assert
+        assert_that(result, contains(
+            ('80%', 1),
+            ('80-100', 3)
+        ))
+
     @skip("find a way to sort list by html tag and occurrence while preserving grouping")
     def test_group_loe_patterns_by_tag_returns_list_sorted_by_tag_and_count(self):
         # arrange

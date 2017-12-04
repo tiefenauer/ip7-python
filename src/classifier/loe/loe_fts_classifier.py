@@ -19,7 +19,6 @@ tag_order = ['h1', 'h2', 'h3', 'p']
 
 
 def group_loe_patterns_by_tag(tags):
-    # TODO: this method does not work as expected
     patterns_by_tag = find_loe_patterns_by_tag(tags)
     patterns_by_tag = list(patterns_by_tag)
     d = collections.defaultdict(list)
@@ -32,18 +31,13 @@ def group_loe_patterns_by_tag(tags):
         for tag_name in (tag_name for tag_name in tag_list if not (tag_name in seen or seen.add(tag_name))):
             result.append((pattern, tag_name, tag_list.count(tag_name)))
 
-    # sort by html tag
-    result = sorted(result, key=lambda item: tag_order.index(item[1]) if item[1] in tag_order else 999)
-    result = sorted(result, key=operator.itemgetter(1, 2), reverse=True)
-    result = sorted(result, key=operator.itemgetter(0))
-    # result = sorted(result, key=lambda item: (item[2], -item[2]), reverse=True)
     return result
 
 
 def group_loe_patterns_by_count(tags):
     patterns_by_tag = find_loe_patterns_by_tag(tags)
     dct = {}
-    for pattern, tag in patterns_by_tag:
+    for pattern, html_tag in patterns_by_tag:
         if pattern not in dct: dct[pattern] = 0
         dct[pattern] += 1
     return sorted(dct.items(), key=operator.itemgetter(1), reverse=True)
@@ -66,8 +60,8 @@ class LoeFtsClassifier(FtsClassifier, LoeClassifier):
 
     def classify(self, tags):
         matches = group_loe_patterns_by_count(tags)
-        workquota_min = 100
-        workquota_max = 100
+        workquota_min = '100'
+        workquota_max = '100'
         if matches:
             loe = matches[0][0]
             if re.match(LOE_PATTERN_SINGLE, loe):
