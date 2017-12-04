@@ -1,5 +1,4 @@
 import unittest
-from unittest import skip
 
 from bs4 import BeautifulSoup
 from hamcrest import assert_that, contains, is_
@@ -198,9 +197,10 @@ class TestLoeFtsClassifier(unittest.TestCase):
         result = loe_fts_classifier.group_loe_patterns_by_count(tags)
         # assert
         assert_that(result, contains(
-            ('80%-100%', 3),
-            ('60-80%', 2),
-            ('80%', 1)
+            ('80%-100%', 'h1', 2),
+            ('60-80%', 'h2', 2),
+            ('80%-100%', 'h2', 1),
+            ('80%', 'h1', 1)
         ))
 
     def test_group_patterns_by_count_returns_percentage_before_other(self):
@@ -215,28 +215,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
         result = loe_fts_classifier.group_loe_patterns_by_count(tags)
         # assert
         assert_that(result, contains(
-            ('80%', 1),
-            ('80-100', 3)
-        ))
-
-    @skip("find a way to sort list by html tag and occurrence while preserving grouping")
-    def test_group_loe_patterns_by_tag_returns_list_sorted_by_tag_and_count(self):
-        # arrange
-        tags = create_tags([
-            ('h1', 'Anstellung 80%-100% als Maurer'),
-            ('h1', 'Anstellung 80%-100% als Maurer'),
-            ('h2', 'Anstellung 80%-100% als Maurer'),
-            ('h1', 'Anstellung 80% als Maurer'),
-            ('h2', 'Anstellung 60-80% als Maurer'),
-            ('h2', 'Anstellung 60-80% als Maurer')
-        ])
-        # random.shuffle(tags) # shuffle to check if sorting works
-        # act
-        result = loe_fts_classifier.group_loe_patterns_by_tag(tags)
-        # assert
-        assert_that(result, contains(
-            ('80%-100%', 'h1', 2),
-            ('80%-100%', 'h2', 1),
             ('80%', 'h1', 1),
-            ('60-80%', 'h2', 2)
+            ('80-100', 'h1', 2),
+            ('80-100', 'h2', 1)
         ))
