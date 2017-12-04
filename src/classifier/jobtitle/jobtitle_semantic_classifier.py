@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 
 
 class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
+    """Predicts a job title by exploiting semantic information from the vacancy. A Word2Vec model is trained as an
+    internal model."""
+
     def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
         self.num_features = 300
         self.min_word_count = 40
@@ -20,8 +23,11 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
         self.num_workers = 6
         self.downsampling = 1e-3
 
-    def train_w2v_model(self, processed_data):
-        sentences = [list(words) for words in processed_data]
+    def train_w2v_model(self, word_list):
+        """trains a new Word2Vec model"""
+        log.info('Training new Word2Vec model...')
+
+        sentences = (list(words) for words in word_list)
         model = word2vec.Word2Vec(sentences,
                                   workers=self.num_workers,
                                   size=self.num_features,
@@ -30,13 +36,17 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
                                   sample=self.downsampling
                                   )
         model.init_sims()
+
+        log.info('...done!')
         return model
 
-    def to_average_vector(self, processed_row, w2v_model):
+    def to_average_vector(self, word_list, w2v_model):
+        """calculates the average vector for a list of words"""
+
         feature_vec = numpy.zeros(self.num_features, dtype='float32')
         num_words = 0
         index2word_set = set(w2v_model.index2word)
-        for word in processed_row:
+        for word in word_list:
             if word in index2word_set:
                 num_words += 1
                 feature_vec = numpy.add(feature_vec, w2v_model[word])
@@ -50,25 +60,6 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
                                                                                context=self.context)
 
     @abstractmethod
-    def description(self):
+    def classify(self, word_list):
         """to be implemented in subclass"""
-
-    @abstractmethod
-    def _load_model(self, path):
-        """to be implemented in subclass"""
-
-    @abstractmethod
-    def _save_model(self, model, path):
-        """to be implemented in subclass"""
-
-    @abstractmethod
-    def _train_model(self, processed_data, labels, num_rows):
-        """to be implemented in subclass"""
-
-    @abstractmethod
-    def title(self):
-        pass
-
-    @abstractmethod
-    def label(self):
-        pass
+        return

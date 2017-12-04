@@ -13,6 +13,13 @@ gzip_filename_pattern = re.compile('(\.gz)$')
 
 
 class ModelClassifier(Classifier):
+    """A ModelClassifier classifies some unknown, preprocessed data using a trained model. The training of the model
+    must be done before classification. Alternatively, a pre-trained model can be loaded from file by supplying a
+    filename as an argument (args.model). The file must exist in ./resource/models/. The pre-trained model will then be
+    loaded upon instantiation.
+    If no filename is supplied, the file does not exist or the model can not be loaded for any other reason, a new
+    model will be trained. Training of a new model can take considerably more time than loading a pre-trained model!"""
+
     def __init__(self, args, preprocessor):
         super(ModelClassifier, self).__init__(args, preprocessor)
         self.model = None
@@ -24,28 +31,27 @@ class ModelClassifier(Classifier):
             self.model = self.load_model()
             self.filename = re.sub(gzip_filename_pattern, '', model_file)
 
-    @abstractmethod
-    def classify(self, processed_data):
-        """get class for a single item of """
-
-    def train_model(self, train_data):
+    def train_classifier(self, train_data):
+        """train classifier by training the internal model saving it to file"""
         if self.model:
+            log.info('Model present: using existing model')
             return self.model
 
-        log.info('train_model: Training new model...')
+        log.info('No model present: Training new model...')
         processed_data = (row.processed for row in self.preprocessor.preprocess(train_data, train_data.num_rows))
         labels = (row.title for row in train_data)
-        self.model = self._train_model(processed_data, labels, train_data.num_rows)
-        log.info('train_model: done!')
+        self.model = self.train_model(processed_data, labels, train_data.num_rows)
+        log.info('...done!')
         #
         self.save_model()
         return self.model
 
     def save_model(self):
-        log.info('save_model: Saving model...')
+        """compress and save a trained model to file"""
         path = path_to_file(self.filename)
+        log.info('save_model: Saving model to {}'.format(path))
         # save
-        self._save_model(self.model, path)
+        self.serialize_model(self.model, path)
         # compress
         path_gz = path + '.gz'
         with open(path, 'rb') as f_in, gzip.open(path_gz, 'wb') as f_out:
@@ -54,9 +60,10 @@ class ModelClassifier(Classifier):
         return path_gz
 
     def load_model(self):
+        """load model from file"""
         path = path_to_file(self.filename)
         log.info('load_model: Trying to load model from {}'.format(path))
-        model = self._load_model(path)
+        model = self.deserialize_model(path)
         if model:
             log.info('load_model: Successfully loaded model from {}'.format(path))
         else:
@@ -64,16 +71,20 @@ class ModelClassifier(Classifier):
         return model
 
     @abstractmethod
-    def _train_model(self, processed_data, labels, num_rows):
+    def classify(self, processed_data):
+        """get class for a single item of """
+
+    @abstractmethod
+    def train_model(self, processed_data, labels, num_rows):
         """train classifier with some given data"""
         return
 
     @abstractmethod
-    def _save_model(self, model, path):
-        """train classifier with some given data"""
+    def serialize_model(self, model, path):
+        """save model to file using a suitable serialization strategy"""
         return
 
     @abstractmethod
-    def _load_model(self, path):
-        """train classifier with some given data"""
+    def deserialize_model(self, path):
+        """load model from file using a suitable deserialization strategy"""
         return

@@ -21,4 +21,4 @@ preprocessor = StructuralPreprocessorNVT()
 classifier = JobtitleStructuralClassifierNVT(args, preprocessor)
 
 if __name__ == '__main__':
-    classifier.train_model(data_train)
+    classifier.train_classifier(data_train)

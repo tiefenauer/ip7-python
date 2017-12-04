@@ -35,7 +35,7 @@ testee = LoeFtsClassifier(args)
 
 class TestLoeFtsClassifier(unittest.TestCase):
 
-    def test_extract_with_multiple_patterns_returns_most_frequent_pattern(self):
+    def test_classify_with_multiple_patterns_returns_most_frequent_pattern(self):
         # arrange
         tags = create_tags([
             ('h1', 'Anstellung 80%-100% als Maurer'),
@@ -46,18 +46,18 @@ class TestLoeFtsClassifier(unittest.TestCase):
             ('h2', 'Anstellung 60-80% als Maurer')
         ])
         # act
-        result = testee.extract(tags)
+        result = testee.classify(tags)
         # assert
         assert_that(result, is_('80%-100%'))
 
-    def test_extract_without_patterns_returns_none(self):
+    def test_classify_without_patterns_returns_none(self):
         # arrange
         tags = create_tags([
             ('h1', 'Anstellung als Maurer'),
             ('h1', 'Anstellung als Baggeführer')
         ])
         # act
-        result = testee.extract(tags)
+        result = testee.classify(tags)
         # assert
         assert_that(result, is_(None))
 

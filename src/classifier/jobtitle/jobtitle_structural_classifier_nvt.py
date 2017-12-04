@@ -4,7 +4,7 @@ import operator
 from src.classifier.jobtitle.jobtitle_structural_classifier import JobtitleStructuralClassifier
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 
-html_tags = ['h1', 'h2', 'h3', 'h4']
+html_tags = ['title', 'h1', 'h2', 'h3', 'h4']
 
 
 def compare_tag(t1, t2):
@@ -52,6 +52,13 @@ def top_n(tagged_words, pos_tag, n):
 
 
 class JobtitleStructuralClassifierNVT(JobtitleStructuralClassifier):
+    """Predicts a job title using the top n nouns and verbs from the processed data as features to train the model.
+    Each verb or noun is counted and only the most n frequent words are used. Additionally for each word the HTML tag
+    is used as a feature. If a word appears in more than one tag, only the most important tag is used. Tag importance
+    is evaluated using an internal list going from 'h1' (more important) to 'p' (less important).
+    This means, in order to train the model the preprocessed data must be must be supplied as word tokens together
+    with their POS tags and the HTML tags they appear in."""
+
     def __init__(self, args):
         preprocessor = StructuralPreprocessorNVT()
         super(JobtitleStructuralClassifierNVT, self).__init__(args, preprocessor)
@@ -78,7 +85,3 @@ class JobtitleStructuralClassifierNVT(JobtitleStructuralClassifier):
     def label(self):
         return 'structural_nvt'
 
-    def description(self):
-        return """Classifies text according to POS tag patterns and HTML tags. HTML tags are used as features.
-        The n most frequent nouns and verbs are extracted as features. 
-        """

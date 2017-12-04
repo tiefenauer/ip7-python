@@ -1,17 +1,19 @@
 from abc import abstractmethod
 
 from src.classifier.classifier import Classifier
+from src.preprocessing.fts_preprocessor import FtsPreprocessor
 
 
 class FtsClassifier(Classifier):
+    """An FTS classifier predicts the class by performing a full text search (FTS) on the processed data."""
 
-    def classify(self, processed_data):
-        predicted_class = self.extract(processed_data)
-        return predicted_class
+    def __init__(self, args):
+        preprocessor = FtsPreprocessor()
+        super(FtsClassifier, self).__init__(args, preprocessor)
 
     @abstractmethod
-    def extract(self, processed_row):
-        """extract the information from data"""
+    def classify(self, processed_data):
+        """to be implemented in subclass"""
         return
 
     def get_filename_postfix(self):

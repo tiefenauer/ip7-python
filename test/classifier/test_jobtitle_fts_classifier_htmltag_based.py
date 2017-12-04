@@ -4,7 +4,7 @@ import bs4
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
-from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based
+from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based as clf_htmltag_based
 from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
 from src.util.jobtitle_util import create_gender_variants
 from test.util.test_util import create_dummy_args
@@ -217,7 +217,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         tags = [create_tag('p', 'nothing to see here...')]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
-        features = jobtitle_fts_classifier_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.extract_features(tags, jnv)
         # assert
         assert_that(features, is_({}))
 
@@ -226,7 +226,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         tags = [create_tag('h2', 'Wir suchen einen Polymechaniker (m/w) der gerne arbeitet')]
         jnv = create_job_name_tuple('Polymechaniker')
         # act
-        features = jobtitle_fts_classifier_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.extract_features(tags, jnv)
         # assert
         assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker (m/w)', 'h2', 1)))
 
@@ -235,7 +235,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         tags = [create_tag('h2', 'Koch (m/w) Polymechaniker Polymechaniker/in Polymechaniker Priester Priester/-in')]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
-        features = jobtitle_fts_classifier_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.extract_features(tags, jnv)
         # assert
         assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h2', 2)))
         assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker/in', 'h2', 1)))
@@ -251,7 +251,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         ]
         jnv = create_job_name_tuple('Polymechaniker')
         # act
-        features = jobtitle_fts_classifier_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.extract_features(tags, jnv)
         # assert
         assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h2', 2)))
 
@@ -263,7 +263,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         ]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
-        features = jobtitle_fts_classifier_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.extract_features(tags, jnv)
         # assert
         assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h1', 1)))
         assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker/-in', 'h2', 1)))
@@ -276,26 +276,26 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         ]
         jnv = create_job_name_tuple('Polymechaniker', 'Koch')
         # act
-        features = jobtitle_fts_classifier_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.extract_features(tags, jnv)
         # assert
         assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h1', 1)))
         assert_that(features, is_(feature_matching('Koch', 'Koch (m/w)', 'h2', 1)))
 
     def test_calc_score_calculates_correct_score(self):
-        assert_that(testee.calculate_score('h1', 1), is_(0.6))
-        assert_that(testee.calculate_score('h2', 1), is_(0.3))
-        assert_that(testee.calculate_score('h2', 2), is_(0.6))
-        assert_that(testee.calculate_score('p', 1), is_(0.1))
+        assert_that(clf_htmltag_based.calculate_score('h1', 1), is_(0.6))
+        assert_that(clf_htmltag_based.calculate_score('h2', 1), is_(0.3))
+        assert_that(clf_htmltag_based.calculate_score('h2', 2), is_(0.6))
+        assert_that(clf_htmltag_based.calculate_score('p', 1), is_(0.1))
 
     def test_normalize_returns_score_between_0_and_1(self):
-        assert_that(testee.normalize(0.6), is_(0.6))
-        assert_that(testee.normalize(1.2), is_(1 / 1.2))
+        assert_that(clf_htmltag_based.normalize(0.6), is_(0.6))
+        assert_that(clf_htmltag_based.normalize(1.2), is_(1 / 1.2))
 
     def test_count_variants_returns_correct_job(self):
         # arrange
         tag = 'Polymechaniker'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, create_gender_variants('Polymechaniker'))
+        result = clf_htmltag_based.count_variants(tag, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker', 1)
@@ -305,7 +305,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tag = 'Polymechaniker/-in'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, create_gender_variants('Polymechaniker'))
+        result = clf_htmltag_based.count_variants(tag, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/-in', 1)
@@ -315,7 +315,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tag = 'Coiffeur/-euse'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, create_gender_variants('Coiffeur'))
+        result = clf_htmltag_based.count_variants(tag, create_gender_variants('Coiffeur'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Coiffeur/-euse', 1)
@@ -325,7 +325,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tag = 'Kaufmann/-frau'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, create_gender_variants('Kaufmann'))
+        result = clf_htmltag_based.count_variants(tag, create_gender_variants('Kaufmann'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Kaufmann/-frau', 1)
@@ -335,7 +335,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tag = 'Polymechaniker/in'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, create_gender_variants('Polymechaniker'))
+        result = clf_htmltag_based.count_variants(tag, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/in', 1)
@@ -345,7 +345,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tag = 'Coiffeur/euse'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, create_gender_variants('Coiffeur'))
+        result = clf_htmltag_based.count_variants(tag, create_gender_variants('Coiffeur'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Coiffeur/euse', 1)
@@ -355,7 +355,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tag = 'Kaufmann/frau'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, create_gender_variants('Kaufmann'))
+        result = clf_htmltag_based.count_variants(tag, create_gender_variants('Kaufmann'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Kaufmann/frau', 1)
@@ -365,7 +365,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         string = 'Polymechaniker (m/w)'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(string, create_gender_variants('Polymechaniker'))
+        result = clf_htmltag_based.count_variants(string, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker (m/w)', 1)
@@ -375,7 +375,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         string = '<h2>Polymechaniker oder Polymechanikerin</h2>'
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(string, create_gender_variants('Polymechaniker'))
+        result = clf_htmltag_based.count_variants(string, create_gender_variants('Polymechaniker'))
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker', 1),
@@ -389,7 +389,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
             .union(create_gender_variants('Coiffeur')) \
             .union(create_gender_variants('Kaufmann'))
         # act
-        result = jobtitle_fts_classifier_htmltag_based.count_variants(tag, variants)
+        result = clf_htmltag_based.count_variants(tag, variants)
         # assert
         assert_that(result, contains_inanyorder(
             ('Polymechaniker/in', 1),

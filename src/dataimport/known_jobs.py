@@ -2,7 +2,7 @@ import os
 import pandas
 
 
-class KnownJobsImporter(object):
+class KnownJobs(object):
     def __init__(self):
         path = os.path.abspath('D:/code/ip7-python/resource/known_jobs.tsv')
         self.job_names = pandas.read_csv(path, delimiter=';', names=['job_name'])

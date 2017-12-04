@@ -1,5 +1,6 @@
-from src.classifier.jobtitle.jobtitle_fts_classifier import JobtitleFtsClassifier
-from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
+from src.classifier.fts_classifier import FtsClassifier
+from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.dataimport.known_jobs import KnownJobs
 from src.util.jobtitle_util import count_variant, create_variants
 
 tag_weight = {
@@ -39,11 +40,36 @@ def count_variants(string, variants):
             yield (variant, count)
 
 
-job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobsImporter()]
+def normalize(score):
+    if score < 1:
+        return score
+    return 1 / score
 
 
-class FeatureBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
-    def extract(self, tags):
+def calculate_score(tag, count):
+    score = 0
+    key = tag if tag in tag_weight else 'default'
+    score += tag_weight[key] * count
+    # todo: add more feature values here if available
+    return score
+    # return self.normalize(score)
+
+
+job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobs()]
+
+
+class FeatureBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
+    """Predict a jobtitle by performing a full text search (FTS) on the processed data. The text of the processed data
+     is searched for occurrences of known job names, including variants (such as male/female form, hyphenated forms
+     etc...).
+     The found results are then weighted according to the following criteria:
+     - what HTML tag does the result appear in (h1 tags are considered more important than h2 tags and so on)
+     - How often does the job title (including variants) appear in the DOM? Higher occurrence means higher probability
+     that the result is the actual job title of the vacancy
+     - in how many variants does the job title appear?
+     """
+
+    def classify(self, tags):
         features = extract_features(tags, job_name_variants)
         best_match = None
         best_job_score = 0
@@ -57,7 +83,7 @@ class FeatureBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
             best_variant_length = 0
             for variant_name, variant_stats in job_stats.items():
                 for tag_name, tag_count in variant_stats.items():
-                    variant_score = self.calculate_score(tag_name, tag_count)
+                    variant_score = calculate_score(tag_name, tag_count)
                     if variant_score > best_variant_score \
                             or variant_score == best_variant_score and len(variant_name) > best_variant_length:
                         best_variant_score = variant_score
@@ -74,31 +100,8 @@ class FeatureBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
                             best_job_diversity = job_diversity
         return best_match
 
-    def normalize(self, score):
-        if score < 1:
-            return score
-        return 1 / score
-
-    def calculate_score(self, tag, count):
-        score = 0
-        key = tag if tag in tag_weight else 'default'
-        score += tag_weight[key] * count
-        # todo: add more feature values here if available
-        return score
-        # return self.normalize(score)
-
     def title(self):
         return 'Jobtitle Extractor: FTS (html-tag-based)'
 
-    def description(self):
-        return """Extract a jobtitle by performing a full text search (FTS) on the DOM. The text of the DOM is searched
-        for occurrences of known job titles, including variants (such as male/female form, hyphenated forms etc...).
-        The found results are then weighted according to the following criteria:
-        - what HTML tag does the result appear in (h1 tags are considered more important than h2 tags and so on)
-        - How often does the job title (including variants) appear in the DOM? Higher occurrence means higher probability
-        that the result is the actual job title of the vacancy
-        - in how many variants does the job title appear?
-        """
-
     def label(self):
-        return 'jobtitle-jobtitle-html-tags'
+        return 'jobtitle-fts-html-tags'

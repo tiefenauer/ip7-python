@@ -17,4 +17,4 @@ data_train = X28TrainData(args)
 classifier = JobtitleSemanticClassifierAvg(args.model)
 
 if __name__ == '__main__':
-    classifier.train_model(data_train)
+    classifier.train_classifier(data_train)

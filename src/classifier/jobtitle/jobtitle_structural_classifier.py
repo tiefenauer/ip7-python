@@ -6,12 +6,12 @@ import nltk
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.model_classifier import ModelClassifier
-from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
+from src.dataimport.known_jobs import KnownJobs
 from src.util import jobtitle_util
 
 
 def clean_labels(labels_list):
-    known_jobs = KnownJobsImporter()
+    known_jobs = KnownJobs()
     for label in labels_list:
         # search known job in label
         for job_name_m in (jobtitle_util.to_male_form(job_name) for job_name in known_jobs):
@@ -22,16 +22,22 @@ def clean_labels(labels_list):
 
 
 class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
+    """Classifier to predict job title using structural information from preprocessed data. Structural data usually
+    consists of the tokenized words and some additional information about the inner structure of the text.
+    A Naive Bayes classifier is trained to make predictions about the job title for unkown instances.
+    """
+
     def __init__(self, args, preprocessor):
         self.num_rows = 0
         super(JobtitleStructuralClassifier, self).__init__(args, preprocessor)
 
-    def classify(self, tagged_words):
-        features = self.extract_features(tagged_words)
+    def classify(self, tagged_word_tokens):
+        features = self.extract_features(tagged_word_tokens)
         result = self.model.classify(features)
         return result
 
-    def _train_model(self, processed_data, labels, num_rows):
+    def train_model(self, processed_data, labels, num_rows):
+        """Train a Naive Bayes classifier as the internal model"""
         self.num_rows = num_rows
         cleaned_labels = clean_labels(labels)
         labeled_data = zip(processed_data, cleaned_labels)
@@ -42,12 +48,12 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
     def get_filename_postfix(self):
         return '{}rows'.format(self.num_rows)
 
-    def _save_model(self, model, path):
+    def serialize_model(self, model, path):
         with open(path, 'wb') as f:
             pickle.dump(model, f)
         return path
 
-    def _load_model(self, path):
+    def deserialize_model(self, path):
         model = None
         with gzip.open(path, 'rb') as f:
             model = pickle.load(f)
@@ -55,16 +61,4 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
 
     @abstractmethod
     def extract_features(self, tagged_words):
-        """to be implemented in subclass"""
-
-    @abstractmethod
-    def description(self):
-        """to be implemented in subclass"""
-
-    @abstractmethod
-    def title(self):
-        """to be implemented in subclass"""
-
-    @abstractmethod
-    def label(self):
-        """to be implemented in subclass"""
+        """extract features to be used to train the Naive Bayes classifier"""

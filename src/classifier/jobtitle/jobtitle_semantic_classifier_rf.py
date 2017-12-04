@@ -14,6 +14,10 @@ log = logging.getLogger(__name__)
 
 
 class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
+    """Classifies a vacancy by using the average vectors of vacancies to train a RandomForest. The random forest
+    is used as the internal model and overrides the Word2Vec model once the forest has been trained .
+    """
+
     def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
         super(JobtitleSemanticClassifierRF, self).__init__(args, preprocessor)
         self.w2v_model = None
@@ -22,11 +26,11 @@ class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
             self.w2v_model = JobtitleSemanticClassifierAvg(args).load_model()
             log.info('loaded pre-trained Word2Vec-Model')
 
-    def classify_all(self, processed_row):
+    def classify(self, word_list):
         # TODO: predict a single item, not the whole matrix!
         pass
 
-    def _train_model(self, processed_rows, labels, num_rows):
+    def train_model(self, processed_rows, labels, num_rows):
         # use pre-trained W2V-Model, if available
         if self.w2v_model:
             log.info('using pre-trained W2V-Model')
@@ -65,16 +69,12 @@ class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
             counter += 1
         return avg_feature_vecs
 
-    def _save_model(self, model, path):
+    def serialize_model(self, model, path):
         pickle.dump(model, open(path, 'wb'))
         return path
 
-    def _load_model(self, path):
+    def deserialize_model(self, path):
         return pickle.load(open(path, 'rb'))
-
-    def description(self):
-        return """Classifies a vacancy by using a RandomForest that has been trained on the average vector of 
-        vacancies """
 
     def title(self):
         return 'Semantic Classifier (Random Forest)'

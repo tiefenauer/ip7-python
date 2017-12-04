@@ -1,8 +1,11 @@
-from src.classifier.jobtitle.jobtitle_fts_classifier import JobtitleFtsClassifier
+from src.classifier.fts_classifier import FtsClassifier
+from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 
 
-class TitleBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
-    def extract(self, tags):
+class TitleBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
+    """Extracts a jobtitle by only looking at the title tag of a DOM. The title tag is used as extracted information."""
+
+    def classify(self, tags):
         title = None
         for tag in (tag for tag in tags if tag.name and tag.name == 'title'):
             title = tag.getText()
@@ -11,9 +14,5 @@ class TitleBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
     def title(self):
         return 'Jobtitle Extractor: FTS (title-tag-based)'
 
-    def description(self):
-        return """Extracts a jobtitle by only looking at the title tag of a DOM. The title tag is used as extracted
-        information."""
-
     def label(self):
-        return 'jobtitle-jobtitle-title'
+        return 'jobtitle-fts-title'

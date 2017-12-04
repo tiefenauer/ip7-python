@@ -38,11 +38,11 @@ class Evaluator(object):
             num_processed += 1
             if self.is_classified(predicted_class):
                 num_classified += 1
+            scores = self.calculate_scores(actual_class, predicted_class)
             self.plotter.update_plots(num_total, num_processed, num_classified)
 
             # only write results if not dry run and class could be predicted
             if self.write and predicted_class:
-                scores = self.calculate_scores(actual_class, predicted_class)
                 self.results.update_classification(rowid, predicted_class, scores)
         self.stop()
 

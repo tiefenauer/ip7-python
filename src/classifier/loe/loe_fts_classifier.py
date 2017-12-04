@@ -5,7 +5,6 @@ import re
 
 from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.loe.loe_classifier import LoeClassifier
-from src.preprocessing.fts_preprocessor import FtsPreprocessor
 
 log = logging.getLogger(__name__)
 
@@ -60,12 +59,10 @@ def find_loe_patterns(text):
 
 
 class LoeFtsClassifier(FtsClassifier, LoeClassifier):
+    """Predict level of employment (LOE) by performing a full text search (FTS) on the processed data for numeric
+    information."""
 
-    def __init__(self, args):
-        preprocessor = FtsPreprocessor()
-        super(LoeFtsClassifier, self).__init__(args, preprocessor)
-
-    def extract(self, tags):
+    def classify(self, tags):
         tags_with_numbers = group_loe_patterns_by_count(tags)
         if len(tags_with_numbers) > 0:
             return tags_with_numbers[0][0]
@@ -73,9 +70,6 @@ class LoeFtsClassifier(FtsClassifier, LoeClassifier):
 
     def title(self):
         return 'LoE Extractor'
-
-    def description(self):
-        return 'extract level of employment by performing a full text search (FTS) for certain patterns'
 
     def label(self):
         return 'extract_loe'

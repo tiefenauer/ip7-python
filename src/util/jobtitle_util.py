@@ -1,6 +1,6 @@
 import re
 
-from src.dataimport.known_jobs_tsv_importer import KnownJobsImporter
+from src.dataimport.known_jobs import KnownJobs
 
 # job title patterns
 pattern_hyphenated = re.compile(r'(?=\S*[-])([a-zA-Z-]+)')
@@ -142,7 +142,7 @@ def create_write_variants(job_name):
         write_variants.add(job_concatenated)
         write_variants.add(job_spaced)
     else:
-        for known_job in KnownJobsImporter():
+        for known_job in KnownJobs():
             if known_job.lower() in job_name:
                 part1 = job_name.split(known_job.lower())[0].strip()
                 job_concatenated = to_concatenated_form(part1, known_job.lower())

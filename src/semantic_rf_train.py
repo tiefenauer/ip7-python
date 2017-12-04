@@ -22,4 +22,4 @@ if not args.w2vmodel:
 data_train = X28TrainData(args)
 classifier = JobtitleSemanticClassifierRF(args)
 if __name__ == '__main__':
-    classifier.train_model(data_train)
+    classifier.train_classifier(data_train)

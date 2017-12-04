@@ -14,14 +14,15 @@ def path_to_file(filename):
 
 
 class Classifier(ABC):
-    """a data processor is something that finds information in data"""
+    """Abstract base class for a classifier. A classifier takes input data of any kind and converts it using a
+    preprocessor. The converted format is used to make the classification."""
 
     def __init__(self, args, preprocessor):
         self.preprocessor = preprocessor
         self.filename = self.default_filename()
 
     def classify_all(self, raw_data):
-        """process an iterable set of raw data by preprocessing it and forwarding the preprocessed data to the
+        """Preprocess each item of an iterable set of raw data. The  by preprocessing it and forwarding the preprocessed data to the
         abstract method whose further logic depends on the implementing subclass"""
         num_rows = raw_data.num_rows if hasattr(raw_data, 'num_rows') else -1
         rows_preprocessed = self.preprocessor.preprocess(raw_data, num_rows)
@@ -41,23 +42,18 @@ class Classifier(ABC):
         return filename
 
     @abstractmethod
-    def classify(self, row_preprocessed):
-        """process single preprocessed row returning the result for each item"""
+    def classify(self, preprocessed_data):
+        """classify the peprocessed data of a single input row and return the predicted class"""
         return
 
     @abstractmethod
     def get_actual_class(self, row):
-        """return the actual class for a given row"""
+        """return the actual class for an input row"""
         return
 
     @abstractmethod
     def title(self):
-        """a short title of the classification strategy"""
-        return
-
-    @abstractmethod
-    def description(self):
-        """describe how the classification is done"""
+        """a short title of the classifier to be used for display"""
         return
 
     @abstractmethod

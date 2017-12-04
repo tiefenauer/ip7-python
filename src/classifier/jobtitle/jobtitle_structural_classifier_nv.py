@@ -18,6 +18,10 @@ def top_n(tagged_words, tag, n):
 
 
 class JobtitleStructuralClassifierNV(JobtitleStructuralClassifier):
+    """Predicts a job title using the top n nouns and verbs from the processed data as features to train the model.
+    Each verb or noun is counted and only the most n frequent words are used. No other information is used.
+    This means, in order to train the model the preprocessed data must be must be supplied as word tokens together
+    with their POS."""
 
     def __init__(self, args):
         preprocessor = StructuralPreprocessorNV()
@@ -38,11 +42,6 @@ class JobtitleStructuralClassifierNV(JobtitleStructuralClassifier):
 
     def title(self):
         return 'Structural Classifier (POS-Tags only)'
-
-    def description(self):
-        return """Classifies text according to POS tag patterns. Only the plaintext of a vacancy is considered.
-        The n most frequent nouns and verbs are extracted as features. 
-        """
 
     def label(self):
         return 'structural_nv'

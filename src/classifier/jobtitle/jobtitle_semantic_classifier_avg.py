@@ -8,6 +8,9 @@ log = logging.getLogger(__name__)
 
 
 class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
+    """Predicts a jobtitle using a pre-trained Word2Vec model. The classification is made by calculating the average
+    of all word vectors from the vacancy that are indexed in the model."""
+
     def classify(self, word_list):
         feature_vec = self.to_average_vector(word_list, self.model)
         # query w2v model
@@ -16,27 +19,23 @@ class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
             return next(iter(top10))[0]
         return None
 
-    def _train_model(self, sentences, labels, num_rows):
-        log.info('Training Word2Vec model')
+    def train_model(self, sentences, labels, num_rows):
         model = self.train_w2v_model(sentences)
-        model.init_sims()
         return model
 
-    def _save_model(self, model, path):
+    def serialize_model(self, model, path):
+        """serialize model using built-in save functionality from gensim"""
         model.wv.save_word2vec_format(path, binary=True)
         return path
 
-    def _load_model(self, path):
+    def deserialize_model(self, path):
+        """de serialize model using built-in load functionality from gensim"""
         model = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
         model.init_sims(replace=True)
         return model
 
     def title(self):
-        return 'Semantic Classifier (average vector)'
-
-    def description(self):
-        return """Classifies some text according to semantic criteria. The class is determined by calculating the
-               average vector over all words from the text (only indexed words)."""
+        return 'Semantic Classifier (average vectors)'
 
     def label(self):
         return 'semantic_avg'
