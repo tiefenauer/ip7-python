@@ -2,6 +2,7 @@ import itertools
 import operator
 
 from src.classifier.jobtitle.jobtitle_structural_classifier import JobtitleStructuralClassifier
+from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 
 html_tags = ['h1', 'h2', 'h3', 'h4']
 
@@ -51,6 +52,10 @@ def top_n(tagged_words, pos_tag, n):
 
 
 class JobtitleStructuralClassifierNVT(JobtitleStructuralClassifier):
+    def __init__(self, args):
+        preprocessor = StructuralPreprocessorNVT()
+        super(JobtitleStructuralClassifierNVT, self).__init__(args, preprocessor)
+
     def extract_features(self, tagged_words):
         # convert to list because of two passes!
         tagged_words = list(tagged_words)

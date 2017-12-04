@@ -4,15 +4,13 @@ from hamcrest import assert_that, is_, contains, less_than
 
 from src.classifier.jobtitle import jobtitle_structural_classifier_nvt
 from src.classifier.jobtitle.jobtitle_structural_classifier_nvt import JobtitleStructuralClassifierNVT
-from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 from test.util.test_util import create_dummy_args
 
 args = create_dummy_args()
-preprocessor = StructuralPreprocessorNVT()
-testee = JobtitleStructuralClassifierNVT(args, preprocessor)
+testee = JobtitleStructuralClassifierNVT(args)
 
 
-class TestStructuralClassifierNVT(unittest.TestCase):
+class TestJobtitleStructuralClassifierNVT(unittest.TestCase):
     def test_compare_tags(self):
         assert_that(jobtitle_structural_classifier_nvt.compare_tag('h1', 'h2'), is_(less_than(0)))
         assert_that(jobtitle_structural_classifier_nvt.compare_tag('h2', 'h3'), is_(less_than(0)))

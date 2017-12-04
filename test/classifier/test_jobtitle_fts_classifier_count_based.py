@@ -9,7 +9,7 @@ from test.util.test_util import create_dummy_args, create_dummy_row
 
 args = create_dummy_args()
 preprocessor = FtsPreprocessor()
-testee = CountBasedJobtitleFtsClassifier(args, preprocessor)
+testee = CountBasedJobtitleFtsClassifier(args)
 
 
 class TestCountBasedJobtitleFtsClassifier(unittest.TestCase):

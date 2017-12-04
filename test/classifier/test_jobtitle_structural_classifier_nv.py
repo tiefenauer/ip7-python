@@ -11,10 +11,10 @@ from test.util.test_util import create_dummy_args, create_dummy_row
 
 args = create_dummy_args()
 preprocessor = StructuralPreprocessorNV()
-testee = JobtitleStructuralClassifierNV(args, preprocessor)
+testee = JobtitleStructuralClassifierNV(args)
 
 
-class TestStructuralClassifierNV(unittest.TestCase):
+class TestJobtitleStructuralClassifierNV(unittest.TestCase):
     def test_top_n_returns_top_n(self):
         # arrange
         row = create_dummy_row('Baum Baum Baum Baum Baum Haus Haus Haus Haus Maler Maler Maler Bäcker Bäcker')

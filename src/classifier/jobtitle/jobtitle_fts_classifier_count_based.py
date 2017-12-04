@@ -15,8 +15,8 @@ def find_all_matches(tags, job_names):
 
 
 class CountBasedJobtitleFtsClassifier(JobtitleFtsClassifier):
-    def __init__(self, args, preprocessor):
-        super(CountBasedJobtitleFtsClassifier, self).__init__(args, preprocessor)
+    def __init__(self, args):
+        super(CountBasedJobtitleFtsClassifier, self).__init__(args)
         self.job_names = KnownJobsImporter()
 
     def extract(self, tags):
