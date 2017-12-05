@@ -116,5 +116,3 @@ if __name__ == '__main__':
             new_jobs.add(job_name.lower())
 
     write_known_jobs_to_file()
-
-conn.close()

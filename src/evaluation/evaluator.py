@@ -8,6 +8,7 @@ from abc import abstractmethod
 
 import matplotlib.pyplot as plt
 
+from src.classifier.classifier import path_to_file
 from src.evaluation.evaluation_plotter import EvaluationPlotter
 from src.util import util
 
@@ -48,7 +49,8 @@ class Evaluator(object):
 
     def stop(self):
         filename = self.classifier.filename + '_' + time.strftime(util.DATE_PATTERN)
-        plt.savefig(filename)
+        path = path_to_file(filename)
+        plt.savefig(path)
 
     @abstractmethod
     def get_scorers(self):

@@ -19,7 +19,10 @@ tag_order = ['h*', 'strong', 'p']
 
 @total_ordering
 class LoeOccurrence(object):
+    """helper class to sort occurrences of LOE"""
+
     def __init__(self, pattern, html_tag, count):
+        # LOE occurrence metadata
         self.pattern = pattern
         self.tag = html_tag
         self.count = count
@@ -42,6 +45,12 @@ class LoeOccurrence(object):
 
 
 def group_loe_patterns_by_count(tags):
+    """creates a list of triples of format (LOE, HTML-Tag, Count)
+    The list is sorted by (in this order)
+    - LOE pattern  ASC: patterns with percent symbol before patterns without percent symbol
+    - HTML-Tag priority AS: higher priority before lower prioritiy (lower number=higher priority)
+    - Count DESC: more frequent patterns before less frequent patterns
+    """
     # step 1: map patterns to HTML tags
     patterns_by_tag = find_loe_patterns_by_tag(tags)
     # step 2: count occurrence of each mapping pattern -> HTML-Tag
@@ -75,13 +84,9 @@ def group_loe_patterns_by_count(tags):
 
 def find_loe_patterns_by_tag(tags):
     for tag in tags:
-        results = find_loe_patterns(tag.getText())
+        results = LOE_PATTERN.findall(tag.getText())
         for result in results:
             yield (result.strip(), tag.name)
-
-
-def find_loe_patterns(text):
-    return LOE_PATTERN.findall(text)
 
 
 class LoeFtsClassifier(FtsClassifier, LoeClassifier):
@@ -102,10 +107,18 @@ class LoeFtsClassifier(FtsClassifier, LoeClassifier):
             workquota_min = re.sub('\s*%', '', workquota_min)
             workquota_max = re.sub('\s*%', '', workquota_max)
 
-        return int(workquota_min), int(workquota_max)
+        try:
+            workquota_min = int(workquota_min)
+        except:
+            workquota_min = 100
+        try:
+            workquota_max = int(workquota_max)
+        except:
+            workquota_max = 100
+        return workquota_min, workquota_max
 
     def title(self):
-        return 'LoE Extractor'
+        return 'LoE FTS-Classifier'
 
     def label(self):
-        return 'extract_loe'
+        return 'loe-fts'
