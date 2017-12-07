@@ -9,7 +9,7 @@ import re
 from pony.orm import commit
 from tqdm import tqdm
 
-from src import preproc
+from src.preprocessing import preproc
 from src.database.entities_pg import Job_Class, Job_Class_Variant
 from src.dataimport.known_jobs import KnownJobs
 from src.util import jobtitle_util

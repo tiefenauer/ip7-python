@@ -1,4 +1,4 @@
-from src import preproc
+from src.preprocessing import preproc
 from src.preprocessing.preprocessor import Preprocessor
 
 
@@ -21,7 +21,7 @@ class StructuralPreprocessorNVT(Preprocessor):
 
     def preprocess_single(self, row):
         # evaluate generator already here because markup might not contain any relevant tags
-        relevant_tags = list(set(preproc.extract_relevant_tags(row.html)))
+        relevant_tags = list(preproc.extract_relevant_tags(row.html))
         if not relevant_tags:
             return []
         # html to map tag-> ['word1', 'word2', '...'] (1 entry per sentence)

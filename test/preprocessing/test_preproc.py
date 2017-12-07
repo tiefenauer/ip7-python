@@ -4,7 +4,7 @@ from bs4 import *
 from bs4 import Tag
 from hamcrest import *
 
-from src import preproc as testee
+from src.preprocessing import preproc as testee
 from test.util.test_html_util import create_tag
 
 

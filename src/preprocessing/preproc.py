@@ -37,13 +37,13 @@ def extract_relevant_tags(markup):
     tags = (html_util.strip_content(tag) for tag in tags)
     tags = (tag for tag in tags if len(tag.getText()) > 2)
 
-    return tags
+    # return tags
     # geting unique values from generator is a huge performance bottleneck!
-    # seen = set()
-    # for tag in tags:
-    #     if tag not in seen:
-    #         yield tag
-    #         seen.add(tag)
+    seen = set()
+    for tag in tags:
+        if tag not in seen:
+            yield tag
+            seen.add(tag)
 
 
 def tag_is_atomic(tag):

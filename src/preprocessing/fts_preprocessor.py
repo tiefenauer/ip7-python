@@ -1,4 +1,4 @@
-from src import preproc
+from src.preprocessing import preproc
 from src.preprocessing.preprocessor import Preprocessor
 
 
