@@ -5,7 +5,7 @@ import pickle
 import numpy
 from sklearn.ensemble import RandomForestClassifier
 
-from src.classifier.classifier import data_dir
+from src.classifier.classifier import model_dir
 from src.classifier.jobtitle.jobtitle_semantic_classifier import JobtitleSemanticClassifier
 from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
@@ -38,7 +38,7 @@ class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
         else:
             w2v_model = self.train_w2v_model(processed_rows)
         # use the trained Word2Vec model to train a RandomForest
-        path = os.path.join(data_dir, 'vecs')
+        path = os.path.join(model_dir, 'vecs')
         if os.path.exists(path):
             log.info('loading vectors from file')
             vecs_labels = pickle.load(open(path, 'rb'))

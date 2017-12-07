@@ -3,6 +3,7 @@
 # For each class the different writing and gender variants are created
 # Each created variant will be a row in job_class_variant
 import logging
+import os
 import re
 
 from pony.orm import commit
@@ -79,10 +80,10 @@ def add_job_variant(job_class, job_name_variant):
     return job_class_variant
 
 
+known_jobs = KnownJobs()
 if __name__ == '__main__':
     truncate_target_tables()
 
-    known_jobs = KnownJobs()
     for job_name in tqdm(known_jobs):
         job_class = add_job_class(job_name)
         variants = set()

@@ -11,9 +11,9 @@ from tqdm import tqdm
 from src import preproc
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
-from src.evaluation.classification_scorer_linear import LinearClassificationScorer
-from src.evaluation.classification_scorer_strict import StrictClassificationScorer
-from src.evaluation.classification_scorer_tolerant import TolerantClassificationScorer
+from src.evaluation.jobtitle.jobtitle_classification_scorer_linear import LinearJobtitleClassificationScorer
+from src.evaluation.jobtitle.jobtitle_classification_scorer_strict import StrictJobtitleClassificationScorer
+from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
 from src.util.log_util import log_setup
 
 log_setup()
@@ -144,9 +144,9 @@ if __name__ == '__main__':
 
     # evaluate_avg predictions
     log.info('measuring accuracy of predictions')
-    e_strict = StrictClassificationScorer()
-    e_tolerant = TolerantClassificationScorer()
-    e_linear = LinearClassificationScorer()
+    e_strict = StrictJobtitleClassificationScorer()
+    e_tolerant = TolerantJobtitleClassificationScorer()
+    e_linear = LinearJobtitleClassificationScorer()
     acc_strict = e_strict.evaluate_all(test_labels, predictions)
     acc_tolerant = e_tolerant.evaluate_all(test_labels, predictions)
     acc_linear = e_linear.evaluate_all(test_labels, predictions)

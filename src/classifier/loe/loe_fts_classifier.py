@@ -1,61 +1,92 @@
-import collections
 import logging
-import operator
 import re
+from functools import total_ordering
 
 from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.loe.loe_classifier import LoeClassifier
 
 log = logging.getLogger(__name__)
 
-p1 = '(\d\d\d?%?)-?(\d\d\d?%?)?'
-p2 = '(\d\d\d?%?-\d\d\d?%?)|(\d\d\d?%?)'
-p3 = '\d\d\d?%?-\d\d\d?%?|\d\d\d?%?'
-LOE_PATTERN = re.compile(p3)
+# matches any pattern, hyphenated or not
+LOE_PATTERN = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%?|\d\d\d?\s*%?')
+# matches single LOE: 80%, 100%, ... (arbitrary number of spaces before percent sign
+LOE_PATTERN_SINGLE = re.compile('\d\d\d?\s*%')
+# matches LOE range: 60(%)-80%, 70(%)-100% ... (first percent symbol is optional)
+LOE_PATTERN_RANGE = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%')
 
-tag_order = ['h1', 'h2', 'h3', 'p']
+tag_order = ['h*', 'strong', 'p']
 
 
-def group_loe_patterns_by_tag(tags):
-    # TODO: this method does not work as expected
-    patterns_by_tag = find_loe_patterns_by_tag(tags)
-    patterns_by_tag = list(patterns_by_tag)
-    d = collections.defaultdict(list)
-    for (pattern, tag_name) in patterns_by_tag:
-        d[pattern].append(tag_name)
+@total_ordering
+class LoeOccurrence(object):
+    """helper class to sort occurrences of LOE"""
 
-    result = []
-    for (pattern, tag_list) in d.items():
-        seen = set()
-        for tag_name in (tag_name for tag_name in tag_list if not (tag_name in seen or seen.add(tag_name))):
-            result.append((pattern, tag_name, tag_list.count(tag_name)))
+    def __init__(self, pattern, html_tag, count):
+        # LOE occurrence metadata
+        self.pattern = pattern
+        self.tag = html_tag
+        self.count = count
 
-    # sort by html tag
-    result = sorted(result, key=lambda item: tag_order.index(item[1]) if item[1] in tag_order else 999)
-    result = sorted(result, key=operator.itemgetter(1, 2), reverse=True)
-    result = sorted(result, key=operator.itemgetter(0))
-    # result = sorted(result, key=lambda item: (item[2], -item[2]), reverse=True)
-    return result
+        # attributes for sorting
+        self.ends_with_percent = 0 if '%' in pattern else 1
+        self.tag_weight = tag_order.index(html_tag[:1]) \
+            if html_tag \
+               and len(html_tag) > 0 \
+               and html_tag in tag_order \
+            else len(tag_order) + 1
+
+    def __lt__(self, other):
+        return ((self.ends_with_percent, self.tag_weight, self.count) <
+                (other.ends_with_percent, other.tag_weight, other.count))
+
+    def __eq__(self, other):
+        return ((self.ends_with_percent, self.tag_weight, self.count) ==
+                (other.ends_with_percent, other.tag_weight, other.count))
 
 
 def group_loe_patterns_by_count(tags):
+    """creates a list of triples of format (LOE, HTML-Tag, Count)
+    The list is sorted by (in this order)
+    - LOE pattern  ASC: patterns with percent symbol before patterns without percent symbol
+    - HTML-Tag priority AS: higher priority before lower prioritiy (lower number=higher priority)
+    - Count DESC: more frequent patterns before less frequent patterns
+    """
+    # step 1: map patterns to HTML tags
     patterns_by_tag = find_loe_patterns_by_tag(tags)
+    # step 2: count occurrence of each mapping pattern -> HTML-Tag
     dct = {}
-    for pattern, tag in patterns_by_tag:
-        if pattern not in dct: dct[pattern] = 0
-        dct[pattern] += 1
-    return sorted(dct.items(), key=operator.itemgetter(1), reverse=True)
+    for pattern, html_tag in patterns_by_tag:
+        if pattern not in dct: dct[pattern] = dict()
+        if pattern in dct and html_tag not in dct[pattern]: dct[pattern][html_tag] = 0
+        dct[pattern][html_tag] += 1
+
+    # step 3: convert to sortable Items
+    lst = []
+    for p in dct:
+        for t in dct[p]:
+            c = dct[p][t]
+            lst.append(LoeOccurrence(p, t, c))
+
+    # step 4a: perform some filtering
+    # filter out items without percent in pattern (those are unlikely to be LOE)
+    lst = (loe for loe in lst if '%' in loe.pattern)
+    # filter out items that occur in lists (those are more likely to belong to skills etc.)
+    lst = (loe for loe in lst if loe.tag not in ['li', 'ul', 'ol'])
+    # step 4b: sort list by pattern suffix ASC (percentages first), tag weight ASC (according to tag_order), count DESC
+    sorted_lst = sorted(lst, key=lambda x: (x.ends_with_percent, x.tag_weight, -x.count))
+    # step 5: convert list to 3-tupel
+    result = []
+    for loe in sorted_lst:
+        result.append((loe.pattern, loe.tag, loe.count))
+
+    return result
 
 
 def find_loe_patterns_by_tag(tags):
     for tag in tags:
-        results = find_loe_patterns(tag.getText())
+        results = LOE_PATTERN.findall(tag.getText())
         for result in results:
-            yield (result, tag.name)
-
-
-def find_loe_patterns(text):
-    return LOE_PATTERN.findall(text)
+            yield (result.strip(), tag.name)
 
 
 class LoeFtsClassifier(FtsClassifier, LoeClassifier):
@@ -63,13 +94,31 @@ class LoeFtsClassifier(FtsClassifier, LoeClassifier):
     information."""
 
     def classify(self, tags):
-        tags_with_numbers = group_loe_patterns_by_count(tags)
-        if len(tags_with_numbers) > 0:
-            return tags_with_numbers[0][0]
-        return None
+        matches = group_loe_patterns_by_count(tags)
+        workquota_min = '100'
+        workquota_max = '100'
+        if matches:
+            loe = matches[0][0]
+            if re.match(LOE_PATTERN_SINGLE, loe):
+                workquota_min = re.sub('\s*%', '', loe)
+                workquota_max = workquota_min
+            if re.match(LOE_PATTERN_RANGE, loe):
+                workquota_min, workquota_max = loe.split('-')
+            workquota_min = re.sub('\s*%', '', workquota_min)
+            workquota_max = re.sub('\s*%', '', workquota_max)
+
+        try:
+            workquota_min = int(workquota_min)
+        except:
+            workquota_min = 100
+        try:
+            workquota_max = int(workquota_max)
+        except:
+            workquota_max = 100
+        return workquota_min, workquota_max
 
     def title(self):
-        return 'LoE Extractor'
+        return 'LoE FTS-Classifier'
 
     def label(self):
-        return 'extract_loe'
+        return 'loe-fts'

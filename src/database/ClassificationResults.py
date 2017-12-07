@@ -104,8 +104,10 @@ class LoeClassificationResults(ClassificationResults):
         super(LoeClassificationResults, self).__init__(Loe_Classification_Result)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
+        workquota_min, workquota_max = predicted_class
         return Loe_Classification_Result(job=job_entity,
-                                         job_name=predicted_class,
+                                         workquota_min=workquota_min,
+                                         workquota_max=workquota_max,
                                          score_strict=sc_str,
                                          score_tolerant=sc_tol,
                                          score_linear=sc_lin)

@@ -4,13 +4,13 @@ from abc import ABC, abstractmethod
 
 from src.util import util
 
-data_dir = 'D:/code/ip7-python/resource/models'
+model_dir = 'D:/code/ip7-python/resource/models'
 
 
 def path_to_file(filename):
-    if not os.path.isdir(data_dir):
-        os.makedirs(data_dir)
-    return os.path.join(data_dir, filename)
+    if not os.path.isdir(model_dir):
+        os.makedirs(model_dir)
+    return os.path.join(model_dir, filename)
 
 
 class Classifier(ABC):
