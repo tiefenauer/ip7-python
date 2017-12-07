@@ -1,7 +1,6 @@
-# only these tags will be considered
-
 from bs4 import Tag
 
+# only these tags will be considered
 RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol', 'strong'}
 
 
@@ -30,7 +29,7 @@ def is_nested(el):
 
 
 def is_relevant(tag):
-    return tag.name and tag.name in RELEVANT_TAGS
+    return tag.name in RELEVANT_TAGS
 
 
 def strip_content(tag):
