@@ -4,14 +4,13 @@ import re
 import types
 
 import nltk
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 from lxml import etree
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
 from src.dataimport.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.util import html_util
-from src.util.html_util import remove_all_attrs, strip_content
 from src.util.util import flatten
 
 # german POS tagger
@@ -30,23 +29,62 @@ special_chars_pattern = re.compile('([^A-Za-zäöüéèà\/\- ]*)')
 
 def extract_relevant_tags(markup):
     soup = parse(markup)
-    return (tag for tag in
-            (strip_content(tag) for tag in
-             (remove_all_attrs(tag) for tag in soup.findAll(html_util.RELEVANT_TAGS))
-             )
-            if len(tag.getText(strip=True)) > 2
-            )
+    tags = soup.findAll()
+    tags = (tag for tag in tags if tag.name in html_util.RELEVANT_TAGS)
+    tags = (tag for tag in tags if tag_is_atomic(tag))
+    tags = (remove_strong_and_b_tags(tag) for tag in tags)
+    tags = (html_util.remove_all_attrs(tag) for tag in tags)
+    tags = (html_util.strip_content(tag) for tag in tags)
+    tags = (tag for tag in tags if len(tag.getText()) > 2)
+
+    return tags
+    # geting unique values from generator is a huge performance bottleneck!
+    # seen = set()
+    # for tag in tags:
+    #     if tag not in seen:
+    #         yield tag
+    #         seen.add(tag)
+
+
+def tag_is_atomic(tag):
+    children = get_children(tag)
+    # only child is string
+    if len(children) == 0 or contains_only_strings(children):
+        return True
+    # tag contains only <strong> or <b> as children
+    elif contains_only_semantic_markup(children):
+        return True
+    # tag is nested
+    return False
+
+
+def get_children(tag):
+    children = []
+    if hasattr(tag, 'children'):
+        children = list(tag.children)
+    return children
+
+
+def contains_only_strings(children):
+    return len(children) == 1 and isinstance(children[0], NavigableString)
+
+
+def contains_only_semantic_markup(children):
+    return len(children) == 0 \
+           or all(isinstance(child, NavigableString) or child.name in ['strong', 'b', 'br'] for child in children)
+
+
+def remove_strong_and_b_tags(tag):
+    if contains_only_semantic_markup(tag):
+        stripped = tag.getText(strip=True, separator=' ')
+        if len(stripped) > 0:
+            tag.string = stripped
+    return tag
 
 
 def parse(markup):
     # lxml parser removes the CDATA section!
     return BeautifulSoup(markup, 'lxml')
-
-
-def remove_html_clutter(soup):
-    tags = []
-    html_util.extract_tags(soup, tags)
-    return tags
 
 
 def text_list_to_sentence_list(contents):

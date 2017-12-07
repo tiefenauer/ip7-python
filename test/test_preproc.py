@@ -5,6 +5,7 @@ from bs4 import Tag
 from hamcrest import *
 
 from src import preproc as testee
+from test.util.test_html_util import create_tag
 
 
 def read_sample_file(filename):
@@ -27,15 +28,108 @@ class TestPreprocessing(unittest.TestCase):
         # assert
         assert_that(soup, equal_to(BeautifulSoup(markup, 'lxml')))
 
-    def test_remove_html_clutter_should_remove_clutter(self):
+    def test_get_children_with_flat_tag_returns_empty_list(self):
         # arrange
-        soup_cluttered = BeautifulSoup(read_sample_file('sample_vacancy'), 'html.parser')
+        tag = create_tag('<p></p>')
         # act
-        extracted_tags = testee.remove_html_clutter(soup_cluttered)
+        children = testee.get_children(tag)
+        # assert
+        assert_that(children, is_(empty()))
+
+    def test_get_children_with_nested_tag_returns_empty_list(self):
+        # arrange
+        tag = create_tag('<div><p></p></div>')
+        # act
+        children = testee.get_children(tag)
+        # assert
+        assert_that(len(children), is_(1))
+        assert_that(children[0].name, is_('p'))
+
+    def test_contains_only_strings_with_flat_tag_returns_True(self):
+        # arrange
+        tag = create_tag('<p>Some Content</p>')
+        children = list(tag.children)
+        # act
+        result = testee.contains_only_strings(children)
+        # assert
+        assert_that(result, is_(True))
+
+    def test_contains_only_strings_with_flat_tag_returns_False(self):
+        # arrange
+        tag = create_tag('<div>Some Content <p>Some nestedContent</p></div>')
+        children = list(tag.children)
+        # act
+        result = testee.contains_only_strings(children)
+        # assert
+        assert_that(result, is_(False))
+
+    def test_contains_only_semantic_markup_with_only_semantic_markup_returns_True(self):
+        # arrange
+        tag_strong = create_tag('<p>some <strong>important</strong> content <br/> and a break</p>')
+        tag_b = create_tag('<p>some <b>important</b> content </p> and a <br/> break')
+        tag_strong_b = create_tag('<p>some <strong>very</strong> very <b>important</b> content and a <br/> break</p>')
+        # act/assert
+        assert_that(testee.contains_only_semantic_markup(tag_strong), is_(True))
+        assert_that(testee.contains_only_semantic_markup(tag_b), is_(True))
+        assert_that(testee.contains_only_semantic_markup(tag_strong_b), is_(True))
+
+    def test_contains_only_strong_or_b_children_with_only_strong_or_b_returns_False(self):
+        # arrange
+        tag_strong = create_tag('<p>some <strong>important</strong> content <p>some other content</p></p>')
+        tag_b = create_tag('<p>some <b>important</b> content <p>some other content</p></p>')
+        tag_strong_b = create_tag(
+            '<p>some <strong>very</strong> very <b>important</b> content <p>some other content</p></p>')
+        # act/assert
+        assert_that(testee.contains_only_semantic_markup(tag_strong), is_(False))
+        assert_that(testee.contains_only_semantic_markup(tag_b), is_(False))
+        assert_that(testee.contains_only_semantic_markup(tag_strong_b), is_(False))
+
+    def test_tag_is_atomic_with_atomic_tag_returns_True(self):
+        # arrange
+        tag_p_empty = create_tag('<p></p>')
+        tag_p = create_tag('<p>Some content</p>')
+        tag_strong = create_tag('<p>Some <strong>important</strong> content</p>')
+        tag_b = create_tag('<p>Some <b>important</b> content</p>')
+        tag_strong_b = create_tag('<p>Some <strong>very</strong> <b>important</b> content</p>')
+        # act/assert
+        assert_that(testee.tag_is_atomic(tag_p_empty), is_(True))
+        assert_that(testee.tag_is_atomic(tag_p), is_(True))
+        assert_that(testee.tag_is_atomic(tag_strong), is_(True))
+        assert_that(testee.tag_is_atomic(tag_b), is_(True))
+        assert_that(testee.tag_is_atomic(tag_strong_b), is_(True))
+
+    def test_tag_is_atomic_with_atomic_tag_returns_False(self):
+        # arrange
+        tag_p = create_tag('<p>Some <p>nested content</p></p>')
+        tag_strong = create_tag('<p>Some <strong>important</strong> <p>nested content</p></p>')
+        tag_b = create_tag('<p>Some <b>important</b> <p>nested content</p></p>')
+        tag_strong_b = create_tag('<p>Some <strong>very</strong> <b>important</b> <p>nested content</p></p>')
+        # act/assert
+        assert_that(testee.tag_is_atomic(tag_p), is_(False))
+        assert_that(testee.tag_is_atomic(tag_strong), is_(False))
+        assert_that(testee.tag_is_atomic(tag_b), is_(False))
+        assert_that(testee.tag_is_atomic(tag_strong_b), is_(False))
+
+    def test_extract_relevant_tags_extracts_relevant_tags(self):
+        # arrange
+        markup = read_sample_file('sample_vacancy')
+        # act
+        result = testee.extract_relevant_tags(markup)
+        extracted_tags = list(result)
+        # write_extracted_tags(extracted_tags, 'sample_vacancy')
         # assert
         soup_expected = BeautifulSoup(read_sample_file('sample_vacancy_extracted'), 'html.parser')
         expected_tags = [child for child in soup_expected.children if type(child) is Tag]
         assert_that(extracted_tags, equal_to(expected_tags))
+
+    def test_remove_strong_and_b_tags_removes_tags(self):
+        # arrange/act
+        tag_strong = testee.remove_strong_and_b_tags(
+            create_tag('<p>This is some <strong>important</strong> content</p>'))
+        tag_b = testee.remove_strong_and_b_tags(create_tag('<p>This is some <b>important</b> content</p>'))
+        # assert
+        assert_that(str(tag_strong), is_('<p>This is some important content</p>'))
+        assert_that(str(tag_b), is_('<p>This is some important content</p>'))
 
     def test_to_words_splits_into_nltk_words(self):
         # arrange
@@ -207,13 +301,3 @@ class TestPreprocessing(unittest.TestCase):
     def test_is_generator(self):
         assert_that(testee.is_generator((i for i in [1, 2, 3])), is_(True))
         assert_that(testee.is_generator([1, 2, 3]), is_(False))
-
-    @unittest.skip("removing CDATA is performed automatically atm by using a lxml-parser")
-    def test_remove_cdata_removes_cdata(self):
-        # arrange
-        soup = BeautifulSoup('<html><body><p><![CDATA[ Lorem ipsum ]]>This text should be preserved</p></body></html>',
-                             'lxml')
-        # act
-        result = testee.remove_cdata(soup)
-        # assert
-        assert_that(str(result), is_('<html><body><p>This text should be preserved</p></body></html>'))

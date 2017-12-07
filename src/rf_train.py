@@ -37,13 +37,12 @@ file_clf_random_forest = os.path.join(data_dir, 'clf_random_forest.pkl')
 
 
 def preprocess(labeled_data):
-    with labeled_data as data:
-        for row in (row for row in tqdm(data, total=data.num_rows, unit=' rows') if row['html']):
-            relevant_tags = preproc.extract_relevant_tags(row['html'])
-            vacancy_text = ' '.join((tag.getText() for tag in relevant_tags))
-            words = preproc.remove_stop_words(vacancy_text)
-            if len(words) > 0:
-                yield words, row['title']
+    for row in tqdm(labeled_data, total=labeled_data.num_rows, unit=' rows'):
+        relevant_tags = preproc.extract_relevant_tags(row.html)
+        vacancy_text = ' '.join((tag.getText() for tag in relevant_tags))
+        words = preproc.remove_stop_words(vacancy_text)
+        if len(words) > 0:
+            yield words, row.title
 
 
 max_features = 500

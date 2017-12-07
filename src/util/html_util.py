@@ -4,21 +4,6 @@ from bs4 import Tag
 RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol', 'strong'}
 
 
-def extract_tags(soup, tags=[]):
-    if is_nested(soup):
-        # nested tag
-        for el in (el for el in soup.children if el.string != '\n'):
-            extract_tags(el, tags)
-        return
-
-    # leaf tag
-    if is_relevant(soup) and soup not in tags:
-        soup = strip_content(soup)
-        soup = remove_all_attrs(soup)
-        if len(soup.getText(strip=True)) > 0:
-            tags.append(soup)
-
-
 def is_nested(el):
     if type(el) is Tag:
         # el is a Tag with possible nested tags

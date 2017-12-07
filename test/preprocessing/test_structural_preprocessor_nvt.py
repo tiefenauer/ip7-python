@@ -2,9 +2,9 @@ import unittest
 
 from hamcrest import assert_that, contains, empty, is_
 
-from src import preproc
 from src.preprocessing import structural_preprocessor_nvt
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
+from test.classifier.test_loe_fts_classifier import create_tags
 from test.util.test_util import create_dummy_row
 
 testee = StructuralPreprocessorNVT()
@@ -54,11 +54,10 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
 
     def test_split_words_by_tag_splits_into_words(self):
         # arrange
-        markup = """
-        <h1>Dies ist ein Test zum schauen ob es funktioniert. Dies ist ein anderer Satz.</h1>
-        <p>Dies ist noch ein Inhalt.</p>
-        """
-        relevant_tags = preproc.extract_relevant_tags(markup)
+        relevant_tags = create_tags([
+            ('h1', 'Dies ist ein Test zum schauen ob es funktioniert. Dies ist ein anderer Satz.'),
+            ('p', 'Dies ist noch ein Inhalt.')
+        ])
         # act
         result = structural_preprocessor_nvt.split_words_by_tag(relevant_tags)
         tags, word_lists = zip(*result)
@@ -72,11 +71,10 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
 
     def test_content_sents_to_wordlist_returns_wordlist_without_punctuation(self):
         # arrange
-        markup = """
-        <h1>Dies ist ein Test zum schauen, ob es funktioniert. Dies ist ein anderer Satz.</h1>
-        <p>Dies ist noch ein Inhalt.</p>
-        """
-        relevant_tags = preproc.extract_relevant_tags(markup)
+        relevant_tags = create_tags([
+            ('h1', 'Dies ist ein Test zum schauen, ob es funktioniert. Dies ist ein anderer Satz.'),
+            ('p', 'Dies ist noch ein Inhalt.')
+        ])
         # act
         result = structural_preprocessor_nvt.split_words_by_tag(relevant_tags)
         tags, word_lists = zip(*result)

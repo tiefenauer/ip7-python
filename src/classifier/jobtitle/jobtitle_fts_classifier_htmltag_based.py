@@ -1,5 +1,8 @@
+from pony.orm import db_session
+
 from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.database.entities_pg import Job_Class
 from src.dataimport.known_jobs import KnownJobs
 from src.util.jobtitle_util import count_variant, create_variants
 
@@ -56,6 +59,9 @@ def calculate_score(tag, count):
 
 
 job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobs()]
+# with db_session:
+#     job_name_variants = [(job_class.job_name, set(variant.job_name_variant for variant in job_class.variants))
+#                          for job_class in Job_Class.select()]
 
 
 class FeatureBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):

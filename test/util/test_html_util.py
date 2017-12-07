@@ -27,8 +27,8 @@ class TestHtmlParser(unittest.TestCase):
         tag_img = create_tag('<img/>')
         tag_form = create_tag('<form></form>')
         # act/assert
-        assert_that(html_util.is_relevant(tag_img), is_(None))
-        assert_that(html_util.is_relevant(tag_form), is_(None))
+        assert_that(html_util.is_relevant(tag_img), is_(False))
+        assert_that(html_util.is_relevant(tag_form), is_(False))
 
     def test_remove_all_attributes_without_whitelist_removes_all_attributes(self):
         # arrange
