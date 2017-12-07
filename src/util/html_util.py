@@ -1,15 +1,7 @@
-import re
-
-# only these tags will be considered
-from copy import copy
-
 from bs4 import Tag
 
-RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol'}
-# these tags will be filtered out without replacement
-IRRELEVANT_TAGS = {'meta', 'link', 'style', 'script', 'noscript', 'iframe', 'form', 'input', 'img'}
-
-relevant_tag_pattern = re.compile("(" + ")|(".join(RELEVANT_TAGS) + ")")
+# only these tags will be considered
+RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol', 'strong'}
 
 
 def extract_tags(soup, tags=[]):
@@ -37,7 +29,7 @@ def is_nested(el):
 
 
 def is_relevant(tag):
-    return tag.name and re.match(relevant_tag_pattern, tag.name)
+    return tag.name in RELEVANT_TAGS
 
 
 def strip_content(tag):
