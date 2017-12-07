@@ -282,9 +282,10 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         assert_that(features, is_(feature_matching('Koch', 'Koch (m/w)', 'h2', 1)))
 
     def test_calc_score_calculates_correct_score(self):
-        assert_that(clf_htmltag_based.calculate_score('h1', 1), is_(0.6))
-        assert_that(clf_htmltag_based.calculate_score('h2', 1), is_(0.3))
-        assert_that(clf_htmltag_based.calculate_score('h2', 2), is_(0.6))
+        assert_that(clf_htmltag_based.calculate_score('h1', 1), is_(0.9))
+        assert_that(clf_htmltag_based.calculate_score('h2', 1), is_(0.8))
+        assert_that(clf_htmltag_based.calculate_score('h2', 2), is_(1.6))
+        assert_that(clf_htmltag_based.calculate_score('strong', 1), is_(0.3))
         assert_that(clf_htmltag_based.calculate_score('p', 1), is_(0.1))
 
     def test_normalize_returns_score_between_0_and_1(self):

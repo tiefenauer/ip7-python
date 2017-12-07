@@ -30,6 +30,9 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_male_form("Kaufmann/frau"), is_("Kaufmann"))
         assert_that(testee.to_male_form("Kaufmann/-frau"), is_("Kaufmann"))
 
+    def test_to_male_form_person_returns_male_form(self):
+        assert_that(testee.to_male_form('Fachperson'), is_('Fachmann'))
+
     def test_to_male_form_mw_returns_male_form(self):
         assert_that(testee.to_male_form("Schreiner (m/w)"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreiner m/w"), is_("Schreiner"))
@@ -47,6 +50,9 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_female_form("Schreiner"), is_("Schreinerin"))
         assert_that(testee.to_female_form("Coiffeur"), is_("Coiffeuse"))
         assert_that(testee.to_female_form("Kaufmann"), is_("Kauffrau"))
+
+    def test_to_female_form_person_returns_female_form(self):
+        assert_that(testee.to_female_form('Fachperson'), is_('Fachfrau'))
 
     def test_to_female_form_camel_cased_returns_female_form(self):
         assert_that(testee.to_female_form_camel_cased("Schreiner"), is_("SchreinerIn"))
@@ -132,8 +138,6 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_concatenated_form('Elektro', 'monteur'), is_('Elektromonteur'))
         assert_that(testee.to_concatenated_form('elektro', 'monteur'), is_('Elektromonteur'))
         assert_that(testee.to_concatenated_form('elektro', 'Monteur'), is_('Elektromonteur'))
-
-
 
     def test_find_single_match(self):
         # arrange / act
