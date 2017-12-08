@@ -11,9 +11,10 @@ pattern_slashed = "{}((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 # job title suffix patterns: general
 suffix_pattern_eur_euse = re.compile(r'(eur)?\/?-?(euse)$')
 suffix_pattern_mann_frau = re.compile(r'(mann)?\/?-?(frau)$')
-suffix_pattern_in = re.compile('\/?-?(\(?[iI]n\)?)$')
-suffix_pattern_mw = re.compile('\s?(\(?m\/?w\)?)')
-suffix_pattern_wm = re.compile('\s?(\(?w\/?m\)?)')
+suffix_pattern_in = re.compile(r'\/?-?(\(?[iI]n\)?)$')
+suffix_pattern_mw = re.compile(r'\s?(\(?m\/?w\)?)')
+suffix_pattern_wm = re.compile(r'\s?(\(?w\/?m\)?)')
+suffix_pattern_person = re.compile(r'(person)$')
 
 # job title suffix patterns: male forms
 suffix_pattern_eur = re.compile(r'(eur)$')
@@ -37,6 +38,7 @@ def find(string, job_name):
 def to_male_form(job_name):
     jn = re.sub(suffix_pattern_eur_euse, 'eur', job_name)
     jn = re.sub(suffix_pattern_mann_frau, 'mann', jn)
+    jn = re.sub(suffix_pattern_person, 'mann', jn)
     jn = re.sub(suffix_pattern_in, '', jn)
     jn = re.sub(suffix_pattern_mw, '', jn)
     jn = re.sub(suffix_pattern_wm, '', jn)
@@ -47,6 +49,7 @@ def to_female_form(job_name):
     jn = re.sub(suffix_pattern_eur, 'euse', job_name)
     jn = re.sub(suffix_pattern_mann, 'frau', jn)
     jn = re.sub(suffix_pattern_er, 'erin', jn)
+    jn = re.sub(suffix_pattern_person, 'frau', jn)
     return jn
 
 
