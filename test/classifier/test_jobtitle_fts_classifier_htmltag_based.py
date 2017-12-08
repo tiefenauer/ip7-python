@@ -5,6 +5,7 @@ from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
 from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based as clf_htmltag_based
+from src.classifier.jobtitle.fts_features import FtsFeatures
 from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
 from src.util.jobtitle_util import create_gender_variants
 from test.util.test_util import create_dummy_args
@@ -16,28 +17,32 @@ def create_tag(tag_name, tag_content):
     return tag
 
 
-def feature_matching(job_name, variant_name, tag_name, count):
-    return FeatureMatcher(job_name, variant_name, tag_name, count)
+def feature_matching(job_name, variant_name, tag_name, pos_counts):
+    return FeatureMatcher(job_name, variant_name, tag_name, pos_counts)
 
 
 class FeatureMatcher(BaseMatcher):
-    def __init__(self, job_name, variant_name, tag_name, count):
+    def __init__(self, job_name, variant_name, tag_name, pos_counts):
         self.job_name = job_name
         self.variant_name = variant_name
         self.tag_name = tag_name
-        self.count = count
+        self.pos_count = []
+        for tag_pos, count in pos_counts:
+            self.pos_count.append({'tag_pos': tag_pos, 'count': count})
 
     def _matches(self, item):
         return self.job_name in item \
                and self.variant_name in item[self.job_name] \
                and self.tag_name in item[self.job_name][self.variant_name] \
-               and item[self.job_name][self.variant_name][self.tag_name] == self.count
+               and self.pos_count == item[self.job_name][self.variant_name][self.tag_name]
 
     def describe_to(self, description):
         description.append_text('feature matching job_name=\'') \
             .append_text(self.job_name) \
             .append_text(' and tag_name=') \
             .append_text(self.tag_name) \
+            .append_text(' and position=') \
+            .append_text(self.tag_pos) \
             .append_text(' and count=') \
             .append_text(self.count) \
             .append_text('\'')
@@ -61,7 +66,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Polymechaniker/-in'))
+        assert_that(result, is_('Polymechaniker'))
 
     def test_classify_one_tag_one_job_multi_variants_returns_longer_variant(self):
         # arrange
@@ -71,7 +76,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Polymechaniker/-in'))
+        assert_that(result, is_('Polymechaniker'))
 
     def test_classify_one_tag_one_job_multi_variants_returns_most_frequent_variant(self):
         # arrange
@@ -93,20 +98,30 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_one_tag_multi_jobs_multi_variants_returns_most_frequent_job_longest_variant(self):
+    def test_classify_one_tag_multi_jobs_multi_variants_returns_most_frequent_job(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Priester Priester/in'),
+            create_tag('h1', 'Koch Priester Priester'),
         ]
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Priester/in'))
+        assert_that(result, is_('Priester'))
 
     def test_classify_one_tag_multi_jobs_multi_variants_returns_most_frequent_job_variant(self):
         # arrange
         tags = [
             create_tag('h1', 'Koch Priester Priester Priester/in'),
+        ]
+        # act
+        result = testee.classify(tags)
+        # assert
+        assert_that(result, is_('Priester'))
+
+    def test_classify_one_tag_multi_job_same_frequency_result_is_the_one_with_more_diversity(self):
+        # arrange
+        tags = [
+            create_tag('h1', 'Koch Koch Koch Priester Priester/in Priester/in')
         ]
         # act
         result = testee.classify(tags)
@@ -133,7 +148,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Coiffeuse'))
+        assert_that(result, is_('Coiffeur'))
 
     def test_classify_multi_tag_multi_tagtype_one_job_multi_variants_returns_higher_ranked_variant(self):
         # arrange
@@ -155,7 +170,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Coiffeuse'))
+        assert_that(result, is_('Coiffeur'))
 
     def test_classify_multi_tag_one_tagtype_multi_job_one_variant_result_is_most_frequent_job(self):
         # arrange
@@ -177,7 +192,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Priester/in'))
+        assert_that(result, is_('Priester'))
 
     def test_classify_multi_tag_one_tagtype_multi_job_multi_variants_result_is_longest_variant(self):
         # arrange
@@ -188,18 +203,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Priester/-in'))
-
-    def test_classify_multi_tag_one_tagtype_multi_job_multi_variant_result_is_the_one_with_more_diversity(self):
-        # arrange
-        tags = [
-            create_tag('h1', 'Koch Koch Koch'),
-            create_tag('h1', 'Priester Priester/in Priester/in')
-        ]
-        # act
-        result = testee.classify(tags)
-        # assert
-        assert_that(result, is_('Priester/in'))
+        assert_that(result, is_('Priester'))
 
     def test_classify_multi_tag_multi_job_result_is_the_one_with_lower_tag(self):
         # arrange
@@ -210,40 +214,40 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         # act
         result = testee.classify(tags)
         # assert
-        assert_that(result, is_('Polymechaniker/in'))
+        assert_that(result, is_('Polymechaniker'))
 
-    def test_extract_features_no_match_returns_empty_list(self):
+    def test_create_statistics_no_match_returns_empty_list(self):
         # arrange
         tags = [create_tag('p', 'nothing to see here...')]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
-        features = clf_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.create_statistics(tags, jnv)
         # assert
         assert_that(features, is_({}))
 
-    def test_extract_features_from_one_tag_one_match(self):
+    def test_create_statistics_from_one_tag_one_match(self):
         # arrange
         tags = [create_tag('h2', 'Wir suchen einen Polymechaniker (m/w) der gerne arbeitet')]
         jnv = create_job_name_tuple('Polymechaniker')
         # act
-        features = clf_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.create_statistics(tags, jnv)
         # assert
-        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker (m/w)', 'h2', 1)))
+        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker (m/w)', 'h2', [(0, 1)])))
 
-    def test_extract_features_from_one_tag_multi_match(self):
+    def test_create_statistics_from_one_tag_multi_match(self):
         # arrange
         tags = [create_tag('h2', 'Koch (m/w) Polymechaniker Polymechaniker/in Polymechaniker Priester Priester/-in')]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
-        features = clf_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.create_statistics(tags, jnv)
         # assert
-        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h2', 2)))
-        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker/in', 'h2', 1)))
-        assert_that(features, is_(feature_matching('Priester', 'Priester', 'h2', 1)))
-        assert_that(features, is_(feature_matching('Priester', 'Priester/-in', 'h2', 1)))
-        assert_that(features, is_(feature_matching('Koch', 'Koch (m/w)', 'h2', 1)))
+        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h2', [(0, 2)])))
+        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker/in', 'h2', [(0, 1)])))
+        assert_that(features, is_(feature_matching('Priester', 'Priester', 'h2', [(0, 1)])))
+        assert_that(features, is_(feature_matching('Priester', 'Priester/-in', 'h2', [(0, 1)])))
+        assert_that(features, is_(feature_matching('Koch', 'Koch (m/w)', 'h2', [(0, 1)])))
 
-    def test_extract_features_from_multi_tag_one_match(self):
+    def test_create_statistics_from_multi_tag_one_match(self):
         # arrange
         tags = [
             create_tag('h2', 'Polymechaniker'),
@@ -251,11 +255,11 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         ]
         jnv = create_job_name_tuple('Polymechaniker')
         # act
-        features = clf_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.create_statistics(tags, jnv)
         # assert
-        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h2', 2)))
+        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h2', [(0, 1), (1, 1)])))
 
-    def test_extract_features_from_multi_different_tag_one_match(self):
+    def test_create_statistics_from_multi_different_tag_one_match(self):
         # arrange
         tags = [
             create_tag('h1', 'Polymechaniker'),
@@ -263,12 +267,12 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         ]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
-        features = clf_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.create_statistics(tags, jnv)
         # assert
-        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h1', 1)))
-        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker/-in', 'h2', 1)))
+        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h1', [(0, 1)])))
+        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker/-in', 'h2', [(1, 1)])))
 
-    def test_extract_features_from_multi_tag_multi_match(self):
+    def test_create_statistics_from_multi_tag_multi_match(self):
         # arrange
         tags = [
             create_tag('h1', 'Polymechaniker'),
@@ -276,21 +280,69 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         ]
         jnv = create_job_name_tuple('Polymechaniker', 'Koch')
         # act
-        features = clf_htmltag_based.extract_features(tags, jnv)
+        features = clf_htmltag_based.create_statistics(tags, jnv)
         # assert
-        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h1', 1)))
-        assert_that(features, is_(feature_matching('Koch', 'Koch (m/w)', 'h2', 1)))
+        assert_that(features, is_(feature_matching('Polymechaniker', 'Polymechaniker', 'h1', [(0, 1)])))
+        assert_that(features, is_(feature_matching('Koch', 'Koch (m/w)', 'h2', [(1, 1)])))
 
-    def test_calc_score_calculates_correct_score(self):
-        assert_that(clf_htmltag_based.calculate_score('h1', 1), is_(0.9))
-        assert_that(clf_htmltag_based.calculate_score('h2', 1), is_(0.8))
-        assert_that(clf_htmltag_based.calculate_score('h2', 2), is_(1.6))
-        assert_that(clf_htmltag_based.calculate_score('strong', 1), is_(0.3))
-        assert_that(clf_htmltag_based.calculate_score('p', 1), is_(0.1))
-
-    def test_normalize_returns_score_between_0_and_1(self):
-        assert_that(clf_htmltag_based.normalize(0.6), is_(0.6))
-        assert_that(clf_htmltag_based.normalize(1.2), is_(1 / 1.2))
+    def test_create_fts_features_creates_valid_fts_features(self):
+        # arrange
+        features = {
+            'Polymechaniker': {
+                'Polymechaniker/in': {
+                    'h1': [{'tag_pos': 1, 'count': 1}],
+                    'h2': [
+                        {'tag_pos': 2, 'count': 1},
+                        {'tag_pos': 3, 'count': 1},
+                        {'tag_pos': 4, 'count': 1},
+                        {'tag_pos': 5, 'count': 1}
+                    ]
+                },
+                'Polymechaniker/-in': {
+                    'span': [
+                        {'tag_pos': 6, 'count': 1},
+                        {'tag_pos': 7, 'count': 1}
+                    ],
+                    'h2': [
+                        {'tag_pos': 8, 'count': 1},
+                        {'tag_pos': 9, 'count': 1},
+                        {'tag_pos': 10, 'count': 1},
+                        {'tag_pos': 11, 'count': 1}
+                    ]
+                }
+            },
+            'Elektriker': {
+                'Elektriker/in': {
+                    'h3': [{'tag_pos': 2, 'count': 1}],
+                    'p': [
+                        {'tag_pos': 3, 'count': 1},
+                        {'tag_pos': 4, 'count': 1}
+                    ]
+                },
+                'Elektriker (m/w)': {
+                    'p': [
+                        {'tag_pos': 5, 'count': 1},
+                        {'tag_pos': 6, 'count': 1},
+                        {'tag_pos': 7, 'count': 1}
+                    ]
+                },
+                'Elektriker (mw)': {
+                    'span': [
+                        {'tag_pos': 8, 'count': 1},
+                        {'tag_pos': 9, 'count': 1},
+                        {'tag_pos': 10, 'count': 1},
+                        {'tag_pos': 11, 'count': 1}
+                    ]
+                }
+            }
+        }
+        # act
+        result = clf_htmltag_based.create_fts_features(features)
+        # assert
+        assert_that(result, contains_inanyorder(
+            FtsFeatures('Polymechaniker', highest_tag='h1', first_position=1, num_occurrences=11, num_variants=2),
+            FtsFeatures('Elektriker', highest_tag='h3', first_position=2, num_occurrences=10, num_variants=3)
+        ))
 
     def test_count_variants_returns_correct_job(self):
         # arrange
