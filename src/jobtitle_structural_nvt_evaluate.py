@@ -30,7 +30,7 @@ if not args.model:
     args.model = 'structural_nvt_2017-11-27-18-05-11_19441rows.gz'
 
 preprocessor = StructuralPreprocessorNVT()
-classifier = JobtitleStructuralClassifierNVT(args, preprocessor)
+classifier = JobtitleStructuralClassifierNVT(args)
 evaluation = StructuralNVTEvaluator(args, classifier)
 
 if __name__ == '__main__':

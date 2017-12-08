@@ -1,4 +1,3 @@
-from src.preprocessing import preproc
 from src.evaluation.classification_scorer import ClassificationScorer
 from src.util import jobtitle_util
 
@@ -11,10 +10,10 @@ class LinearJobtitleClassificationScorer(ClassificationScorer):
         if not predicted_class or len(predicted_class) == 0:
             return 0
 
-        actual_words = list(self.normalize(actual_class))
+        actual_words = list(jobtitle_util.normalize_text(actual_class))
         if len(actual_words) == 0:
             return 0
-        predicted_words = self.normalize(predicted_class)
+        predicted_words = jobtitle_util.normalize_text(predicted_class)
         count = 0
 
         for word in predicted_words:
@@ -31,13 +30,6 @@ class LinearJobtitleClassificationScorer(ClassificationScorer):
 
     def status(self):
         return 'average accuracy: {}'.format("{:1.4f}".format(self.accuracy))
-
-    def normalize(self, text):
-        no_special_chars = preproc.remove_special_chars(text)
-        words = preproc.to_words(no_special_chars)
-        no_stopwords = (preproc.remove_stop_words(words))
-        no_gender = (jobtitle_util.to_male_form(word) for word in no_stopwords)
-        return (word for word in preproc.stem(no_gender))
 
     def label(self):
         return "linear"

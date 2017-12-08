@@ -12,7 +12,6 @@ log_setup()
 log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Plot statistics for classification method""")
-parser.add_argument('method', type=str, help='classification method to evaluat')
 args = parser.parse_args()
 
 classification_methods = [
@@ -64,16 +63,22 @@ if __name__ == '__main__':
     ind = np.arange(N)  # the x locations for the groups
     width = 0.2  # the width of the bars
 
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(ind, means_strict, width, color='r')
-    rects2 = ax.bar(ind + width, means_tolerant, width, color='b')
-    rects3 = ax.bar(ind + 2 * width, means_linear, width, color='g')
+    fig, ax = plt.subplots(figsize=(16, 8))
+    rects1 = ax.bar(ind - width / 2, means_strict, width, color='r')
+    rects2 = ax.bar(ind + width / 2, means_tolerant, width, color='b')
+    rects3 = ax.bar(ind + 3 * width / 2, means_linear, width, color='g')
 
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Average accuracy')
     ax.set_title('Accuracy by classification and score method')
     ax.set_xticks(ind + width / 2)
-    ax.set_xticklabels((clf_name for clf_name in classification_methods))
+
+    # labels: classification method + number of evaluated rows
+    nums = ['N/A' for _ in classification_methods]
+    with db_session:
+        for i, method in enumerate(classification_methods):
+            nums[i] = Classification_Results.select(lambda x: x.clf_method == method).count()
+    ax.set_xticklabels((clf_name + '\n' + str(num) for clf_name, num in zip(classification_methods, nums)))
 
     ax.legend((rects1[0], rects2[0], rects3[0]), ('strict', 'tolerant', 'linear'))
 

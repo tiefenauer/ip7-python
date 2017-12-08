@@ -1,16 +1,17 @@
 import re
 
 from src.dataimport.known_jobs import KnownJobs
-
 # job title patterns
+from src.preprocessing import preproc
+
 pattern_hyphenated = re.compile(r'(?=\S*[-])([a-zA-Z-]+)')
 # dynamic patterns
 pattern_suffix = "{}((in)|(euse)|(frau))"
 pattern_slashed = "{}((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
 
 # job title suffix patterns: general
-suffix_pattern_eur_euse = re.compile(r'(eur)?\/?-?(euse)$')
-suffix_pattern_mann_frau = re.compile(r'(mann)?\/?-?(frau)$')
+suffix_pattern_eur_euse = re.compile(r'(eur)?\/?-?([Ee]use)$')
+suffix_pattern_mann_frau = re.compile(r'(mann)?\/?-?([Ff]rau)$')
 suffix_pattern_in = re.compile(r'\/?-?(\(?[iI]n\)?)$')
 suffix_pattern_mw = re.compile(r'\s?(\(?m\/?w\)?)')
 suffix_pattern_wm = re.compile(r'\s?(\(?w\/?m\)?)')
@@ -173,3 +174,19 @@ def count_variant(variant, string):
     pattern = r'(?<!\w){}(?![\w/]|\s\(m/w\))'.format(re.escape(variant))
     matches = re.findall(pattern, string)
     return len(matches)
+
+
+def normalize_job_name(job_name):
+    if not job_name:
+        return job_name
+    return preproc.stem(to_male_form(job_name)).lower()
+
+
+def normalize_text(text):
+    if not text:
+        return text
+    no_special_chars = preproc.remove_special_chars(text)
+    words = preproc.to_words(no_special_chars)
+    no_stopwords = (preproc.remove_stop_words(words))
+    no_gender = (to_male_form(word) for word in no_stopwords)
+    return (word for word in preproc.stem(no_gender))

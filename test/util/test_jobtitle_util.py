@@ -11,24 +11,31 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_male_form("Schreiner"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreinerin"), is_("Schreiner"))
         assert_that(testee.to_male_form("SchreinerIn"), is_("Schreiner"))
-        assert_that(testee.to_male_form("Schreiner(in)"), is_("Schreiner"))
-        assert_that(testee.to_male_form('Schreiner/in'), is_('Schreiner'))
+        assert_that(testee.to_male_form("Schreiner/in"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner/In"), is_("Schreiner"))
         assert_that(testee.to_male_form('Schreiner/-in'), is_('Schreiner'))
+        assert_that(testee.to_male_form('Schreiner/-In'), is_('Schreiner'))
+        assert_that(testee.to_male_form("Schreiner(in)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner(In)"), is_("Schreiner"))
 
-    def test_to_male_form_in_does_with_non_er_male_form(self):
+    def test_to_male_form_in_does_with_non_append_er_to_male_form(self):
         assert_that(testee.to_male_form('Getränketechnologin'), is_('Getränketechnolog'))
 
     def test_to_male_form_euse_returns_male_form(self):
         assert_that(testee.to_male_form("Coiffeur"), is_("Coiffeur"))
         assert_that(testee.to_male_form("Coiffeuse"), is_("Coiffeur"))
         assert_that(testee.to_male_form("Coiffeur/euse"), is_("Coiffeur"))
+        assert_that(testee.to_male_form("Coiffeur/Euse"), is_("Coiffeur"))
         assert_that(testee.to_male_form("Coiffeur/-euse"), is_("Coiffeur"))
+        assert_that(testee.to_male_form("Coiffeur/-Euse"), is_("Coiffeur"))
 
     def test_to_male_form_frau_returns_male_form(self):
         assert_that(testee.to_male_form("Kaufmann"), is_("Kaufmann"))
         assert_that(testee.to_male_form("Kauffrau"), is_("Kaufmann"))
         assert_that(testee.to_male_form("Kaufmann/frau"), is_("Kaufmann"))
+        assert_that(testee.to_male_form("Kaufmann/Frau"), is_("Kaufmann"))
         assert_that(testee.to_male_form("Kaufmann/-frau"), is_("Kaufmann"))
+        assert_that(testee.to_male_form("Kaufmann/-Frau"), is_("Kaufmann"))
 
     def test_to_male_form_person_returns_male_form(self):
         assert_that(testee.to_male_form('Fachperson'), is_('Fachmann'))
@@ -266,6 +273,44 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(result3, is_(1), "When counting a variant only count exact matches of that variant")
         assert_that(result4, is_(1), "When counting a variant only count exact matches of that variant")
         assert_that(result5, is_(1), "When counting a variant only count exact matches of that variant")
+
+    def test_normalize_job_name_with_empty_values_returns_input(self):
+        # sanity check
+        assert_that(testee.normalize_job_name(None), is_(None))
+        assert_that(testee.normalize_job_name(''), is_(''))
+
+    def test_normalize_job_name_normalizes_job_name(self):
+        # male forms: -er
+        assert_that(testee.normalize_job_name('Schreiner'), is_('schrein'))
+        assert_that(testee.normalize_job_name('Schreinerin'), is_('schrein'))
+        assert_that(testee.normalize_job_name('SchreinerIn'), is_('schrein'))
+        assert_that(testee.normalize_job_name('Schreiner/in'), is_('schrein'))
+        assert_that(testee.normalize_job_name('Schreiner/In'), is_('schrein'))
+        assert_that(testee.normalize_job_name('Schreiner/-in'), is_('schrein'))
+        assert_that(testee.normalize_job_name('Schreiner/-In'), is_('schrein'))
+        assert_that(testee.normalize_job_name('Schreiner(in)'), is_('schrein'))
+        assert_that(testee.normalize_job_name('Schreiner(In)'), is_('schrein'))
+
+        # male forms: -eur
+        assert_that(testee.normalize_job_name('Coiffeur'), is_('coiffeur'))
+        assert_that(testee.normalize_job_name('Coiffeuse'), is_('coiffeur'))
+        assert_that(testee.normalize_job_name('Coiffeur/euse'), is_('coiffeur'))
+        assert_that(testee.normalize_job_name('Coiffeur/Euse'), is_('coiffeur'))
+        assert_that(testee.normalize_job_name('Coiffeur/-euse'), is_('coiffeur'))
+        assert_that(testee.normalize_job_name('Coiffeur/-Euse'), is_('coiffeur'))
+
+    def test_normalize_text_with_empty_values_normalizes_text(self):
+        assert_that(testee.normalize_text(None), is_(None))
+        assert_that(testee.normalize_text(''), is_(''))
+
+    def test_normalize_text_normalizes_text(self):
+        # arrange
+        text = "Text, Fachperson und Arzt oder Schreinerin"
+        # act
+        result = testee.normalize_text(text)
+        result_text = ' '.join(item for item in result)
+        # assert
+        assert_that(result_text, is_('text fachmann arzt schrein'))
 
 
 def match_item_for_job_name(job_name):
