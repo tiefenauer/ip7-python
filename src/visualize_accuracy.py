@@ -1,5 +1,6 @@
 import argparse
 import logging
+import subprocess
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +8,8 @@ from pony.orm import db_session
 
 from src.database.entities_pg import Classification_Results
 from src.util.log_util import log_setup
+
+project_root = 'D:/code/ip7-python/'
 
 log_setup()
 log = logging.getLogger(__name__)
@@ -69,8 +72,9 @@ if __name__ == '__main__':
     rects3 = ax.bar(ind + 3 * width / 2, means_linear, width, color='g')
 
     # add some text for labels, title and axes ticks
+    git_commit = subprocess.check_output(["git", "describe", '--always'], cwd='..').strip()
+    ax.set_title('Accuracy by classification and score method\nGit commit: ' + git_commit.decode('utf-8'))
     ax.set_ylabel('Average accuracy')
-    ax.set_title('Accuracy by classification and score method')
     ax.set_xticks(ind + width / 2)
 
     # labels: classification method + number of evaluated rows
