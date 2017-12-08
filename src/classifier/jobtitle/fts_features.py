@@ -25,8 +25,9 @@ class FtsFeatures(object):
         self.num_variants = num_variants
 
     def __lt__(self, other):
-        return (self.tag_weight, self.first_position, -self.num_occurrences, -self.num_variants) < \
-               (other.tag_weight, other.first_position, -other.num_occurrences, -other.num_variants)
+        # note: The order of the attributes defines the sorting priority!
+        return (self.tag_weight, -self.num_occurrences, self.first_position, -self.num_variants) < \
+               (other.tag_weight, -other.num_occurrences, other.first_position, -other.num_variants)
 
     def __eq__(self, other):
         return (self.job_name, self.tag_weight, self.first_position, self.num_occurrences, self.num_variants) == \

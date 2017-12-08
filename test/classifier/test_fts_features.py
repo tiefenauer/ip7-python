@@ -63,6 +63,13 @@ class TestFtsFeatures(unittest.TestCase):
         # act/assert
         assert_that(feature1, is_(less_than(feature2)))
 
+    def test_lt_with_different_occurrence_and_different_position_higher_occurrence_is_first(self):
+        # arrange
+        feature1 = FtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=12, num_variants=12)
+        feature2 = FtsFeatures(job_name='Bäcker', highest_tag='h1', first_position=0, num_occurrences=10, num_variants=12)
+        # act/assert
+        assert_that(feature1, is_(less_than(feature2)))
+
     def test_lt_with_different_number_of_variants_higher_number_is_first(self):
         # arrange
         feature1 = FtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=10, num_variants=12)

@@ -137,6 +137,7 @@ def create_gender_variants(job_name):
 def create_write_variants(job_name):
     write_variants = set()
     write_variants.add(job_name)
+    # convert hyphenated form to concatenated and spaced form
     if is_hyphenated(job_name):
         job_name_parts = re.findall('([a-zA-Z]+)', job_name)
         part1 = job_name_parts[0]
@@ -148,10 +149,15 @@ def create_write_variants(job_name):
     else:
         for known_job in KnownJobs():
             if known_job.lower() in job_name:
-                part1 = job_name.split(known_job.lower())[0].strip()
-                job_concatenated = to_concatenated_form(part1, known_job.lower())
-                job_spaced = to_spaced_form(part1, known_job)
-                job_hyphenated = to_hyphenated_form(part1, known_job)
+                job_name_parts = job_name.split(known_job.lower())
+                part1 = job_name_parts[0].strip()
+                part2 = job_name_parts[1]
+
+                # concatenate and re-append second part so full job name is not lost!
+                # (e.g. Facharzt Arbeitsmedizin -> Facharzt Arbeitsmedizin, Fach-Arzt Arbeitsmedizin, Fach Arzt Arbeitsmedizin
+                job_concatenated = to_concatenated_form(part1, known_job.lower()) + part2
+                job_spaced = to_spaced_form(part1, known_job) + part2
+                job_hyphenated = to_hyphenated_form(part1, known_job) + part2
                 write_variants.add(job_concatenated)
                 write_variants.add(job_spaced)
                 write_variants.add(job_hyphenated)

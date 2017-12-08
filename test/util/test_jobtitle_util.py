@@ -205,6 +205,33 @@ class TestJobTitleUtil(unittest.TestCase):
             match_item_for_job_name('Schreinerin')
         ))
 
+    def test_create_write_variants_compound_job_name_creates_hyphenated_and_spaced_form(self):
+        assert_that(testee.create_write_variants('Facharzt'), only_contains(
+            'Facharzt',
+            'Fach-Arzt',
+            'Fach Arzt'
+        ))
+        assert_that(testee.create_write_variants('Servicemonteur'), only_contains(
+            'Servicemonteur',
+            'Service-Monteur',
+            'Service Monteur'
+        ))
+
+    def test_create_write_variants_compound_spaced_job_name_creates_hyphenated_and_spaced_form(self):
+        assert_that(testee.create_write_variants('Facharzt Arbeitsmedizin'), only_contains(
+            'Facharzt Arbeitsmedizin',
+            'Fach-Arzt Arbeitsmedizin',
+            'Fach Arzt Arbeitsmedizin'
+        ))
+
+    def test_create_write_variants_hyphenated_job_name_creates_hyphenated_and_spaced_form(self):
+        assert_that(testee.create_write_variants('Event-Manager'), only_contains(
+            'Event-Manager',
+            'Eventmanager',
+            'Event Manager'
+        ))
+
+
     def test_create_gender_variants_returns_gender_variants(self):
         # arrange
         job_name = 'Schreiner'
