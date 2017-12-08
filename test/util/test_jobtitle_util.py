@@ -244,35 +244,63 @@ class TestJobTitleUtil(unittest.TestCase):
 
     def test_count_variant_in_returns_correct_count(self):
         # arrange
-        string = 'Schneider Schneiderin Schneider/-in Schneider/in Schneider (m/w)'
-        # act
-        result1 = testee.count_variant('Schneider', string)
-        result2 = testee.count_variant('Schneiderin', string)
-        result3 = testee.count_variant('Schneider/in', string)
-        result4 = testee.count_variant('Schneider/-in', string)
-        result5 = testee.count_variant('Schneider (m/w)', string)
-        # assert
-        assert_that(result1, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result2, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result3, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result4, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result5, is_(1), "When counting a variant only count exact matches of that variant")
+        string = """
+        Polymechaniker
+        Polymechanikerin
+        PolymechanikerIn
+        Polymechaniker/in
+        Polymechaniker/In
+        Polymechaniker/-in
+        Polymechaniker/-In
+        Polymechaniker (m/w)
+        Polymechaniker   (m/w)
+        Polymechaniker (mw)
+        Polymechaniker   (mw)
+        Polymechaniker mw
+        Polymechaniker   mw
+        Polymechaniker/Polymechanikerin
+        """
+        # act/assert
+        assert_that(testee.count_variant('Polymechaniker', string), is_(2))
+        assert_that(testee.count_variant('Polymechanikerin', string), is_(2))
+        assert_that(testee.count_variant('PolymechanikerIn', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker/in', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker/In', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker/-in', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker/-In', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker (m/w)', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker   (m/w)', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker (mw)', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker   (mw)', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker mw', string), is_(1))
+        assert_that(testee.count_variant('Polymechaniker   mw', string), is_(1))
 
     def test_count_variant_euse_returns_correct_count(self):
         # arrange
-        string = 'Coiffeur Coiffeuse Coiffeur/euse Coiffeur/-euse Coiffeur (m/w)'
-        # act
-        result1 = testee.count_variant('Coiffeur', string)
-        result2 = testee.count_variant('Coiffeuse', string)
-        result3 = testee.count_variant('Coiffeur/euse', string)
-        result4 = testee.count_variant('Coiffeur/-euse', string)
-        result5 = testee.count_variant('Coiffeur (m/w)', string)
-        # assert
-        assert_that(result1, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result2, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result3, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result4, is_(1), "When counting a variant only count exact matches of that variant")
-        assert_that(result5, is_(1), "When counting a variant only count exact matches of that variant")
+        string = """
+        Coiffeur
+        Coiffeuse
+        Coiffeur/euse
+        Coiffeur/-euse
+        Coiffeur (m/w)
+        Coiffeur   (m/w)
+        Coiffeur (mw)
+        Coiffeur   (mw)
+        Coiffeur mw
+        Coiffeur   mw
+        Coiffeur/Coiffeuse
+        """
+        # act/assert
+        assert_that(testee.count_variant('Coiffeur', string), is_(2))
+        assert_that(testee.count_variant('Coiffeuse', string), is_(2))
+        assert_that(testee.count_variant('Coiffeur/euse', string), is_(1))
+        assert_that(testee.count_variant('Coiffeur/-euse', string), is_(1))
+        assert_that(testee.count_variant('Coiffeur (m/w)', string), is_(1))
+        assert_that(testee.count_variant('Coiffeur   (m/w)', string), is_(1))
+        assert_that(testee.count_variant('Coiffeur (mw)', string), is_(1))
+        assert_that(testee.count_variant('Coiffeur   (mw)', string), is_(1))
+        assert_that(testee.count_variant('Coiffeur mw', string), is_(1))
+        assert_that(testee.count_variant('Coiffeur   mw', string), is_(1))
 
     def test_normalize_job_name_with_empty_values_returns_input(self):
         # sanity check

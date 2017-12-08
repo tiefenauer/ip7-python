@@ -7,14 +7,6 @@ from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.dataimport.known_jobs import KnownJobs
 from src.util.jobtitle_util import count_variant, create_variants
 
-tag_weight = {
-    'h1': 0.9,
-    'h2': 0.8,
-    'h3': 0.7,
-    'strong': 0.3,
-    'default': 0.1
-}
-
 
 # {
 

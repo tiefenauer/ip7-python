@@ -171,7 +171,31 @@ def create_variants(job_name):
 
 
 def count_variant(variant, string):
-    pattern = r'(?<!\w){}(?![\w/]|\s\(m/w\))'.format(re.escape(variant))
+    """Count EXACT occurrences of variant with respect to word boundaries. This means an occurrence will only be counted
+    if it is a full word (not including hyphenated or slashed forms.
+
+    Example
+
+    variant          string                                     count
+    ---------------------------------------------------------------------------
+    Polymechaniker   Polymechaniker                             1
+    Polymechaniker   Polymechanikerin                           0
+    Polymechaniker   PolymechanikerIn                           0
+    Polymechaniker   Polymechaniker/Polymechanikerin            1
+
+    Anatomy of regex:
+    (?<!\w){}       left word boundary and the variant ({} will be replaced by the variant)
+    (?! ...)        negative lookahead for one of the following variants
+        [\w]            word character
+        \s*\(?m/?w\)?   space(s) and the (m/w) suffix in any form
+        (\/-)           slash followed by a hyphen
+        (\/[IEa-z])     slash followed by uppercase I or E and a lowercase character
+                            -> this prevents e.g. Polymechaniker being counted in Polymechanikerin while still counting
+                               Polymechaniker in Polymechaniker/Polymechanikerin
+                               or analogous Coiffeur is not counted in Coiffeur/euse but in Coiffeur/Coiffeuse
+    """
+    # pattern = r'(?<!\w){}(?![\w/]|\s\(m/w\)|\/)'.format(re.escape(variant))  # old pattern
+    pattern = r'(?<!\w){}(?![\w]|\s*\(?m/?w\)?|(\/-)|(\/[IEa-z]))'.format(re.escape(variant))
     matches = re.findall(pattern, string)
     return len(matches)
 
