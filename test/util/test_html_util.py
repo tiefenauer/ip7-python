@@ -3,20 +3,16 @@ import unittest
 from bs4 import BeautifulSoup, NavigableString
 from hamcrest import *
 
+from src.preprocessing import preproc
 from src.util import html_util
-
-
-def create_tag(markup):
-    soup = BeautifulSoup(markup, 'html.parser')
-    return list(soup.children)[0]
 
 
 class TestHtmlParser(unittest.TestCase):
     def test_is_relevant_with_relevant_tag_returns_true(self):
         # arrange
-        tag_p = create_tag('<p></p>')
-        tag_div = create_tag('<div></div>')
-        tag_div_nested = create_tag('<div><img /></div>')
+        tag_p = preproc.create_tag_from_markup('<p></p>')
+        tag_div = preproc.create_tag_from_markup('<div></div>')
+        tag_div_nested = preproc.create_tag_from_markup('<div><img /></div>')
         # act/assert
         assert_that(html_util.is_relevant(tag_p), is_(not_(None)))
         assert_that(html_util.is_relevant(tag_div), is_(not_(None)))
@@ -24,15 +20,15 @@ class TestHtmlParser(unittest.TestCase):
 
     def test_is_relevant_with_irrelevant_tag_returns_false(self):
         # arrange
-        tag_img = create_tag('<img/>')
-        tag_form = create_tag('<form></form>')
+        tag_img = preproc.create_tag_from_markup('<img/>')
+        tag_form = preproc.create_tag_from_markup('<form></form>')
         # act/assert
         assert_that(html_util.is_relevant(tag_img), is_(False))
         assert_that(html_util.is_relevant(tag_form), is_(False))
 
     def test_remove_all_attributes_without_whitelist_removes_all_attributes(self):
         # arrange
-        tag = create_tag('<span lang="de" xml:lang="de">Kontakt</span>')
+        tag = preproc.create_tag_from_markup('<span lang="de" xml:lang="de">Kontakt</span>')
         # act
         tag = html_util.remove_all_attrs(tag)
         # assert
@@ -41,7 +37,7 @@ class TestHtmlParser(unittest.TestCase):
 
     def test_strip_tag_without_inner_markup_returns_only_text(self):
         # arrange
-        element = create_tag('<p>\r\n       foo             \r\n</p>')
+        element = preproc.create_tag_from_markup('<p>\r\n       foo             \r\n</p>')
         # act
         result = html_util.strip_content(element)
         # assert
@@ -80,7 +76,7 @@ class TestHtmlParser(unittest.TestCase):
                             <input></input>
                         </meta>
                     </form>"""
-        element_with_relevant_children = create_tag(markup)
+        element_with_relevant_children = preproc.create_tag_from_markup(markup)
         # act
         result = html_util.is_nested(element_with_relevant_children)
         # assert
@@ -95,7 +91,7 @@ class TestHtmlParser(unittest.TestCase):
                             <input></input>
                         </div>
                     </div>"""
-        element_with_relevant_children = create_tag(markup)
+        element_with_relevant_children = preproc.create_tag_from_markup(markup)
         # act
         result = html_util.is_nested(element_with_relevant_children)
         # assert

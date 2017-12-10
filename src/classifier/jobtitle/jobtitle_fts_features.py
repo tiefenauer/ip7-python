@@ -9,7 +9,7 @@ def calculate_tag_weight(tag):
 
 
 @total_ordering
-class FtsFeatures(object):
+class JobtitleFtsFeatures(object):
     """helper class to sort features"""
 
     def __init__(self, job_name, highest_tag, first_position, num_occurrences, num_variants):

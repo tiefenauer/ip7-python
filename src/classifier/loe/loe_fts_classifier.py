@@ -1,9 +1,10 @@
 import logging
 import re
-from functools import total_ordering
 
 from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.loe.loe_classifier import LoeClassifier
+from src.classifier.loe.loe_fts_features import LoeFtsFeatures
+from src.preprocessing.loe_preprocessor import LoePreprocessor
 
 log = logging.getLogger(__name__)
 
@@ -13,35 +14,6 @@ LOE_PATTERN = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%?|\d\d\d?\s*%?')
 LOE_PATTERN_SINGLE = re.compile('\d\d\d?\s*%')
 # matches LOE range: 60(%)-80%, 70(%)-100% ... (first percent symbol is optional)
 LOE_PATTERN_RANGE = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%')
-
-tag_order = ['h*', 'strong', 'p']
-
-
-@total_ordering
-class LoeOccurrence(object):
-    """helper class to sort occurrences of LOE"""
-
-    def __init__(self, pattern, html_tag, count):
-        # LOE occurrence metadata
-        self.pattern = pattern
-        self.tag = html_tag
-        self.count = count
-
-        # attributes for sorting
-        self.ends_with_percent = 0 if '%' in pattern else 1
-        self.tag_weight = tag_order.index(html_tag[:1]) \
-            if html_tag \
-               and len(html_tag) > 0 \
-               and html_tag in tag_order \
-            else len(tag_order) + 1
-
-    def __lt__(self, other):
-        return ((self.ends_with_percent, self.tag_weight, self.count) <
-                (other.ends_with_percent, other.tag_weight, other.count))
-
-    def __eq__(self, other):
-        return ((self.ends_with_percent, self.tag_weight, self.count) ==
-                (other.ends_with_percent, other.tag_weight, other.count))
 
 
 def group_loe_patterns_by_count(tags):
@@ -65,19 +37,19 @@ def group_loe_patterns_by_count(tags):
     for p in dct:
         for t in dct[p]:
             c = dct[p][t]
-            lst.append(LoeOccurrence(p, t, c))
+            lst.append(LoeFtsFeatures(p, t, c))
 
     # step 4a: perform some filtering
     # filter out items without percent in pattern (those are unlikely to be LOE)
     lst = (loe for loe in lst if '%' in loe.pattern)
     # filter out items that occur in lists (those are more likely to belong to skills etc.)
-    lst = (loe for loe in lst if loe.tag not in ['li', 'ul', 'ol'])
+    lst = (loe for loe in lst if loe.tag_name not in ['li', 'ul', 'ol'])
     # step 4b: sort list by pattern suffix ASC (percentages first), tag weight ASC (according to tag_order), count DESC
     sorted_lst = sorted(lst, key=lambda x: (x.ends_with_percent, x.tag_weight, -x.count))
     # step 5: convert list to 3-tupel
     result = []
     for loe in sorted_lst:
-        result.append((loe.pattern, loe.tag, loe.count))
+        result.append((loe.pattern, loe.tag_name, loe.count))
 
     return result
 
@@ -92,6 +64,9 @@ def find_loe_patterns_by_tag(tags):
 class LoeFtsClassifier(FtsClassifier, LoeClassifier):
     """Predict level of employment (LOE) by performing a full text search (FTS) on the processed data for numeric
     information."""
+
+    def __init__(self, args, preprocessor=LoePreprocessor()):
+        super(LoeFtsClassifier, self).__init__(args, preprocessor)
 
     def classify(self, tags):
         matches = group_loe_patterns_by_count(tags)

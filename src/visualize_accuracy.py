@@ -22,7 +22,8 @@ classification_methods = [
     'jobtitle-semantic-rf',
     'jobtitle-semantic-avg',
     'jobtitle-structural-nv',
-    'jobtitle-structural-nvt'
+    'jobtitle-structural-nvt',
+    'loe-fts'
 ]
 
 

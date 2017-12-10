@@ -4,7 +4,7 @@ from hamcrest import assert_that, contains, empty, is_
 
 from src.preprocessing import structural_preprocessor_nvt
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
-from test.classifier.test_loe_fts_classifier import create_tags
+from src.preprocessing.preproc import create_tags
 from test.util.test_util import create_dummy_row
 
 testee = StructuralPreprocessorNVT()

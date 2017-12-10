@@ -87,6 +87,22 @@ def parse(markup):
     return BeautifulSoup(markup, 'lxml')
 
 
+def create_tag(tag_name, tag_content):
+    tag = BeautifulSoup('', 'html.parser').new_tag(tag_name)
+    if tag_content:
+        tag.string = tag_content
+    return tag
+
+
+def create_tags(param):
+    return [create_tag(tag_name, tag_content) for (tag_name, tag_content) in param]
+
+
+def create_tag_from_markup(markup):
+    soup = BeautifulSoup(markup, 'html.parser')
+    return list(soup.children)[0]
+
+
 def text_list_to_sentence_list(contents):
     sentences = (to_sentences(content) for content in contents)
     return flatten(sentences)

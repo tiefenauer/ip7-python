@@ -1,20 +1,14 @@
 import unittest
 
-import bs4
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
 from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based as clf_htmltag_based
-from src.classifier.jobtitle.fts_features import FtsFeatures
+from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
 from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
+from src.preprocessing import preproc
 from src.util.jobtitle_util import create_gender_variants
 from test.util.test_util import create_dummy_args
-
-
-def create_tag(tag_name, tag_content):
-    tag = bs4.BeautifulSoup('', 'html.parser').new_tag(tag_name)
-    tag.string = tag_content
-    return tag
 
 
 def feature_matching(job_name, variant_name, tag_name, pos_counts):
@@ -61,7 +55,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_one_job_one_variant_returns_correct_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Wir suchen eine/n Polymechaniker/-in mit Freude an der Arbeit.')
+            preproc.create_tag('h1', 'Wir suchen eine/n Polymechaniker/-in mit Freude an der Arbeit.')
         ]
         # act
         result = testee.classify(tags)
@@ -71,7 +65,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_one_job_multi_variants_returns_longer_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Polymechaniker/-in Polymechaniker')
+            preproc.create_tag('h1', 'Polymechaniker/-in Polymechaniker')
         ]
         # act
         result = testee.classify(tags)
@@ -81,7 +75,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_one_job_multi_variants_returns_most_frequent_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Polymechaniker/-in Polymechaniker Polymechaniker')
+            preproc.create_tag('h1', 'Polymechaniker/-in Polymechaniker Polymechaniker')
         ]
         # act
         result = testee.classify(tags)
@@ -91,7 +85,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_multi_jobs_one_variant_returns_most_frequent_job(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Koch Polymechaniker Polymechaniker Polymechaniker Priester'),
+            preproc.create_tag('h1', 'Koch Koch Polymechaniker Polymechaniker Polymechaniker Priester'),
         ]
         # act
         result = testee.classify(tags)
@@ -101,7 +95,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_multi_jobs_multi_variants_returns_most_frequent_job(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Priester Priester'),
+            preproc.create_tag('h1', 'Koch Priester Priester'),
         ]
         # act
         result = testee.classify(tags)
@@ -111,7 +105,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_multi_jobs_multi_variants_returns_most_frequent_job_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Priester Priester Priester/in'),
+            preproc.create_tag('h1', 'Koch Priester Priester Priester/in'),
         ]
         # act
         result = testee.classify(tags)
@@ -121,7 +115,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_one_tag_multi_job_same_frequency_result_is_the_one_with_more_diversity(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Koch Koch Priester Priester/in Priester/in')
+            preproc.create_tag('h1', 'Koch Koch Koch Priester Priester/in Priester/in')
         ]
         # act
         result = testee.classify(tags)
@@ -131,8 +125,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_one_tagtype_one_job_one_variant_returns_correct_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Coiffeur'),
-            create_tag('h1', 'Coiffeur')
+            preproc.create_tag('h1', 'Coiffeur'),
+            preproc.create_tag('h1', 'Coiffeur')
         ]
         # act
         result = testee.classify(tags)
@@ -142,8 +136,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_one_tagtype_one_job_multi_variants_returns_longer_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Coiffeur'),
-            create_tag('h1', 'Coiffeuse')
+            preproc.create_tag('h1', 'Coiffeur'),
+            preproc.create_tag('h1', 'Coiffeuse')
         ]
         # act
         result = testee.classify(tags)
@@ -153,8 +147,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_multi_tagtype_one_job_multi_variants_returns_higher_ranked_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Coiffeur'),
-            create_tag('h2', 'Coiffeuse')
+            preproc.create_tag('h1', 'Coiffeur'),
+            preproc.create_tag('h2', 'Coiffeuse')
         ]
         # act
         result = testee.classify(tags)
@@ -164,8 +158,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_one_tagtype_one_job_multi_variants_returns_most_frequent_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Coiffeur Coiffeuse'),
-            create_tag('h1', 'Coiffeuse')
+            preproc.create_tag('h1', 'Coiffeur Coiffeuse'),
+            preproc.create_tag('h1', 'Coiffeuse')
         ]
         # act
         result = testee.classify(tags)
@@ -175,8 +169,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_one_tagtype_multi_job_one_variant_result_is_most_frequent_job(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Koch Priester'),
-            create_tag('h1', 'Priester Priester')
+            preproc.create_tag('h1', 'Koch Koch Priester'),
+            preproc.create_tag('h1', 'Priester Priester')
         ]
         # act
         result = testee.classify(tags)
@@ -186,8 +180,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_one_tagtype_multi_job_multi_variants_result_is_most_frequent_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Koch Priester/in'),
-            create_tag('h1', 'Priester/in Priester')
+            preproc.create_tag('h1', 'Koch Koch Priester/in'),
+            preproc.create_tag('h1', 'Priester/in Priester')
         ]
         # act
         result = testee.classify(tags)
@@ -197,8 +191,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_one_tagtype_multi_job_multi_variants_result_is_longest_variant(self):
         # arrange
         tags = [
-            create_tag('h1', 'Koch Koch Priester/-in'),
-            create_tag('h1', 'Priester/in Priester')
+            preproc.create_tag('h1', 'Koch Koch Priester/-in'),
+            preproc.create_tag('h1', 'Priester/in Priester')
         ]
         # act
         result = testee.classify(tags)
@@ -208,8 +202,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_classify_multi_tag_multi_job_result_is_the_one_with_lower_tag(self):
         # arrange
         tags = [
-            create_tag('h2', 'Coiffeur'),
-            create_tag('h1', 'Polymechaniker/in')
+            preproc.create_tag('h2', 'Coiffeur'),
+            preproc.create_tag('h1', 'Polymechaniker/in')
         ]
         # act
         result = testee.classify(tags)
@@ -218,7 +212,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_create_statistics_no_match_returns_empty_list(self):
         # arrange
-        tags = [create_tag('p', 'nothing to see here...')]
+        tags = [preproc.create_tag('p', 'nothing to see here...')]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
         features = clf_htmltag_based.create_statistics(tags, jnv)
@@ -227,7 +221,7 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_create_statistics_from_one_tag_one_match(self):
         # arrange
-        tags = [create_tag('h2', 'Wir suchen einen Polymechaniker (m/w) der gerne arbeitet')]
+        tags = [preproc.create_tag('h2', 'Wir suchen einen Polymechaniker (m/w) der gerne arbeitet')]
         jnv = create_job_name_tuple('Polymechaniker')
         # act
         features = clf_htmltag_based.create_statistics(tags, jnv)
@@ -236,7 +230,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_create_statistics_from_one_tag_multi_match(self):
         # arrange
-        tags = [create_tag('h2', 'Koch (m/w) Polymechaniker Polymechaniker/in Polymechaniker Priester Priester/-in')]
+        tags = [preproc.create_tag('h2',
+                                   'Koch (m/w) Polymechaniker Polymechaniker/in Polymechaniker Priester Priester/-in')]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
         features = clf_htmltag_based.create_statistics(tags, jnv)
@@ -250,8 +245,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_create_statistics_from_multi_tag_one_match(self):
         # arrange
         tags = [
-            create_tag('h2', 'Polymechaniker'),
-            create_tag('h2', 'Polymechaniker')
+            preproc.create_tag('h2', 'Polymechaniker'),
+            preproc.create_tag('h2', 'Polymechaniker')
         ]
         jnv = create_job_name_tuple('Polymechaniker')
         # act
@@ -262,8 +257,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_create_statistics_from_multi_different_tag_one_match(self):
         # arrange
         tags = [
-            create_tag('h1', 'Polymechaniker'),
-            create_tag('h2', 'Polymechaniker/-in')
+            preproc.create_tag('h1', 'Polymechaniker'),
+            preproc.create_tag('h2', 'Polymechaniker/-in')
         ]
         jnv = create_job_name_tuple('Polymechaniker', 'Priester', 'Koch')
         # act
@@ -275,8 +270,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_create_statistics_from_multi_tag_multi_match(self):
         # arrange
         tags = [
-            create_tag('h1', 'Polymechaniker'),
-            create_tag('h2', 'Koch (m/w)')
+            preproc.create_tag('h1', 'Polymechaniker'),
+            preproc.create_tag('h2', 'Koch (m/w)')
         ]
         jnv = create_job_name_tuple('Polymechaniker', 'Koch')
         # act
@@ -340,8 +335,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         result = clf_htmltag_based.create_fts_features(features)
         # assert
         assert_that(result, contains_inanyorder(
-            FtsFeatures('Polymechaniker', highest_tag='h1', first_position=1, num_occurrences=11, num_variants=2),
-            FtsFeatures('Elektriker', highest_tag='h3', first_position=2, num_occurrences=10, num_variants=3)
+            JobtitleFtsFeatures('Polymechaniker', highest_tag='h1', first_position=1, num_occurrences=11, num_variants=2),
+            JobtitleFtsFeatures('Elektriker', highest_tag='h3', first_position=2, num_occurrences=10, num_variants=3)
         ))
 
     def test_count_variants_returns_correct_job(self):

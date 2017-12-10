@@ -1,7 +1,7 @@
 from bs4 import Tag
 
 # only these tags will be considered
-RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol', 'strong'}
+RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'span', 'div', 'title', 'ul', 'ol', 'li', 'strong'}
 
 
 def is_nested(el):

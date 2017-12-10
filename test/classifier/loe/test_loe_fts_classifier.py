@@ -1,10 +1,10 @@
 import unittest
 
-from bs4 import BeautifulSoup
 from hamcrest import assert_that, contains, is_
 
 from src.classifier.loe import loe_fts_classifier
 from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
+from src.preprocessing import preproc
 from test.util.test_util import create_dummy_args
 
 """
@@ -17,17 +17,6 @@ Anstellung 60%-80% als Maurer
 
 """
 
-
-def create_tag(tag_name, tag_content):
-    tag = BeautifulSoup('', 'html.parser').new_tag(tag_name)
-    tag.string = tag_content
-    return tag
-
-
-def create_tags(param):
-    return [create_tag(tag_name, tag_content) for (tag_name, tag_content) in param]
-
-
 args = create_dummy_args()
 testee = LoeFtsClassifier(args)
 
@@ -36,7 +25,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
 
     def test_classify_without_patterns_returns_none(self):
         # arrange
-        tags = create_tags([
+        tags = preproc.create_tags([
             ('h1', 'Anstellung als Maurer'),
             ('h1', 'Anstellung als Baggeführer')
         ])
@@ -48,20 +37,20 @@ class TestLoeFtsClassifier(unittest.TestCase):
 
     def test_classify_xxxP_returns_xxx_for_min_and_max(self):
         # arrange
-        tags1 = create_tags([('h1', 'Anstellung 80% als Maurer')])
-        tags2 = create_tags([('h1', 'Anstellung 80 % als Maurer')])
+        tags1 = preproc.create_tags([('h1', 'Anstellung 80% als Maurer')])
+        tags2 = preproc.create_tags([('h1', 'Anstellung 80 % als Maurer')])
         # act / Assert
         assert_that(testee.classify(tags1), is_((80, 80)))
         assert_that(testee.classify(tags2), is_((80, 80)))
 
     def test_classify_xxx_yyyP_returns_xxx_for_min_and_yyy_max(self):
         # arrange
-        tags1 = create_tags([('h1', 'Anstellung 80-100% als Maurer')])
-        tags2 = create_tags([('h1', 'Anstellung 80 -100% als Maurer')])
-        tags3 = create_tags([('h1', 'Anstellung 80- 100% als Maurer')])
-        tags4 = create_tags([('h1', 'Anstellung 80-100 % als Maurer')])
-        tags5 = create_tags([('h1', 'Anstellung 80 - 100 % als Maurer')])
-        tags6 = create_tags([('h1', 'Anstellung 80 - 100% als Maurer')])
+        tags1 = preproc.create_tags([('h1', 'Anstellung 80-100% als Maurer')])
+        tags2 = preproc.create_tags([('h1', 'Anstellung 80 -100% als Maurer')])
+        tags3 = preproc.create_tags([('h1', 'Anstellung 80- 100% als Maurer')])
+        tags4 = preproc.create_tags([('h1', 'Anstellung 80-100 % als Maurer')])
+        tags5 = preproc.create_tags([('h1', 'Anstellung 80 - 100 % als Maurer')])
+        tags6 = preproc.create_tags([('h1', 'Anstellung 80 - 100% als Maurer')])
         # act/assert
         assert_that(testee.classify(tags1), is_((80, 100)))
         assert_that(testee.classify(tags2), is_((80, 100)))
@@ -72,14 +61,14 @@ class TestLoeFtsClassifier(unittest.TestCase):
 
     def test_classify_xxxP_yyyP_returns_xxx_for_min_and_yyy_max(self):
         # arrange
-        tags1 = create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
-        tags2 = create_tags([('h1', 'Anstellung 80 %-100% als Maurer')])
-        tags3 = create_tags([('h1', 'Anstellung 80% -100% als Maurer')])
-        tags4 = create_tags([('h1', 'Anstellung 80%- 100% als Maurer')])
-        tags5 = create_tags([('h1', 'Anstellung 80%-100 % als Maurer')])
-        tags6 = create_tags([('h1', 'Anstellung 80 % - 100 % als Maurer')])
-        tags7 = create_tags([('h1', 'Anstellung 80% - 100% als Maurer')])
-        tags8 = create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
+        tags1 = preproc.create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
+        tags2 = preproc.create_tags([('h1', 'Anstellung 80 %-100% als Maurer')])
+        tags3 = preproc.create_tags([('h1', 'Anstellung 80% -100% als Maurer')])
+        tags4 = preproc.create_tags([('h1', 'Anstellung 80%- 100% als Maurer')])
+        tags5 = preproc.create_tags([('h1', 'Anstellung 80%-100 % als Maurer')])
+        tags6 = preproc.create_tags([('h1', 'Anstellung 80 % - 100 % als Maurer')])
+        tags7 = preproc.create_tags([('h1', 'Anstellung 80% - 100% als Maurer')])
+        tags8 = preproc.create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
         # act/assert
         assert_that(testee.classify(tags1), is_((80, 100)))
         assert_that(testee.classify(tags2), is_((80, 100)))
@@ -92,7 +81,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
 
     def test_classify_with_multiple_patterns_returns_most_frequent_pattern(self):
         # arrange
-        tags = create_tags([
+        tags = preproc.create_tags([
             ('h1', 'Anstellung 80%-100% als Maurer'),
             ('h1', 'Anstellung 80%-100% als Maurer'),
             ('h2', 'Anstellung 80%-100% als Maurer'),
@@ -108,7 +97,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
 
     def test_find_loe_patterns_by_tag_returns_tags_and_results(self):
         # arrange
-        tags = create_tags([
+        tags = preproc.create_tags([
             ('h1', 'Anstellung 80%-100% als Maurer'),
             ('h2', 'Anstellung 80% als Baggerführer'),
             ('p', 'Anstellung 80-100% als Schreiner')
@@ -124,7 +113,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
 
     def test_group_patterns_by_count_returns_list_sorted_by_count_desc(self):
         # arrange
-        tags = create_tags([
+        tags = preproc.create_tags([
             ('h1', 'Anstellung 80%-100% als Maurer'),
             ('h1', 'Anstellung 80%-100% als Maurer'),
             ('h2', 'Anstellung 80%-100% als Maurer'),
@@ -144,7 +133,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
 
     def test_group_patterns_by_count_filters_only_percentage(self):
         # arrange
-        tags = create_tags([
+        tags = preproc.create_tags([
             ('h1', 'Anstellung 80-100 als Maurer'),
             ('h1', 'Anstellung 80-100 als Maurer'),
             ('h2', 'Anstellung 80-100 als Maurer'),

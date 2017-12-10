@@ -1,8 +1,8 @@
 import math
 
 from src.classifier.fts_classifier import FtsClassifier
-from src.classifier.jobtitle import fts_features
-from src.classifier.jobtitle.fts_features import FtsFeatures
+from src.classifier.jobtitle import jobtitle_fts_features
+from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.dataimport.known_jobs import KnownJobs
 from src.util.jobtitle_util import count_variant, create_variants
@@ -56,7 +56,7 @@ def create_fts_features(features):
         for job_variant in features[job_name]:
             num_variants += 1
             for tag_name in features[job_name][job_variant]:
-                tag_weight = fts_features.calculate_tag_weight(tag_name)
+                tag_weight = jobtitle_fts_features.calculate_tag_weight(tag_name)
                 if tag_weight < lowest_tag_weight:
                     lowest_tag_weight = tag_weight
                     highest_tag = tag_name
@@ -67,7 +67,7 @@ def create_fts_features(features):
                         first_position = position
                     num_occurrences += count
 
-        feature_list.append(FtsFeatures(job_name, highest_tag, first_position, num_occurrences, num_variants))
+        feature_list.append(JobtitleFtsFeatures(job_name, highest_tag, first_position, num_occurrences, num_variants))
     return feature_list
 
 

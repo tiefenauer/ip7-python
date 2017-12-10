@@ -5,7 +5,6 @@ from bs4 import Tag
 from hamcrest import *
 
 from src.preprocessing import preproc as testee
-from test.util.test_html_util import create_tag
 
 
 def read_sample_file(filename):
@@ -28,9 +27,55 @@ class TestPreprocessing(unittest.TestCase):
         # assert
         assert_that(soup, equal_to(BeautifulSoup(markup, 'lxml')))
 
+    def test_create_tag_creates_tag(self):
+        # arrange/act
+        tag_p_foo = testee.create_tag('p', 'foo')
+        tag_p_empty = testee.create_tag('p', '')
+        tag_p_none = testee.create_tag('p', None)
+        tag_foo = testee.create_tag('foo', 'bar')
+        # assert
+        assert_that(tag_p_foo.name, is_('p'))
+        assert_that(tag_p_foo.getText(), is_('foo'))
+        assert_that(tag_p_empty.name, is_('p'))
+        assert_that(tag_p_empty.getText(), is_(''))
+        assert_that(tag_p_none.name, is_('p'))
+        assert_that(tag_p_none.getText(), is_(''))
+        assert_that(tag_foo.name, is_('foo'))
+
+    def test_create_tags_creates_list_of_tags(self):
+        # arrange / act
+        result = testee.create_tags([
+            ('h1', 'foo'),
+            ('p', 'bar'),
+            ('foo', 'bar')
+        ])
+        # assert
+        assert_that(len(result), is_(3))
+        assert_that(result[0].name, is_('h1'))
+        assert_that(result[0].getText(), is_('foo'))
+        assert_that(result[1].name, is_('p'))
+        assert_that(result[1].getText(), is_('bar'))
+        assert_that(result[2].name, is_('foo'))
+        assert_that(result[2].getText(), is_('bar'))
+
+    def test_create_tag_from_markup_creates_tag(self):
+        # arrange
+        markup = '<p>foo</p>'
+        markup_empty = '<p></p>'
+        markup_invalid = '<foo>bar</foo>'
+        markup_nomarkup = 'foo bar'
+        # act/assert
+        assert_that(testee.create_tag_from_markup(markup).name, is_('p'))
+        assert_that(testee.create_tag_from_markup(markup).getText(), is_('foo'))
+        assert_that(testee.create_tag_from_markup(markup_empty).name, is_('p'))
+        assert_that(testee.create_tag_from_markup(markup_empty).getText(), is_(''))
+        assert_that(testee.create_tag_from_markup(markup_invalid).name, is_('foo'))
+        assert_that(testee.create_tag_from_markup(markup_invalid).getText(), is_('bar'))
+        assert_that(testee.create_tag_from_markup(markup_nomarkup), is_('foo bar'))
+
     def test_get_children_with_flat_tag_returns_empty_list(self):
         # arrange
-        tag = create_tag('<p></p>')
+        tag = testee.create_tag_from_markup('<p></p>')
         # act
         children = testee.get_children(tag)
         # assert
@@ -38,7 +83,7 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_get_children_with_nested_tag_returns_empty_list(self):
         # arrange
-        tag = create_tag('<div><p></p></div>')
+        tag = testee.create_tag_from_markup('<div><p></p></div>')
         # act
         children = testee.get_children(tag)
         # assert
@@ -47,7 +92,7 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_contains_only_strings_with_flat_tag_returns_True(self):
         # arrange
-        tag = create_tag('<p>Some Content</p>')
+        tag = testee.create_tag_from_markup('<p>Some Content</p>')
         children = list(tag.children)
         # act
         result = testee.contains_only_strings(children)
@@ -56,7 +101,7 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_contains_only_strings_with_flat_tag_returns_False(self):
         # arrange
-        tag = create_tag('<div>Some Content <p>Some nestedContent</p></div>')
+        tag = testee.create_tag_from_markup('<div>Some Content <p>Some nestedContent</p></div>')
         children = list(tag.children)
         # act
         result = testee.contains_only_strings(children)
@@ -65,9 +110,10 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_contains_only_semantic_markup_with_only_semantic_markup_returns_True(self):
         # arrange
-        tag_strong = create_tag('<p>some <strong>important</strong> content <br/> and a break</p>')
-        tag_b = create_tag('<p>some <b>important</b> content </p> and a <br/> break')
-        tag_strong_b = create_tag('<p>some <strong>very</strong> very <b>important</b> content and a <br/> break</p>')
+        tag_strong = testee.create_tag_from_markup('<p>some <strong>important</strong> content <br/> and a break</p>')
+        tag_b = testee.create_tag_from_markup('<p>some <b>important</b> content </p> and a <br/> break')
+        tag_strong_b = testee.create_tag_from_markup(
+            '<p>some <strong>very</strong> very <b>important</b> content and a <br/> break</p>')
         # act/assert
         assert_that(testee.contains_only_semantic_markup(tag_strong), is_(True))
         assert_that(testee.contains_only_semantic_markup(tag_b), is_(True))
@@ -75,9 +121,10 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_contains_only_strong_or_b_children_with_only_strong_or_b_returns_False(self):
         # arrange
-        tag_strong = create_tag('<p>some <strong>important</strong> content <p>some other content</p></p>')
-        tag_b = create_tag('<p>some <b>important</b> content <p>some other content</p></p>')
-        tag_strong_b = create_tag(
+        tag_strong = testee.create_tag_from_markup(
+            '<p>some <strong>important</strong> content <p>some other content</p></p>')
+        tag_b = testee.create_tag_from_markup('<p>some <b>important</b> content <p>some other content</p></p>')
+        tag_strong_b = testee.create_tag_from_markup(
             '<p>some <strong>very</strong> very <b>important</b> content <p>some other content</p></p>')
         # act/assert
         assert_that(testee.contains_only_semantic_markup(tag_strong), is_(False))
@@ -86,11 +133,11 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_tag_is_atomic_with_atomic_tag_returns_True(self):
         # arrange
-        tag_p_empty = create_tag('<p></p>')
-        tag_p = create_tag('<p>Some content</p>')
-        tag_strong = create_tag('<p>Some <strong>important</strong> content</p>')
-        tag_b = create_tag('<p>Some <b>important</b> content</p>')
-        tag_strong_b = create_tag('<p>Some <strong>very</strong> <b>important</b> content</p>')
+        tag_p_empty = testee.create_tag_from_markup('<p></p>')
+        tag_p = testee.create_tag_from_markup('<p>Some content</p>')
+        tag_strong = testee.create_tag_from_markup('<p>Some <strong>important</strong> content</p>')
+        tag_b = testee.create_tag_from_markup('<p>Some <b>important</b> content</p>')
+        tag_strong_b = testee.create_tag_from_markup('<p>Some <strong>very</strong> <b>important</b> content</p>')
         # act/assert
         assert_that(testee.tag_is_atomic(tag_p_empty), is_(True))
         assert_that(testee.tag_is_atomic(tag_p), is_(True))
@@ -100,10 +147,11 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_tag_is_atomic_with_atomic_tag_returns_False(self):
         # arrange
-        tag_p = create_tag('<p>Some <p>nested content</p></p>')
-        tag_strong = create_tag('<p>Some <strong>important</strong> <p>nested content</p></p>')
-        tag_b = create_tag('<p>Some <b>important</b> <p>nested content</p></p>')
-        tag_strong_b = create_tag('<p>Some <strong>very</strong> <b>important</b> <p>nested content</p></p>')
+        tag_p = testee.create_tag_from_markup('<p>Some <p>nested content</p></p>')
+        tag_strong = testee.create_tag_from_markup('<p>Some <strong>important</strong> <p>nested content</p></p>')
+        tag_b = testee.create_tag_from_markup('<p>Some <b>important</b> <p>nested content</p></p>')
+        tag_strong_b = testee.create_tag_from_markup(
+            '<p>Some <strong>very</strong> <b>important</b> <p>nested content</p></p>')
         # act/assert
         assert_that(testee.tag_is_atomic(tag_p), is_(False))
         assert_that(testee.tag_is_atomic(tag_strong), is_(False))
@@ -123,13 +171,15 @@ class TestPreprocessing(unittest.TestCase):
         assert_that(extracted_tags, equal_to(expected_tags))
 
     def test_remove_strong_and_b_tags_removes_tags(self):
-        # arrange/act
-        tag_strong = testee.remove_strong_and_b_tags(
-            create_tag('<p>This is some <strong>important</strong> content</p>'))
-        tag_b = testee.remove_strong_and_b_tags(create_tag('<p>This is some <b>important</b> content</p>'))
+        # arrange
+        tag_strong = testee.create_tag_from_markup('<p>This is some <strong>important</strong> content</p>')
+        tag_b = testee.create_tag_from_markup('<p>This is some <b>important</b> content</p>')
+        # act
+        tag_strong_removed = testee.remove_strong_and_b_tags(tag_strong)
+        tag_b_removed = testee.remove_strong_and_b_tags(tag_b)
         # assert
-        assert_that(str(tag_strong), is_('<p>This is some important content</p>'))
-        assert_that(str(tag_b), is_('<p>This is some important content</p>'))
+        assert_that(str(tag_strong_removed), is_('<p>This is some important content</p>'))
+        assert_that(str(tag_b_removed), is_('<p>This is some important content</p>'))
 
     def test_to_words_splits_into_nltk_words(self):
         # arrange
