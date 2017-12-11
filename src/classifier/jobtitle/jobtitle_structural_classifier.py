@@ -36,11 +36,13 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
         result = self.model.classify(features)
         return result
 
-    def train_model(self, processed_data, labels, num_rows):
+    def train_model(self, data_train):
         """Train a Naive Bayes classifier as the internal model"""
-        self.num_rows = num_rows
-        cleaned_labels = clean_labels(labels)
-        labeled_data = zip(processed_data, cleaned_labels)
+        self.num_rows = data_train.num_rows
+        processed_data = self.preprocessor(data_train)
+        data = (row.processed for row in processed_data)
+        labels = clean_labels(row.title for row in processed_data)
+        labeled_data = zip(data, labels)
         train_set = ((self.extract_features(words), label) for words, label in labeled_data)
         model = nltk.NaiveBayesClassifier.train(train_set)
         return model

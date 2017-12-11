@@ -16,8 +16,7 @@ args = parser.parse_args()
 logging = log_setup()
 
 data_train = X28TrainData(args)
-preprocessor = StructuralPreprocessorNV()
-classifier = JobtitleStructuralClassifierNV(args, preprocessor)
+classifier = JobtitleStructuralClassifierNV(args)
 
 if __name__ == '__main__':
     classifier.train_classifier(data_train)

@@ -23,8 +23,7 @@ class JobtitleStructuralClassifierNV(JobtitleStructuralClassifier):
     This means, in order to train the model the preprocessed data must be must be supplied as word tokens together
     with their POS."""
 
-    def __init__(self, args):
-        preprocessor = StructuralPreprocessorNV()
+    def __init__(self, args, preprocessor=StructuralPreprocessorNV):
         super(JobtitleStructuralClassifierNV, self).__init__(args, preprocessor)
 
     def extract_features(self, tagged_words):
