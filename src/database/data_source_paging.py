@@ -9,6 +9,16 @@ pagesize = 1000
 
 
 class PagingDataSource(DataSource):
+    """iterates over data by paging. This has some serious performance advantages over the limit and offset approach
+    with the disadvantage that the data cannot be split into training and test data (at least not easily).
+    This means that this DataSource will contain ALL rows!
+    """
+
+    def __init__(self, args, Entity):
+        super(PagingDataSource, self).__init__(args, Entity)
+        # disable data splitting
+        self.split = 1.0
+        self.num_rows = self.num_total
 
     @db_session
     def __iter__(self):

@@ -21,7 +21,7 @@ class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
         return None
 
     def train_model(self, train_data):
-        sentences = TrainingSentences(train_data)
+        sentences = TrainingSentences(self.preprocessor(train_data))
         model = self.train_w2v_model(sentences)
         return model
 
@@ -53,10 +53,10 @@ class TrainingSentences(object):
     for training!
     """
 
-    def __init__(self, raw_data):
-        self.preprocessor = SemanticPreprocessor(raw_data)
+    def __init__(self, processed_rows):
+        self.processed_rows = processed_rows
 
     def __iter__(self):
-        for row in self.preprocessor:
+        for row in self.processed_rows:
             # evaluate generator
             yield list(row.processed)

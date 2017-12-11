@@ -18,9 +18,9 @@ args = parser.parse_args()
 
 logging = log_setup()
 
+x28_data = X28TrainData(args)
 classifier = LoeFtsClassifier(args)
 evaluation = LoeEvaluator(args, classifier)
 
 if __name__ == '__main__':
-    x28_data = X28TrainData(args)
     evaluation.evaluate(x28_data)

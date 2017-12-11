@@ -24,8 +24,8 @@ class Classifier(ABC):
     def classify_all(self, raw_data):
         """Preprocess each item of an iterable set of raw data. The  by preprocessing it and forwarding the preprocessed data to the
         abstract method whose further logic depends on the implementing subclass"""
-        processed_rows = self.preprocessor(raw_data)
-        for row in processed_rows:
+        processed_data = self.preprocessor(raw_data) if callable(self.preprocessor) else self.preprocessor
+        for row in processed_data:
             rowid = row.id
             actual_class = self.get_actual_class(row)
             predicted_class = self.classify(row.processed)
