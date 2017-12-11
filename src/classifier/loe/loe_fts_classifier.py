@@ -65,7 +65,7 @@ class LoeFtsClassifier(FtsClassifier, LoeClassifier):
     """Predict level of employment (LOE) by performing a full text search (FTS) on the processed data for numeric
     information."""
 
-    def __init__(self, args, preprocessor=LoePreprocessor()):
+    def __init__(self, args, preprocessor=LoePreprocessor):
         super(LoeFtsClassifier, self).__init__(args, preprocessor)
 
     def classify(self, tags):

@@ -7,7 +7,7 @@ from src.preprocessing.fts_preprocessor import FtsPreprocessor
 class FtsClassifier(Classifier):
     """An FTS classifier predicts the class by performing a full text search (FTS) on the processed data."""
 
-    def __init__(self, args, preprocessor=FtsPreprocessor()):
+    def __init__(self, args, preprocessor=FtsPreprocessor):
         super(FtsClassifier, self).__init__(args, preprocessor)
 
     @abstractmethod
