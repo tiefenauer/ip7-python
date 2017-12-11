@@ -16,8 +16,6 @@ def content_words_to_stems(tagged_word_lists):
 
 
 class StructuralPreprocessorNVT(Preprocessor):
-    def __init__(self):
-        super(StructuralPreprocessorNVT, self).__init__()
 
     def preprocess_single(self, row):
         # evaluate generator already here because markup might not contain any relevant tags

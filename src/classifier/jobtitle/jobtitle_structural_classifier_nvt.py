@@ -59,8 +59,7 @@ class JobtitleStructuralClassifierNVT(JobtitleStructuralClassifier):
     This means, in order to train the model the preprocessed data must be must be supplied as word tokens together
     with their POS tags and the HTML tags they appear in."""
 
-    def __init__(self, args):
-        preprocessor = StructuralPreprocessorNVT()
+    def __init__(self, args, preprocessor=StructuralPreprocessorNVT):
         super(JobtitleStructuralClassifierNVT, self).__init__(args, preprocessor)
 
     def extract_features(self, tagged_words):
@@ -84,4 +83,3 @@ class JobtitleStructuralClassifierNVT(JobtitleStructuralClassifier):
 
     def label(self):
         return 'structural_nvt'
-
