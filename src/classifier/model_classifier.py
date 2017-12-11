@@ -38,9 +38,7 @@ class ModelClassifier(Classifier):
             return self.model
 
         log.info('No model present: Training new model...')
-        processed_data = (row.processed for row in self.preprocessor.preprocess(train_data, train_data.num_rows))
-        labels = (row.title for row in train_data)
-        self.model = self.train_model(processed_data, labels, train_data.num_rows)
+        self.model = self.train_model(train_data)
         log.info('...done!')
         #
         self.save_model()
@@ -75,7 +73,7 @@ class ModelClassifier(Classifier):
         """get class for a single item of """
 
     @abstractmethod
-    def train_model(self, processed_data, labels, num_rows):
+    def train_model(self, train_data):
         """train classifier with some given data"""
         return
 

@@ -1,6 +1,7 @@
 import argparse
 
 from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
+from src.database.FetchflowTrainData import FetchflowTrainData
 from src.database.X28TrainData import X28TrainData
 from src.util.log_util import log_setup
 
@@ -14,6 +15,9 @@ parser.add_argument('-m', '--model',
 args = parser.parse_args()
 
 data_train = X28TrainData(args)
+if args.source == 'fetchflow':
+    data_train = FetchflowTrainData(args)
+
 classifier = JobtitleSemanticClassifierAvg(args.model)
 
 if __name__ == '__main__':

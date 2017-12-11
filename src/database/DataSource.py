@@ -20,12 +20,15 @@ class DataSource(ABC):
 
     @db_session
     def __iter__(self):
-        for row in self.create_cursor():
-            yield row
-        # num_pages = int(math.ceil(self.num_rows / self.pagesize))
-        # for page in (self.Entity.select().page(i, pagesize=self.pagesize) for i in (i for i in range(1, num_pages))):
-        #     for row in page:
-        #         yield row
+        # old approach with limit and offset: Performance problems!
+        # for row in self.create_cursor():
+        #     yield row
+
+        # new approach with paging
+        num_pages = int(math.ceil(self.num_rows / self.pagesize))
+        for page in (self.Entity.select().page(i, pagesize=self.pagesize) for i in (i for i in range(1, num_pages))):
+            for row in page:
+                yield row
 
     @abstractmethod
     def create_cursor(self):
