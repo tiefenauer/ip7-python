@@ -21,4 +21,4 @@ class TestTagsPreprocessor(unittest.TestCase):
         # assert
         soup_expected = BeautifulSoup(testutils.read_sample_file('sample_vacancy_all_tags'), 'html.parser')
         expected_tags = soup_expected.findAll()
-        assert_that(len(extracted_tags), is_(len(expected_tags)))
+        assert_that(len(list(extracted_tags)), is_(len(expected_tags)))

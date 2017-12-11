@@ -19,4 +19,4 @@ class TagsPreprocessor(Preprocessor):
         [tag.extract() for tag in soup('img')]
         # remove comments
         [tag.extract() for tag in soup.findAll(text=lambda text: isinstance(text, Comment))]
-        return soup.findAll()
+        return (tag for tag in soup.findAll())
