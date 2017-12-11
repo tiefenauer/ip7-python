@@ -38,8 +38,8 @@ def create_statistics(tags, job_name_variants):
 
 def count_variants(text, variants):
     """counts all occurrences of the job variants in a text string"""
-    for variant in (variant for variant in variants if variant in text):
-        count = count_variant(variant, text)
+    for variant in (variant for variant in variants if variant.lower() in text.lower()):
+        count = count_variant(variant.lower(), text.lower())
         if count > 0:
             yield (variant, count)
 
