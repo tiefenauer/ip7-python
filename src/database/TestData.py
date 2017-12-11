@@ -1,9 +1,9 @@
 import math
 
-from src.database.DataSource import DataSource
+from src.database.data_source_limit_offset import LimitOffsetDataSource
 
 
-class TestData(DataSource):
+class TestData(LimitOffsetDataSource):
     def __init__(self, args, Entity):
         super(TestData, self).__init__(args, Entity)
 

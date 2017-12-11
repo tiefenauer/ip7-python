@@ -1,10 +1,6 @@
-import math
 from abc import ABC, abstractmethod
 
 from pony.orm import db_session
-
-# number of rows to process in each page
-pagesize = 1000
 
 
 class DataSource(ABC):
@@ -20,27 +16,10 @@ class DataSource(ABC):
         self.split = int(split * self.num_total)
         self.num_rows = self.calc_num_rows(num_total, split)
 
-    @db_session
-    def __iter__(self):
-        # old approach with limit and offset: Performance problems!
-        # for row in self.create_cursor():
-        #     yield row
-
-        # new approach with paging
-        num_pages = int(math.ceil(self.num_rows / pagesize))
-        query = self.Entity.select(lambda d: self.id < 0 or d.id == self.id)
-        page_numbers = (i for i in range(1, num_pages))
-        for page in (query.page(i, pagesize=pagesize) for i in page_numbers):
-            for row in page:
-                yield row
-
     @abstractmethod
-    def create_cursor(self):
-        """return a cursor for iteration over data"""
+    def __iter__(self):
+        pass
 
     @abstractmethod
     def calc_num_rows(self, num_total, split):
         """calculate number of rows to process with current splitting"""
-
-    # def create_cursor(self, rowid):
-    # return self.Entity.select(lambda d: d.id > rowid)[:self.pagesize]
