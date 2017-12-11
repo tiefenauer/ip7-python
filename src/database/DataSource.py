@@ -3,11 +3,13 @@ from abc import ABC, abstractmethod
 
 from pony.orm import db_session
 
+# number of rows to process in each page
+pagesize = 1000
+
 
 class DataSource(ABC):
     @db_session
     def __init__(self, args, entity):
-        self.pagesize = 1000
         self.Entity = entity
         # calculate total number of available rows
         self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
@@ -25,8 +27,10 @@ class DataSource(ABC):
         #     yield row
 
         # new approach with paging
-        num_pages = int(math.ceil(self.num_rows / self.pagesize))
-        for page in (self.Entity.select().page(i, pagesize=self.pagesize) for i in (i for i in range(1, num_pages))):
+        num_pages = int(math.ceil(self.num_rows / pagesize))
+        query = self.Entity.select(lambda d: self.id < 0 or d.id == self.id)
+        page_numbers = (i for i in range(1, num_pages))
+        for page in (query.page(i, pagesize=pagesize) for i in page_numbers):
             for row in page:
                 yield row
 
@@ -39,4 +43,4 @@ class DataSource(ABC):
         """calculate number of rows to process with current splitting"""
 
     # def create_cursor(self, rowid):
-        # return self.Entity.select(lambda d: d.id > rowid)[:self.pagesize]
+    # return self.Entity.select(lambda d: d.id > rowid)[:self.pagesize]
