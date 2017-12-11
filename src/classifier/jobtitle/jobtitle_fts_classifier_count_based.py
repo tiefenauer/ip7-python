@@ -34,7 +34,7 @@ class CountBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
         return best_match
 
     def title(self):
-        return 'Jobtitle Extractor: FTS (count-based)'
+        return 'Jobtitle Classifier: FTS (count-based)'
 
     def label(self):
         return 'jobtitle-fts-count'

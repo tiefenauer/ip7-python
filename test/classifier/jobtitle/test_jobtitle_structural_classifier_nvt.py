@@ -4,7 +4,7 @@ from hamcrest import assert_that, is_, contains, less_than
 
 from src.classifier.jobtitle import jobtitle_structural_classifier_nvt
 from src.classifier.jobtitle.jobtitle_structural_classifier_nvt import JobtitleStructuralClassifierNVT
-from test.util.test_util import create_dummy_args
+from test.testutils import create_dummy_args
 
 args = create_dummy_args()
 testee = JobtitleStructuralClassifierNVT(args)

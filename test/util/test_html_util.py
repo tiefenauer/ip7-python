@@ -41,7 +41,7 @@ class TestHtmlParser(unittest.TestCase):
         # act
         result = html_util.strip_content(element)
         # assert
-        assert_that(str(result), equal_to('<p>foo</p>'))
+        assert_that(str(result), is_('<p>foo</p>'))
 
     def test_contains_children_without_children_attribute_returns_false(self):
         # arrange

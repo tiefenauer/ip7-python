@@ -10,7 +10,6 @@ from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
 from src.dataimport.create_nltk_pos_tagger_german import german_pos_tagger_path
-from src.util import html_util
 from src.util.util import flatten
 
 # german POS tagger
@@ -25,25 +24,6 @@ punctuation_tokens = ['.', '..', '...', ',', ';', ':', '(', ')', '"', '\'', '[',
 punctuation = '?.!/;:()&+'
 
 special_chars_pattern = re.compile('([^A-Za-zäöüéèà\/\- ]*)')
-
-
-def extract_relevant_tags(markup):
-    soup = parse(markup)
-    tags = soup.findAll()
-    tags = (tag for tag in tags if tag.name in html_util.RELEVANT_TAGS)
-    tags = (tag for tag in tags if tag_is_atomic(tag))
-    tags = (remove_strong_and_b_tags(tag) for tag in tags)
-    tags = (html_util.remove_all_attrs(tag) for tag in tags)
-    tags = (html_util.strip_content(tag) for tag in tags)
-    tags = (tag for tag in tags if len(tag.getText()) > 2)
-
-    # return tags
-    # geting unique values from generator is a huge performance bottleneck!
-    seen = set()
-    for tag in tags:
-        if tag not in seen:
-            yield tag
-            seen.add(tag)
 
 
 def tag_is_atomic(tag):

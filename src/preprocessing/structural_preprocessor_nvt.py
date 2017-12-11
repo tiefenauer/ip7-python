@@ -1,5 +1,5 @@
 from src.preprocessing import preproc
-from src.preprocessing.preprocessor import Preprocessor
+from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 
 
 def split_words_by_tag(tags):
@@ -15,11 +15,12 @@ def content_words_to_stems(tagged_word_lists):
         yield [(preproc.stem(word), pos_tag) for (word, pos_tag) in tagged_word_list]
 
 
-class StructuralPreprocessorNVT(Preprocessor):
+class StructuralPreprocessorNVT(RelevantTagsPreprocessor):
 
     def preprocess_single(self, row):
+        relevant_tags = super(StructuralPreprocessorNVT, self).preprocess_single(row)
         # evaluate generator already here because markup might not contain any relevant tags
-        relevant_tags = list(preproc.extract_relevant_tags(row.html))
+        relevant_tags = list(relevant_tags)
         if not relevant_tags:
             return []
         # html to map tag-> ['word1', 'word2', '...'] (1 entry per sentence)

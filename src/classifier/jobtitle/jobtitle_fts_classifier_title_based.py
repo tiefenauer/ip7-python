@@ -12,7 +12,7 @@ class TitleBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
         return title
 
     def title(self):
-        return 'Jobtitle Extractor: FTS (title-tag-based)'
+        return 'Jobtitle Classifier: FTS (title-tag-based)'
 
     def label(self):
         return 'jobtitle-fts-title'

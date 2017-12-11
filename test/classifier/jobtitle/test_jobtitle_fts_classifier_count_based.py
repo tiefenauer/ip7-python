@@ -4,11 +4,11 @@ from hamcrest import *
 
 from src.classifier.jobtitle.jobtitle_fts_classifier_count_based import CountBasedJobtitleFtsClassifier, \
     count_job_names
-from src.preprocessing.fts_preprocessor import FtsPreprocessor
-from test.util.test_util import create_dummy_args, create_dummy_row
+from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
+from test.testutils import create_dummy_args, create_dummy_row
 
 args = create_dummy_args()
-preprocessor = FtsPreprocessor()
+preprocessor = RelevantTagsPreprocessor()
 testee = CountBasedJobtitleFtsClassifier(args)
 
 

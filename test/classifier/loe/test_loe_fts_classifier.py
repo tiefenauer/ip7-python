@@ -5,7 +5,7 @@ from hamcrest import assert_that, contains, is_
 from src.classifier.loe import loe_fts_classifier
 from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
 from src.preprocessing import preproc
-from test.util.test_util import create_dummy_args
+from test.testutils import create_dummy_args
 
 """
 Anstellung 100% als Maurer

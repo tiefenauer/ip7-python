@@ -1,8 +1,8 @@
 from src.preprocessing import preproc
-from src.preprocessing.fts_preprocessor import FtsPreprocessor
+from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 
 
-class LoePreprocessor(FtsPreprocessor):
+class LoePreprocessor(RelevantTagsPreprocessor):
 
     def preprocess_single(self, row):
         title_tag = preproc.create_tag('title', row.title)

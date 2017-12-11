@@ -99,7 +99,7 @@ class FeatureBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
         return None
 
     def title(self):
-        return 'Jobtitle Extractor: FTS (html-tag-based)'
+        return 'Jobtitle Classifier: FTS (html-tag-based)'
 
     def label(self):
         return 'jobtitle-fts-html-tags'

@@ -7,7 +7,7 @@ from src.classifier.jobtitle import jobtitle_structural_classifier_nv
 from src.classifier.jobtitle.jobtitle_structural_classifier_nv import JobtitleStructuralClassifierNV
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
-from test.util.test_util import create_dummy_args, create_dummy_row
+from test.testutils import create_dummy_args, create_dummy_row
 
 args = create_dummy_args()
 preprocessor = StructuralPreprocessorNV()

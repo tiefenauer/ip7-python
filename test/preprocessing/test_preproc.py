@@ -1,21 +1,10 @@
 import unittest
 
 from bs4 import *
-from bs4 import Tag
 from hamcrest import *
 
 from src.preprocessing import preproc as testee
-
-
-def read_sample_file(filename):
-    with open('./resources/' + filename + '.html', 'r', encoding='utf-8') as file:
-        return file.read()
-
-
-def write_extracted_tags(extracted_tags, filename):
-    with open('./resources/' + filename + '_extracted.html', 'w+', encoding='utf-8') as file:
-        for tag in extracted_tags:
-            file.write(str(tag) + '\n')
+from test.testutils import read_sample_file
 
 
 class TestPreprocessing(unittest.TestCase):
@@ -25,7 +14,7 @@ class TestPreprocessing(unittest.TestCase):
         # act
         soup = testee.parse(markup)
         # assert
-        assert_that(soup, equal_to(BeautifulSoup(markup, 'lxml')))
+        assert_that(soup, is_(BeautifulSoup(markup, 'lxml')))
 
     def test_create_tag_creates_tag(self):
         # arrange/act
@@ -157,18 +146,6 @@ class TestPreprocessing(unittest.TestCase):
         assert_that(testee.tag_is_atomic(tag_strong), is_(False))
         assert_that(testee.tag_is_atomic(tag_b), is_(False))
         assert_that(testee.tag_is_atomic(tag_strong_b), is_(False))
-
-    def test_extract_relevant_tags_extracts_relevant_tags(self):
-        # arrange
-        markup = read_sample_file('sample_vacancy')
-        # act
-        result = testee.extract_relevant_tags(markup)
-        extracted_tags = list(result)
-        # write_extracted_tags(extracted_tags, 'sample_vacancy')
-        # assert
-        soup_expected = BeautifulSoup(read_sample_file('sample_vacancy_extracted'), 'html.parser')
-        expected_tags = [child for child in soup_expected.children if type(child) is Tag]
-        assert_that(extracted_tags, equal_to(expected_tags))
 
     def test_remove_strong_and_b_tags_removes_tags(self):
         # arrange

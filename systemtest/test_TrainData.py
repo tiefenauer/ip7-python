@@ -4,6 +4,7 @@ import math
 from hamcrest import assert_that, is_
 from pony.orm import db_session
 
+import test.testutils
 from src.database.TrainData import TrainData
 from src.database.entities_pg import X28_HTML
 from test.util import test_util
@@ -19,7 +20,7 @@ def count_items(testee):
 class TestTrainData(unittest.TestCase):
     def test_no_split_returns_all_rows(self):
         # arrange
-        args = test_util.create_dummy_args()
+        args = test.testutils.create_dummy_args()
         # act
         testee = TrainData(args, X28_HTML)
         # assert
@@ -32,7 +33,7 @@ class TestTrainData(unittest.TestCase):
         # arrange
         split = 0.1
         # act
-        testee = TrainData(test_util.create_dummy_args(split=split), X28_HTML)
+        testee = TrainData(test.testutils.create_dummy_args(split=split), X28_HTML)
         # assert
         assert_that(count_items(testee), is_(math.ceil(train_data_count * split)))
         assert_that(testee.split, is_(int(train_data_count * split)))

@@ -3,6 +3,7 @@ import unittest
 from hamcrest import assert_that, is_
 from pony.orm import db_session
 
+import test.testutils
 from src.database.TestData import TestData
 from src.database.entities_pg import X28_HTML
 from test.util import test_util
@@ -18,7 +19,7 @@ def count_items(testee):
 class TestTestData(unittest.TestCase):
     def test_no_split_returns_no_rows(self):
         # arrange
-        args = test_util.create_dummy_args()
+        args = test.testutils.create_dummy_args()
         # act
         testee = TestData(args, X28_HTML)
         # assert
@@ -31,7 +32,7 @@ class TestTestData(unittest.TestCase):
         # arrange
         split = 0.1
         # act
-        testee = TestData(test_util.create_dummy_args(split=split), X28_HTML)
+        testee = TestData(test.testutils.create_dummy_args(split=split), X28_HTML)
         # assert
         assert_that(count_items(testee), is_(train_data_count - int(train_data_count * split)))
         assert_that(testee.split, is_(int(train_data_count * split)))

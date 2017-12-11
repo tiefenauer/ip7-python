@@ -8,7 +8,7 @@ from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
 from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
 from src.preprocessing import preproc
 from src.util.jobtitle_util import create_gender_variants
-from test.util.test_util import create_dummy_args
+from test.testutils import create_dummy_args
 
 
 def feature_matching(job_name, variant_name, tag_name, pos_counts):

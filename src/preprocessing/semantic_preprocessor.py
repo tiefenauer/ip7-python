@@ -1,8 +1,8 @@
 from src.preprocessing import preproc
-from src.preprocessing.preprocessor import Preprocessor
+from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 
 
-class SemanticPreprocessor(Preprocessor):
+class SemanticPreprocessor(RelevantTagsPreprocessor):
     def __init__(self, raw_data, remove_stopwords=False):
         super(SemanticPreprocessor, self).__init__(raw_data)
         self.remove_stopwords = remove_stopwords
@@ -13,7 +13,7 @@ class SemanticPreprocessor(Preprocessor):
             words = preproc.to_words(row.plaintext)
         # Fetchflow Data needs to be reduced to relevant tags and then the words need to be extracted from there
         else:
-            relevant_tags = preproc.extract_relevant_tags(row.html)
+            relevant_tags = super(SemanticPreprocessor, self).preprocess_single(row)
             words = preproc.to_words(' '.join(tag.getText() for tag in relevant_tags))
         words = preproc.remove_punctuation(words)
         if self.remove_stopwords:
