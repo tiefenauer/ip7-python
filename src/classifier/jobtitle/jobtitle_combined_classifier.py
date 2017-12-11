@@ -1,8 +1,8 @@
-from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.classifier.tag_classifier import TagClassifier
 
 
-class CombinedJobtitleClassifier(FtsClassifier, JobtitleClassifier):
+class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
     def classify(self, tags):
         pass
 

@@ -1,9 +1,9 @@
 import math
 
-from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.jobtitle import jobtitle_fts_features
-from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
+from src.classifier.tag_classifier import TagClassifier
 from src.dataimport.known_jobs import KnownJobs
 from src.util.jobtitle_util import count_variant, create_variants
 
@@ -79,7 +79,7 @@ job_name_variants = [(job_name, create_variants(job_name)) for job_name in Known
 #                          for job_class in Job_Class.select()]
 
 
-class FeatureBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
+class FeatureBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
     """Predict a jobtitle by performing a full text search (FTS) on the processed data. The text of the processed data
      is searched for occurrences of known job names, including variants (such as male/female form, hyphenated forms
      etc...).

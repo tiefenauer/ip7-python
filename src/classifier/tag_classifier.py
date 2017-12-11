@@ -4,11 +4,11 @@ from src.classifier.classifier import Classifier
 from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 
 
-class FtsClassifier(Classifier):
+class TagClassifier(Classifier):
     """An FTS classifier predicts the class by performing a full text search (FTS) on the processed data."""
 
     def __init__(self, args, preprocessor=RelevantTagsPreprocessor):
-        super(FtsClassifier, self).__init__(args, preprocessor)
+        super(TagClassifier, self).__init__(args, preprocessor)
 
     @abstractmethod
     def classify(self, processed_data):

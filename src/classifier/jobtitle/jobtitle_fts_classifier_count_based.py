@@ -1,5 +1,5 @@
-from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.classifier.tag_classifier import TagClassifier
 from src.dataimport.known_jobs import KnownJobs
 from src.util.jobtitle_util import create_gender_variants, count_variant
 
@@ -15,7 +15,7 @@ def count_job_names(tags, job_names):
             yield (count, job_name)
 
 
-class CountBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
+class CountBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
     """Predict a jobtitle by performing a full text search (FTS) on the processed data. The processed data is searched
     for occurrences of known job names, including variants (such as male/female form, hyphenated forms etc...).
     The job name with the highest occurrence is used as extracted job title."""

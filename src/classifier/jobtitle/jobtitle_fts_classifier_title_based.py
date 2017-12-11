@@ -1,8 +1,8 @@
-from src.classifier.fts_classifier import FtsClassifier
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.classifier.tag_classifier import TagClassifier
 
 
-class TitleBasedJobtitleFtsClassifier(FtsClassifier, JobtitleClassifier):
+class TitleBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
     """Extracts a jobtitle by only looking at the title tag of a DOM. The title tag is used as extracted information."""
 
     def classify(self, tags):

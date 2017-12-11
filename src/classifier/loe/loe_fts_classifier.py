@@ -1,7 +1,7 @@
 import logging
 import re
 
-from src.classifier.fts_classifier import FtsClassifier
+from src.classifier.tag_classifier import TagClassifier
 from src.classifier.loe.loe_classifier import LoeClassifier
 from src.classifier.loe.loe_fts_features import LoeFtsFeatures
 from src.preprocessing.loe_preprocessor import LoePreprocessor
@@ -61,7 +61,7 @@ def find_loe_patterns_by_tag(tags):
             yield (result.strip(), tag.name)
 
 
-class LoeFtsClassifier(FtsClassifier, LoeClassifier):
+class LoeFtsClassifier(TagClassifier, LoeClassifier):
     """Predict level of employment (LOE) by performing a full text search (FTS) on the processed data for numeric
     information."""
 
