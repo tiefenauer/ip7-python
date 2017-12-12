@@ -5,6 +5,8 @@ pg = Database()
 
 class Fetchflow_HTML(pg.Entity):
     html = Required(str)
+    plaintext = Optional(str)
+    preprocessed = Optional(bool)
     fetchflow_id = Required(int)
 
 

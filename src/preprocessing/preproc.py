@@ -20,7 +20,7 @@ stopwords_de = set(stopwords.words('german'))
 stemmer = SnowballStemmer('german', ignore_stopwords=True)
 xml_parser = etree.HTMLParser(strip_cdata=False)
 punctuation_tokens = ['.', '..', '...', ',', ';', ':', '(', ')', '"', '\'', '[', ']',
-                      '{', '}', '?', '!', '-', '–', '+', '*', '--', '\'\'', '``']
+                      '{', '}', '?', '!', '-', '–', '+', '*', '--', '\'\'', '``', '•']
 punctuation = '?.!/;:()&+'
 
 special_chars_pattern = re.compile('([^A-Za-zäöüéèà\/\- ]*)')
