@@ -7,7 +7,7 @@ import nltk
 from bs4 import BeautifulSoup, NavigableString
 from lxml import etree
 from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
+from nltk.stem.snowball import GermanStemmer
 
 from src.dataimport.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.util.util import flatten
@@ -17,7 +17,7 @@ with open(german_pos_tagger_path, 'rb') as f:
     german_pos_tagger = pickle.load(f)
 
 stopwords_de = set(stopwords.words('german'))
-stemmer = SnowballStemmer('german', ignore_stopwords=True)
+stemmer = GermanStemmer(ignore_stopwords=True)
 xml_parser = etree.HTMLParser(strip_cdata=False)
 punctuation_tokens = ['.', '..', '...', ',', ';', ':', '(', ')', '"', '\'', '[', ']',
                       '{', '}', '?', '!', '-', '–', '+', '*', '--', '\'\'', '``', '•']

@@ -1,16 +1,21 @@
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
+from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import job_name_variants
 from src.classifier.tag_classifier import TagClassifier
 from src.preprocessing import preproc
-from src.preprocessing.preproc import german_pos_tagger
-
-german_pos_tagger
 
 
-def pos_tag_tags(tags):
-    for tag in tags:
-        words = preproc.to_words(tag.getText())
-        tagged_words = german_pos_tagger.tag(words)
-        yield tag.name, tagged_words
+def find_known_jobs(words_per_tag, known_jobs=job_name_variants):
+    pass
+
+
+def to_pos_tagged_words(html_tags):
+    words_per_tag = to_word_list(html_tags)
+    for tag_name, words in words_per_tag:
+        yield tag_name, preproc.pos_tag(words)
+
+
+def to_word_list(html_tags):
+    return ((tag.name, preproc.to_words(tag.getText())) for tag in html_tags)
 
 
 class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
@@ -31,9 +36,9 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         - hit is expanded with
     """
 
-    def classify(self, tags):
-        tagged_tags = pos_tag_tags(tags)
-        for tag_name, tagged_words in tagged_tags:
+    def classify(self, html_tags):
+        words_per_tag = to_pos_tagged_words(html_tags)
+        for tag_name, tagged_words in words_per_tag:
             print(tag_name, tagged_words)
         return None
 
