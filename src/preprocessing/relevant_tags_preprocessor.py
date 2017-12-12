@@ -18,7 +18,8 @@ class RelevantTagsPreprocessor(TagsPreprocessor):
         relevant_tags = []
         seen = set()
         for tag in tags:
-            if tag not in seen:
+            text = tag.getText()
+            if text not in seen:
                 relevant_tags.append(tag)
-                seen.add(tag)
+                seen.add(text)
         return relevant_tags

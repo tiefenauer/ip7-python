@@ -59,4 +59,5 @@ class TrainingSentences(object):
     def __iter__(self):
         for row in self.processed_rows:
             # evaluate generator
-            yield list(row.processed)
+            for sent in row.processed:
+                yield sent
