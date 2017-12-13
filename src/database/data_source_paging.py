@@ -14,21 +14,10 @@ class PagingDataSource(DataSource):
     This means that this DataSource will contain ALL rows!
     """
 
-    def __init__(self, args, Entity):
-        super(PagingDataSource, self).__init__(args, Entity)
-        # disable data splitting
-        self.split = 1.0
-        self.num_rows = self.num_total
-
     @db_session
     def __iter__(self):
-        num_pages = int(math.ceil(self.num_rows / pagesize))
-        query = self.Entity.select(lambda row: self.id < 0 or row.id == self.id)
+        num_pages = int(math.ceil(self.count / pagesize))
         page_numbers = (i for i in range(1, num_pages))
-        for page in (query.page(i, pagesize=pagesize) for i in page_numbers):
+        for page in (self.query.page(i, pagesize=pagesize) for i in page_numbers):
             for row in page:
                 yield row
-
-    @db_session
-    def calc_num_rows(self, num_total, split):
-        return self.Entity.select(lambda row: self.id < 0 or row.id == self.id).count()

@@ -25,8 +25,7 @@ class TestTestData(unittest.TestCase):
         # assert
         assert_that(count_items(testee), is_(0))
         assert_that(testee.split, is_(train_data_count))
-        assert_that(testee.num_total, is_(train_data_count))
-        assert_that(testee.num_rows, is_(0))
+        assert_that(testee.count, is_(train_data_count))
 
     def test_with_split_returns_fraction_of_rows(self):
         # arrange
@@ -36,5 +35,4 @@ class TestTestData(unittest.TestCase):
         # assert
         assert_that(count_items(testee), is_(train_data_count - int(train_data_count * split)))
         assert_that(testee.split, is_(int(train_data_count * split)))
-        assert_that(testee.num_total, is_(train_data_count))
-        assert_that(testee.num_rows, is_(testee.num_total - testee.split))
+        assert_that(testee.count, is_(train_data_count))

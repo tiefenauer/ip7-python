@@ -41,10 +41,10 @@ classifier = JobtitleSemanticClassifierRF(args, preprocessor)
 evaluation = SemanticRFEvaluation(args, classifier)
 
 if __name__ == '__main__':
-    processed_train_data = preprocessor.preprocess(data_train, data_train.num_rows)
-    processed_test_data = preprocessor.preprocess(data_test, data_test.num_rows)
-    trainDataVecs = classifier.create_average_vectors(processed_train_data, data_train.num_rows)
-    testDataVecs = classifier.create_average_vectors(processed_test_data, data_test.num_rows)
+    processed_train_data = preprocessor.preprocess(data_train, data_train.count)
+    processed_test_data = preprocessor.preprocess(data_test, data_test.count)
+    trainDataVecs = classifier.create_average_vectors(processed_train_data, data_train.count)
+    testDataVecs = classifier.create_average_vectors(processed_test_data, data_test.count)
     args.split = 0.001
     trainDataLabels = [row.title for row in X28TrainData(args)]
     args.split = 0.999
@@ -57,15 +57,15 @@ if __name__ == '__main__':
     log.info('evaluate_rf: evaluating random forest...')
     args.split = 0.999
     data_test = X28TestData(args)
-    processed_test_data = preprocessor.preprocess(data_test, data_test.num_rows)
+    processed_test_data = preprocessor.preprocess(data_test, data_test.count)
     for i, (row, predicted_class) in enumerate(zip(processed_test_data, result), 1):
-        sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
+        sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.count)
         results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
 
     # log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     # for i, row in enumerate(processed_test_data, 1):
     #     predicted_class = classifier.classify(row.processed)
-    #     sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.num_rows)
+    #     sc_str, sc_tol, sc_lin = evaluation.update(row.title, predicted_class, i, data_test.count)
     #     results.update_classification(row, predicted_class, sc_str, sc_tol, sc_lin)
     evaluation.stop()
     log.info('evaluate_avg: done!')

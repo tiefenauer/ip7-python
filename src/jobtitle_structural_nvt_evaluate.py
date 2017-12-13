@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     # some more evaluation with NLTK
     data_test = X28TestData(args)
-    data_test_processed = preprocessor.preprocess(data_test, data_test.num_rows)
+    data_test_processed = preprocessor.preprocess(data_test, data_test.count)
     test_set = ((classifier.extract_features(row.processed), row.title) for row in data_test_processed)
     nltk_accuracy = nltk.classify.accuracy(classifier.model, test_set)
     log.info('nltk.classify.accuracy: {}'.format(nltk_accuracy))

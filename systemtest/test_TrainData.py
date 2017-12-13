@@ -1,13 +1,12 @@
+import math
 import unittest
 
-import math
 from hamcrest import assert_that, is_
 from pony.orm import db_session
 
 import test.testutils
 from src.database.TrainData import TrainData
 from src.database.entities_pg import X28_HTML
-from test.util import test_util
 
 with db_session:
     train_data_count = X28_HTML.select().count()
@@ -26,8 +25,7 @@ class TestTrainData(unittest.TestCase):
         # assert
         assert_that(count_items(testee), is_(train_data_count))
         assert_that(testee.split, is_(train_data_count))
-        assert_that(testee.num_total, is_(train_data_count))
-        assert_that(testee.num_rows, is_(train_data_count))
+        assert_that(testee.count, is_(train_data_count))
 
     def test_with_split_returns_fraction_of_rows(self):
         # arrange
@@ -37,5 +35,4 @@ class TestTrainData(unittest.TestCase):
         # assert
         assert_that(count_items(testee), is_(math.ceil(train_data_count * split)))
         assert_that(testee.split, is_(int(train_data_count * split)))
-        assert_that(testee.num_total, is_(train_data_count))
-        assert_that(testee.num_rows, is_(math.ceil(train_data_count * split)))
+        assert_that(testee.count, is_(train_data_count))

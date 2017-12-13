@@ -37,7 +37,7 @@ file_clf_random_forest = os.path.join(data_dir, 'clf_random_forest.pkl')
 
 
 def preprocess(labeled_data):
-    for row in tqdm(labeled_data, total=labeled_data.num_rows, unit=' rows'):
+    for row in tqdm(labeled_data, total=labeled_data.count, unit=' rows'):
         relevant_tags = preproc.extract_relevant_tags(row.html)
         vacancy_text = ' '.join((tag.getText() for tag in relevant_tags))
         words = preproc.remove_stop_words(vacancy_text)

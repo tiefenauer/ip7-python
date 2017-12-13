@@ -5,21 +5,21 @@ from pony.orm import db_session
 
 class DataSource(ABC):
     @db_session
-    def __init__(self, args, entity):
-        self.Entity = entity
-        # calculate total number of available rows
-        self.id = args.id if hasattr(args, 'id') and args.id is not None else -1000
-        num_total = self.Entity.select(lambda d: self.id < 0 or d.id == self.id).count()
-        self.num_total = num_total
-        # calculate effective number of rows with limit and offset
-        split = args.split if hasattr(args, 'split') and args.split else 1
-        self.split = int(split * self.num_total)
-        self.num_rows = self.calc_num_rows(num_total, split)
+    def __init__(self, args, Entity):
+        self.Entity = Entity
+        self.query = self.create_query(args)
+        self.count = self.query.count()
 
-    @abstractmethod
+    @db_session
     def __iter__(self):
-        pass
+        for row in self.query:
+            yield row
 
-    @abstractmethod
-    def calc_num_rows(self, num_total, split):
-        """calculate number of rows to process with current splitting"""
+    def create_query(self, args):
+        """create Pony ORM query"""
+        where_clause = self.create_where_clause(args)
+        return self.Entity.select(where_clause)
+
+    def create_where_clause(self, args):
+        id = args.id if hasattr(args, 'id') and args.id is not None else -1000
+        return lambda row: id < 0 or row.id == id
