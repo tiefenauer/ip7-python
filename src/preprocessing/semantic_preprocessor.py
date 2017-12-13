@@ -1,4 +1,3 @@
-from src.database.entities_pg import Fetchflow_HTML
 from src.preprocessing import preproc
 from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 

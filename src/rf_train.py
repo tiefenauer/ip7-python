@@ -8,12 +8,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm
 
-from src.preprocessing import preproc
 from src.database.X28TestData import X28TestData
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.jobtitle.jobtitle_classification_scorer_linear import LinearJobtitleClassificationScorer
 from src.evaluation.jobtitle.jobtitle_classification_scorer_strict import StrictJobtitleClassificationScorer
 from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
+from src.preprocessing import preproc
 from src.util.log_util import log_setup
 
 log_setup()

@@ -3,7 +3,6 @@ import logging
 import gensim
 
 from src.classifier.jobtitle.jobtitle_semantic_classifier import JobtitleSemanticClassifier
-from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 

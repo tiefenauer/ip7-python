@@ -1,9 +1,9 @@
 import logging
 import re
 
-from src.classifier.tag_classifier import TagClassifier
 from src.classifier.loe.loe_classifier import LoeClassifier
 from src.classifier.loe.loe_fts_features import LoeFtsFeatures
+from src.classifier.tag_classifier import TagClassifier
 from src.preprocessing.loe_preprocessor import LoePreprocessor
 
 log = logging.getLogger(__name__)

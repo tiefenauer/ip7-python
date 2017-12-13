@@ -1,5 +1,7 @@
 from abc import abstractmethod
 
+from pony.orm import db_session
+
 from src.database.data_source import DataSource
 
 
@@ -8,6 +10,7 @@ class SplitDataSource(DataSource):
     is then used. Which par that is depends on the implementing class
     """
 
+    @db_session
     def __init__(self, args, Entity):
         super(SplitDataSource, self).__init__(args, Entity)
         # calculate effective number of rows with limit and offset
