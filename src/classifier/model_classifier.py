@@ -74,7 +74,7 @@ class ModelClassifier(Classifier):
 
     @abstractmethod
     def train_model(self, train_data):
-        """train classifier with some given data"""
+        """train classifier with suitable given data"""
         return
 
     @abstractmethod

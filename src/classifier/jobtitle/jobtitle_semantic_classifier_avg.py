@@ -19,8 +19,8 @@ class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
             return next(iter(top10))[0]
         return None
 
-    def train_model(self, train_data):
-        sentences = TrainingSentences(self.preprocessor(train_data))
+    def train_model(self, sentences):
+        """Trains a Word2Vec model using the given pre-processed sentences (list of list of words)"""
         model = self.train_w2v_model(sentences)
         return model
 
@@ -40,23 +40,3 @@ class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
 
     def label(self):
         return 'semantic_avg'
-
-
-class TrainingSentences(object):
-    """helper class to train Word2Vec model using pre-processed data
-    This class is needed because Word2Vec expects an iterator returning a sentence as a list of words in each iteration
-    The default SemenaticProcessor information however is implemented as a generator returning the whole row and the
-    tokenized words as a generator in each iteration. This behavior is needed in evaluating because there the expected
-    target label is needed.
-    To train the Word2Vec we expects an iterator (not a generator) returning a list of tokenized words (not a generator)
-    for training!
-    """
-
-    def __init__(self, processed_rows):
-        self.processed_rows = processed_rows
-
-    def __iter__(self):
-        for row in self.processed_rows:
-            # evaluate generator
-            for sent in row.processed:
-                yield sent
