@@ -3,10 +3,25 @@ import unittest
 from hamcrest import contains, assert_that, empty, is_, only_contains
 
 from src.classifier.jobtitle import jobtitle_fts_combined
+from src.classifier.jobtitle.jobtitle_fts_combined import CombinedJobtitleClassifier
 from src.preprocessing.preproc import create_tag
+from test import testutils
+
+args = testutils.create_dummy_args()
+testee = CombinedJobtitleClassifier(args)
 
 
 class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
+
+    def test_classify_with_improvable_hit(self):
+        # arrange
+        html_tags = [
+            create_tag('h2', 'Polymechaniker / CNC Fräser 80% - 100% (m/w)')
+        ]
+        # act
+        result = testee.classify(html_tags)
+        # assert
+        assert_that(result, is_('Polymechaniker / CNC Fräser'))
 
     def test_find_positions_with_no_match_returns_empty_list(self):
         # arrange
@@ -130,6 +145,25 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         result = jobtitle_fts_combined.improve_search_result(tagged_words, matching_job, position)
         # assert
         assert_that(result, is_(matching_job))
+
+    def test_improve_search_result_more_on_right_possible_returns_matchin_job(self):
+        # arrange
+        tagged_words = [('Polymechaniker', 'NE'), ('/', '$('), ('CNC', 'NE'), ('Fräser', 'NE'), ('80', 'CARD'),
+                        ('%', 'NN'), ('-', '$('), ('100', 'CARD'), ('%', 'NN'), ('(', '$('), ('m/w', 'XY'), (')', '$(')]
+        # act
+        result = jobtitle_fts_combined.improve_search_result(tagged_words, 'Polymechaniker', 0)
+        # assert
+        assert_that(result, is_('Polymechaniker / CNC Fräser'))
+
+    def test_improve_search_result_more_on_left_and_right(self):
+        # arrange
+        tagged_words = [('Team', 'NN'), ('Head', 'NE'), ('Compliance', 'FM'), ('Officer', 'FM'), ('Premium', 'FM'),
+                        ('Clients', 'FM'), ('Switzerland', 'FM'), ('(', '$('), ('80-100', 'CARD'), ('%', '$('),
+                        (')', '$(')]
+        # act
+        result = jobtitle_fts_combined.improve_search_result(tagged_words, 'Compliance Officer', 2)
+        # assert
+        assert_that(result, is_('Team Head Compliance Officer Premium Clients Switzerland'))
 
     def test_to_sentences_map_one_sentence_returns_map_tag_name_sentences(self):
         # arrange

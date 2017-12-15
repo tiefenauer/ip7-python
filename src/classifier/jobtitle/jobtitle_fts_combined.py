@@ -1,6 +1,9 @@
-from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based, jobtitle_features_combined
+import collections
+
+from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 # from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import job_name_variants
+from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesCombined
 from src.classifier.tag_classifier import TagClassifier
 from src.preprocessing import preproc
 
@@ -40,9 +43,25 @@ def find_known_jobs(html_tags, known_job_variants):
 
 def improve_search_result(tagged_words, matching_job, position):
     """improve search result by evaluating adjacent POS tags"""
-    improved_job_name = matching_job
     # evaluate to the left
-    return improved_job_name
+    tokens = collections.deque([matching_job])
+    i = position - 1
+    while 0 <= i < len(tagged_words):
+        word, pos_tag = tagged_words[i]
+        if pos_tag[0] in ['N', '$', 'F'] and word != '(' or pos_tag.startswith('ADJ'):
+            tokens.appendleft(word)
+        else:
+            break
+        i -= 1
+    i = position + 1
+    while 0 <= i < len(tagged_words):
+        word, pos_tag = tagged_words[i]
+        if pos_tag[0] in ['N', '$', 'F'] and word != '(' or pos_tag.startswith('ADJ'):
+            tokens.append(word)
+        else:
+            break
+        i += 1
+    return ' '.join(tokens)
 
 
 def to_sentences_map(html_tags):
@@ -83,16 +102,18 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
     """
 
     def classify(self, html_tags):
-        # find occurrences of known jobs (including variants) in HTML tags together with positional and POS informatoin
+        # find occurrences of known jobs (including variants) in HTML tags together with positional and POS information
         search_results = find_known_jobs(html_tags, jobtitle_fts_classifier_htmltag_based.job_name_variants)
         features_list = []
-        for tag_position, html_tag, variant, positions, tagged_words in search_results:
-            features = jobtitle_features_combined.create_features(tag_position, html_tag, variant, positions,
-                                                                  tagged_words)
+        for tag_position, html_tag, variant, position, tagged_words in search_results:
+            features = JobtitleFeaturesCombined(tag_position, variant, html_tag, tagged_words, position)
             features_list.append(features)
         if len(features_list) > 0:
             best_match = sorted(features_list)[0]
-            return improve_search_result(best_match)
+            tagged_words = best_match.tagged_words
+            matching_job = best_match.job_name
+            position = best_match.min_job_position
+            return improve_search_result(tagged_words, matching_job, position)
         return None
 
     def title(self):

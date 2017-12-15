@@ -31,7 +31,3 @@ class JobtitleFeaturesCombined(object):
     def __eq__(self, other):
         return (self.tag_position, self.job_name, self.html_tag, self.tagged_words, self.positions) == \
                (other.tag_position, other.job_name, other.html_tag, other.tagged_words, other.positions)
-
-
-def create_features(tag_position, html_tag, variant, positions, tagged_words):
-    return JobtitleFeaturesCombined()
