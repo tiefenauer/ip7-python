@@ -45,6 +45,14 @@ def improve_search_result(tagged_words, matching_job, position):
     return improved_job_name
 
 
+def to_sentences_map(html_tags):
+    for tag in html_tags:
+        tag_name = tag.name
+        tag_sentences = preproc.to_sentences(tag.getText())
+        for sent in tag_sentences:
+            yield tag_name, sent
+
+
 def to_pos_tagged_words(html_tags):
     words_per_tag = to_word_list(html_tags)
     for tag_name, words in words_per_tag:

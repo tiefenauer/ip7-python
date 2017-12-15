@@ -145,7 +145,40 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             ('p', ['baz', 'baq'])
         ))
 
-    def test_to_pos_tagged_words_returns_map_tag_word_pos_tag(self):
+    def test_to_sentences_one_sentence_returns_map_tag_name_sentences(self):
+        # arrange
+        html_tags = [
+            create_tag('h1', 'Wir suchen einen Geschäftsführer.'),
+            create_tag('h2', 'Willst du dich bewerben?'),
+            create_tag('p', 'Erfahrung wird überbewertet!')
+        ]
+        # act
+        result = jobtitle_fts_combined.to_sentences_map(html_tags)
+        result = list(result)
+        # asser
+        assert_that(result, only_contains(
+            ('h1', 'Wir suchen einen Geschäftsführer.'),
+            ('h2', 'Willst du dich bewerben?'),
+            ('p', 'Erfahrung wird überbewertet!')
+        ))
+
+    def test_to_sentences_multi_sentence_returns_one_entry_per_sentence(self):
+        # arrange
+        html_tags = [
+            create_tag('h1', 'Wir suchen einen Geschäftsführer. Willst du dich bewerben?'),
+            create_tag('p', 'Erfahrung wird überbewertet!')
+        ]
+        # act
+        result = jobtitle_fts_combined.to_sentences_map(html_tags)
+        result = list(result)
+        # asser
+        assert_that(result, only_contains(
+            ('h1', 'Wir suchen einen Geschäftsführer.'),
+            ('h1', 'Willst du dich bewerben?'),
+            ('p', 'Erfahrung wird überbewertet!')
+        ))
+
+    def test_to_pos_tagged_words_one_sentence_returns_map_of_tag_to_pos_tagged_sentences(self):
         # arrange
         html_tags = [
             create_tag('h1', 'Wir suchen einen Geschäftsführer'),
@@ -157,4 +190,18 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         assert_that(result, contains(
             ('h1', [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]),
             ('p', [('Erfahrung', 'NN'), ('wird', 'VAFIN'), ('überbewertet', 'VVPP')])
+        ))
+
+    def test_to_pos_tagged_words_compound_word(self):
+        # arrange
+        html_tags = [
+            create_tag('h2', 'Polymechaniker / CNC Fräser 80% - 100% (m/w)')
+        ]
+        # act
+        result = jobtitle_fts_combined.to_pos_tagged_words(html_tags)
+        result = list(result)
+        # assert
+        assert_that(result, contains(
+            ('h2', [('Polymechaniker', 'NE'), ('/', '$('), ('CNC', 'NE'), ('Fräser', 'NE'), ('80', 'CARD'), ('%', 'NN'),
+                    ('-', '$('), ('100', 'CARD'), ('%', 'NN'), ('(', '$('), ('m/w', 'XY'), (')', '$(')])
         ))
