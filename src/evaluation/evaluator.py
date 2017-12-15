@@ -31,7 +31,7 @@ class Evaluator(object):
         self.plotter = EvaluationPlotter(self)
 
     def evaluate(self, data_test):
-        num_total = data_test.num_total
+        num_total = data_test.count
         num_processed = 0
         num_classified = 0
 

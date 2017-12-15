@@ -11,7 +11,7 @@ class Preprocessor(ABC):
     def __init__(self, raw_data=None):
         if raw_data:
             self.raw_data = raw_data
-            self.num_rows = raw_data.num_rows
+            self.num_rows = raw_data.count
         else:
             self.raw_data = []
             self.num_rows = 0

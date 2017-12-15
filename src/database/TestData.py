@@ -1,14 +1,13 @@
-import math
-
-from src.database.data_source_limit_offset import LimitOffsetDataSource
+from src.database.data_source_split import SplitDataSource
 
 
-class TestData(LimitOffsetDataSource):
-    def __init__(self, args, Entity):
-        super(TestData, self).__init__(args, Entity)
+class TestData(SplitDataSource):
 
-    def create_cursor(self):
-        return self.Entity.select(lambda d: self.id < 0 or d.id == self.id)[self.split:self.num_total]
+    def row_from(self, count, split):
+        return int(count * (split or 1))
 
-    def calc_num_rows(self, num_total, split):
-        return num_total - math.floor(num_total * split)
+    def row_to(self, count, split):
+        return count
+
+    def num_rows(self, split):
+        return self.count - self.row_from(self.count, split)

@@ -6,7 +6,6 @@ import nltk
 from src.classifier.jobtitle.jobtitle_structural_classifier_nv import JobtitleStructuralClassifierNV
 from src.database.X28TestData import X28TestData
 from src.evaluation.jobtitle.evaluator_jobtitle_structural_nv import StructuralNVEvaluator
-from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from src.util.log_util import log_setup
 
 log_setup()
@@ -40,7 +39,7 @@ if __name__ == '__main__':
 
     # some more evaluation with NLTK
     data_test = X28TestData(args)
-    data_test_processed = preprocessor.preprocess(data_test, data_test.num_rows)
+    data_test_processed = preprocessor.preprocess(data_test, data_test.count)
     test_set = ((classifier.extract_features(row.processed), row.title) for row in data_test_processed)
     nltk_accuracy = nltk.classify.accuracy(classifier.model, test_set)
     log.info('nltk.classify.accuracy: {}'.format(nltk_accuracy))

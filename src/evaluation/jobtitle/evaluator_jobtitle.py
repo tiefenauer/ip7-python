@@ -1,7 +1,7 @@
+from src.evaluation.evaluator import Evaluator
 from src.evaluation.jobtitle.jobtitle_classification_scorer_linear import LinearJobtitleClassificationScorer
 from src.evaluation.jobtitle.jobtitle_classification_scorer_strict import StrictJobtitleClassificationScorer
 from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
-from src.evaluation.evaluator import Evaluator
 
 
 class JobtitleEvaluator(Evaluator):

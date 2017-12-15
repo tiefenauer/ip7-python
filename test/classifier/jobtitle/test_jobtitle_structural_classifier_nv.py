@@ -77,10 +77,10 @@ class TestJobtitleStructuralClassifierNV(unittest.TestCase):
 
     def test_save_load(self):
         # arrange
+        testee.filename = 'test.pickle'
         data_train = X28TrainData(create_dummy_args(split=0.00001))
         testee.train_classifier(data_train)
         # act
-        testee.filename = 'test.pickle'
         path = testee.save_model()
         testee.filename = path
         model = testee.load_model()
