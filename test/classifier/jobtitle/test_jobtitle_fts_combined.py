@@ -69,7 +69,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
                         ('Geschäftsführerin', 'NN')
                         ]
         # act
-        result = jobtitle_fts_combined.find_variant_positions(tagged_words, ['Geschäftsführer', 'Geschäftsführerin'])
+        result = jobtitle_fts_combined.find_job_names_positions(tagged_words, ['Geschäftsführer', 'Geschäftsführerin'])
         result = list(result)
         # assert
         assert_that(result, only_contains(
@@ -77,31 +77,43 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             ('Geschäftsführerin', [6, 7])
         ))
 
-    def test_find_variants_in_tags_returns_variants_with_positions_and_tagged_words(self):
+    def test_find_job_names_one_match_returns_jobname_with_positions_and_tagged_words(self):
         # arrange
-        tagged_words_1 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
-        tagged_words_2 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('eine', 'ART'), ('Geschäftsführerin', 'NN')]
-        tagged_words_3 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
-                          ('oder', 'KON'), ('eine', 'ART'), ('Geschäftsführerin', 'NN')]
-        tagged_words_4 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
-                          ('und', 'KON'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
-        pos_tagged_html_tags = [
-            ('h1', tagged_words_1),
-            ('h2', tagged_words_2),
-            ('h3', tagged_words_3),
-            ('h4', tagged_words_4),
-        ]
-        variants = ['Geschäftsführer', 'Geschäftsführerin']
+        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
+        job_names = ['Geschäftsführer', 'Geschäftsführerin']
         # act
-        result = jobtitle_fts_combined.find_variants_in_tags(pos_tagged_html_tags, variants)
+        result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
         result = list(result)
         # assert
         assert_that(result, only_contains(
-            (0, 'h1', 'Geschäftsführer', [3], tagged_words_1),
-            (1, 'h2', 'Geschäftsführerin', [3], tagged_words_2),
-            (2, 'h3', 'Geschäftsführer', [3], tagged_words_3),
-            (2, 'h3', 'Geschäftsführerin', [6], tagged_words_3),
-            (3, 'h4', 'Geschäftsführer', [3, 6], tagged_words_4)
+            ('Geschäftsführer', [3], tagged_words),
+        ))
+
+    def test_find_job_names_multi_different_matches_returns_all_jobname_with_positions_and_tagged_words(self):
+        # arrange
+        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
+                        ('oder', 'KON'), ('eine', 'ART'), ('Geschäftsführerin', 'NN')]
+        job_names = ['Geschäftsführer', 'Geschäftsführerin']
+        # act
+        result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
+        result = list(result)
+        # assert
+        assert_that(result, only_contains(
+            ('Geschäftsführer', [3], tagged_words),
+            ('Geschäftsführerin', [6], tagged_words),
+        ))
+
+    def test_find_job_names_multi_same_matches_returns_jobname_with_all_positions(self):
+        # arrange
+        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
+                        ('und', 'KON'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
+        job_names = ['Geschäftsführer', 'Geschäftsführerin']
+        # act
+        result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
+        result = list(result)
+        # assert
+        assert_that(result, only_contains(
+            ('Geschäftsführer', [3, 6], tagged_words)
         ))
 
     def test_find_known_jobs_returns_list_of_matches(self):

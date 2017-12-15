@@ -13,22 +13,21 @@ def find_positions(tagged_words, search_word):
     return (i for (i, (word, tag)) in enumerate(tagged_words) if word == search_word)
 
 
-def find_variant_positions(tagged_words, job_variants):
+def find_job_names_positions(tagged_words, job_names):
     """return positions of all job variants in tagged_words"""
-    for variant in job_variants:
-        positions = list(find_positions(tagged_words, variant))
+    for job_name in job_names:
+        positions = list(find_positions(tagged_words, job_name))
         if positions:
-            yield variant, positions
+            yield job_name, positions
 
 
-def find_variants_in_tags(pos_tagged_html_tags, job_variants):
+def find_job_names(pos_tagged_words, job_names):
     """search for occurrences of job variants in pos_tagged_html_tags
-    Result is returned as 3-tuple: (html_tag, job_variant, [position1, position2, ...])
+    Result is returned as 3-tuple: (job_name, [position1, position2, ...], [('word1', 'TAG), ('word2', 'TAG'), ...])
     """
-    for tag_index, (html_tag, pos_tagged_words) in enumerate(pos_tagged_html_tags):
-        variant_positions = find_variant_positions(pos_tagged_words, job_variants)
-        for variant, positions in variant_positions:
-            yield tag_index, html_tag, variant, positions, pos_tagged_words
+    jobname_positions = find_job_names_positions(pos_tagged_words, job_names)
+    for job_name, positions in jobname_positions:
+        yield job_name, positions, pos_tagged_words
 
 
 def find_known_jobs(html_tags, known_job_variants):
@@ -36,9 +35,10 @@ def find_known_jobs(html_tags, known_job_variants):
     # evaluate generator already here because it is iterated over once for each job name
     pos_tagged_html_tags = list(pos_tagged_html_tags)
     for job_name, job_variants in known_job_variants:
-        search_results_for_job = find_variants_in_tags(pos_tagged_html_tags, job_variants)
-        for tag_index, html_tag, variant, positions, tagged_words in search_results_for_job:
-            yield tag_index, html_tag, variant, positions, tagged_words
+        for tag_index, (tag_name, pos_tagged_words) in enumerate(pos_tagged_html_tags):
+            search_results_for_job = find_job_names(pos_tagged_words, job_variants)
+            for variant, positions, tagged_words in search_results_for_job:
+                yield tag_index, tag_name, variant, positions, tagged_words
 
 
 def improve_search_result(tagged_words, matching_job, position):
