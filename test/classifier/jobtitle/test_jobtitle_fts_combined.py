@@ -131,21 +131,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # assert
         assert_that(result, is_(matching_job))
 
-    def test_to_word_list_returns_map_tag_word_list(self):
-        # arrange
-        html_tags = [
-            create_tag('h1', 'Foo bar'),
-            create_tag('p', 'baz baq')
-        ]
-        # act
-        result = jobtitle_fts_combined.to_word_list(html_tags)
-        # assert
-        assert_that(result, contains(
-            ('h1', ['Foo', 'bar']),
-            ('p', ['baz', 'baq'])
-        ))
-
-    def test_to_sentences_one_sentence_returns_map_tag_name_sentences(self):
+    def test_to_sentences_map_one_sentence_returns_map_tag_name_sentences(self):
         # arrange
         html_tags = [
             create_tag('h1', 'Wir suchen einen Geschäftsführer.'),
@@ -162,7 +148,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             ('p', 'Erfahrung wird überbewertet!')
         ))
 
-    def test_to_sentences_multi_sentence_returns_one_entry_per_sentence(self):
+    def test_to_sentences_map_multi_sentence_returns_one_entry_per_sentence(self):
         # arrange
         html_tags = [
             create_tag('h1', 'Wir suchen einen Geschäftsführer. Willst du dich bewerben?'),
@@ -178,18 +164,36 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             ('p', 'Erfahrung wird überbewertet!')
         ))
 
-    def test_to_pos_tagged_words_one_sentence_returns_map_of_tag_to_pos_tagged_sentences(self):
+    def test_to_wordlist_map_returns_tokenized_sentence_including_punctuation(self):
         # arrange
         html_tags = [
-            create_tag('h1', 'Wir suchen einen Geschäftsführer'),
-            create_tag('p', 'Erfahrung wird überbewertet')
+            create_tag('h1', 'Wir suchen einen Geschäftsführer. Willst du dich bewerben?'),
+            create_tag('p', 'Erfahrung wird überbewertet!')
         ]
         # act
-        result = jobtitle_fts_combined.to_pos_tagged_words(html_tags)
+        result = jobtitle_fts_combined.to_wordlist_map(html_tags)
+        result = list(result)
+        # asser
+        assert_that(result, only_contains(
+            ('h1', ['Wir', 'suchen', 'einen', 'Geschäftsführer', '.']),
+            ('h1', ['Willst', 'du', 'dich', 'bewerben', '?']),
+            ('p', ['Erfahrung', 'wird', 'überbewertet', '!'])
+        ))
+
+    def test_to_pos_tagged_words_map_returns_map_of_tag_to_pos_tagged_sentences_excluding_punctuation(self):
+        # arrange
+        html_tags = [
+            create_tag('h1', 'Wir suchen einen Geschäftsführer. Willst du dich bewerben?'),
+            create_tag('p', 'Erfahrung wird überbewertet!')
+        ]
+        # act
+        result = jobtitle_fts_combined.to_pos_tagged_words_map(html_tags)
+        result = list(result)
         # assert
         assert_that(result, contains(
-            ('h1', [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]),
-            ('p', [('Erfahrung', 'NN'), ('wird', 'VAFIN'), ('überbewertet', 'VVPP')])
+            ('h1', [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'), ('.', '$.')]),
+            ('h1', [('Willst', 'PWS'), ('du', 'PPER'), ('dich', 'PRF'), ('bewerben', 'VVINF'), ('?', '$.')]),
+            ('p', [('Erfahrung', 'NN'), ('wird', 'VAFIN'), ('überbewertet', 'VVPP'), ('!', '$.')])
         ))
 
     def test_to_pos_tagged_words_compound_word(self):
@@ -198,7 +202,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             create_tag('h2', 'Polymechaniker / CNC Fräser 80% - 100% (m/w)')
         ]
         # act
-        result = jobtitle_fts_combined.to_pos_tagged_words(html_tags)
+        result = jobtitle_fts_combined.to_pos_tagged_words_map(html_tags)
         result = list(result)
         # assert
         assert_that(result, contains(

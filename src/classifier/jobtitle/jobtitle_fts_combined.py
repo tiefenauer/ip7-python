@@ -29,7 +29,7 @@ def find_variants_in_tags(pos_tagged_html_tags, job_variants):
 
 
 def find_known_jobs(html_tags, known_job_variants):
-    pos_tagged_html_tags = to_pos_tagged_words(html_tags)
+    pos_tagged_html_tags = to_pos_tagged_words_map(html_tags)
     # evaluate generator already here because it is iterated over once for each job name
     pos_tagged_html_tags = list(pos_tagged_html_tags)
     for job_name, job_variants in known_job_variants:
@@ -53,14 +53,15 @@ def to_sentences_map(html_tags):
             yield tag_name, sent
 
 
-def to_pos_tagged_words(html_tags):
-    words_per_tag = to_word_list(html_tags)
-    for tag_name, words in words_per_tag:
+def to_wordlist_map(html_tags):
+    for tag_name, sentence in to_sentences_map(html_tags):
+        words = preproc.to_words(sentence)
+        yield tag_name, list(words)
+
+
+def to_pos_tagged_words_map(html_tags):
+    for tag_name, words in to_wordlist_map(html_tags):
         yield tag_name, preproc.pos_tag(words)
-
-
-def to_word_list(html_tags):
-    return ((tag.name, preproc.to_words(tag.getText())) for tag in html_tags)
 
 
 class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
