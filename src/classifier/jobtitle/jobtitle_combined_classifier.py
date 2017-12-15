@@ -47,7 +47,7 @@ def improve_search_result(tagged_words, matching_job, position):
     i = position - 1
     while 0 <= i < len(tagged_words):
         word, pos_tag = tagged_words[i]
-        if pos_tag[0] in ['N', '$', 'F'] and word != '(' or pos_tag.startswith('ADJ'):
+        if pos_tag[0] in ['N', 'F'] or pos_tag[0] == '$' and word in ['/']:
             tokens.appendleft(word)
         else:
             break
@@ -55,7 +55,7 @@ def improve_search_result(tagged_words, matching_job, position):
     i = position + 1
     while 0 <= i < len(tagged_words):
         word, pos_tag = tagged_words[i]
-        if pos_tag[0] in ['N', '$', 'F'] and word != '(' or pos_tag.startswith('ADJ'):
+        if pos_tag[0] in ['N', 'F'] or pos_tag[0] == '$' and word in ['/']:
             tokens.append(word)
         else:
             break
@@ -65,10 +65,8 @@ def improve_search_result(tagged_words, matching_job, position):
 
 def to_sentences_map(html_tags):
     for tag in html_tags:
-        tag_name = tag.name
-        tag_sentences = preproc.to_sentences(tag.getText())
-        for sent in tag_sentences:
-            yield tag_name, sent
+        for sent in preproc.to_sentences(tag.getText()):
+            yield tag.name, sent
 
 
 def to_wordlist_map(html_tags):
@@ -122,7 +120,7 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         return 'Jobtitle Classifier: FTS (advanced)'
 
     def label(self):
-        return 'jobtitle-fts-advanced'
+        return 'jobtitle-combined'
 
     def get_filename_postfix(self):
         return ''

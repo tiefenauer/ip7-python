@@ -1,9 +1,9 @@
 import argparse
 import logging
 
-from src.classifier.jobtitle.jobtitle_fts_combined import CombinedJobtitleClassifier
+from src.classifier.jobtitle.jobtitle_combined_classifier import CombinedJobtitleClassifier
 from src.database.X28TrainData import X28TrainData
-from src.evaluation.jobtitle.evaluator_jobtitle_fts import JobtitleFtsEvaluator
+from src.evaluation.jobtitle.evaluator_jobtitle_combined import JobtitleCombinedEvaluator
 from src.util.log_util import log_setup
 
 log_setup()
@@ -22,7 +22,7 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 classifier = CombinedJobtitleClassifier(args)
-evaluation = JobtitleFtsEvaluator(args, classifier)
+evaluation = JobtitleCombinedEvaluator(args, classifier)
 
 if __name__ == '__main__':
     data_train = X28TrainData(args)

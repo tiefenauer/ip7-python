@@ -3,8 +3,8 @@ from unittest import skip
 
 from hamcrest import contains, assert_that, empty, is_, only_contains
 
-from src.classifier.jobtitle import jobtitle_fts_combined
-from src.classifier.jobtitle.jobtitle_fts_combined import CombinedJobtitleClassifier
+from src.classifier.jobtitle import jobtitle_combined_classifier
+from src.classifier.jobtitle.jobtitle_combined_classifier import CombinedJobtitleClassifier
 from src.preprocessing import preproc
 from src.preprocessing.preproc import create_tag
 from test import testutils
@@ -17,7 +17,7 @@ def to_tagged_words(text):
     return preproc.pos_tag(preproc.to_words(text))
 
 
-class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
+class TestCombinedJobtitleClassifier(unittest.TestCase):
 
     def test_classify_with_improvable_hit(self):
         # arrange
@@ -44,7 +44,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer")
         # act
-        result = jobtitle_fts_combined.find_positions(tagged_words, 'Bäcker')
+        result = jobtitle_combined_classifier.find_positions(tagged_words, 'Bäcker')
         result = list(result)
         # assert
         assert_that(result, is_(empty()))
@@ -53,7 +53,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer")
         # act
-        result = jobtitle_fts_combined.find_positions(tagged_words, 'Geschäftsführer')
+        result = jobtitle_combined_classifier.find_positions(tagged_words, 'Geschäftsführer')
         result = list(result)
         # assert
         assert_that(result, only_contains(3))
@@ -62,7 +62,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer oder einen Geschäftsführer")
         # act
-        result = jobtitle_fts_combined.find_positions(tagged_words, 'Geschäftsführer')
+        result = jobtitle_combined_classifier.find_positions(tagged_words, 'Geschäftsführer')
         result = list(result)
         # assert
         assert_that(result, only_contains(3, 6))
@@ -72,7 +72,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tagged_words = to_tagged_words("Wir suchen einen Compliance Officer mit Erfahrung")
         # act
-        result = jobtitle_fts_combined.find_positions(tagged_words, 'Compliance Officer')
+        result = jobtitle_combined_classifier.find_positions(tagged_words, 'Compliance Officer')
         result = list(result)
         # assert
         assert_that(result, only_contains(3))
@@ -81,7 +81,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer oder eine Geschäftsführerin Geschäftsführerin")
         # act
-        result = jobtitle_fts_combined.find_job_names_positions(tagged_words, ['Geschäftsführer', 'Geschäftsführerin'])
+        result = jobtitle_combined_classifier.find_job_names_positions(tagged_words, ['Geschäftsführer', 'Geschäftsführerin'])
         result = list(result)
         # assert
         assert_that(result, only_contains(
@@ -94,7 +94,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer")
         job_names = ['Geschäftsführer', 'Geschäftsführerin']
         # act
-        result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
+        result = jobtitle_combined_classifier.find_job_names(tagged_words, job_names)
         result = list(result)
         # assert
         assert_that(result, only_contains(
@@ -106,7 +106,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer oder eine Geschäftsführerin")
         job_names = ['Geschäftsführer', 'Geschäftsführerin']
         # act
-        result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
+        result = jobtitle_combined_classifier.find_job_names(tagged_words, job_names)
         result = list(result)
         # assert
         assert_that(result, only_contains(
@@ -119,7 +119,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer und einen Geschäftsführer")
         job_names = ['Geschäftsführer', 'Geschäftsführerin']
         # act
-        result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
+        result = jobtitle_combined_classifier.find_job_names(tagged_words, job_names)
         result = list(result)
         # assert
         assert_that(result, only_contains(
@@ -148,7 +148,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             ('Elektrotechniker', ['Elektrotechniker', 'Elektro-Techniker', 'Elektrotechniker/in', 'ElektrotechnikerIn'])
         ]
         # act
-        result = jobtitle_fts_combined.find_known_jobs(tags, known_jobs)
+        result = jobtitle_combined_classifier.find_known_jobs(tags, known_jobs)
         result = list(result)
         # assert
         assert_that(result, contains(
@@ -166,7 +166,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         matching_job = 'Geschäftsführer'
         position = 3
         # act
-        result = jobtitle_fts_combined.improve_search_result(tagged_words, matching_job, position)
+        result = jobtitle_combined_classifier.improve_search_result(tagged_words, matching_job, position)
         # assert
         assert_that(result, is_(matching_job))
 
@@ -174,7 +174,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tagged_words = to_tagged_words('Polymechaniker / CNC Fräser 80% - 100% (m/w)')
         # act
-        result = jobtitle_fts_combined.improve_search_result(tagged_words, 'Polymechaniker', 0)
+        result = jobtitle_combined_classifier.improve_search_result(tagged_words, 'Polymechaniker', 0)
         # assert
         assert_that(result, is_('Polymechaniker / CNC Fräser'))
 
@@ -183,7 +183,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # arrange
         tagged_words = to_tagged_words('Team Head Compliance Officer Premium Clients Switzerland (80-100%)')
         # act
-        result = jobtitle_fts_combined.improve_search_result(tagged_words, 'Compliance Officer', 2)
+        result = jobtitle_combined_classifier.improve_search_result(tagged_words, 'Compliance Officer', 2)
         # assert
         assert_that(result, is_('Team Head Compliance Officer Premium Clients Switzerland'))
 
@@ -195,7 +195,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             create_tag('p', 'Erfahrung wird überbewertet!')
         ]
         # act
-        result = jobtitle_fts_combined.to_sentences_map(html_tags)
+        result = jobtitle_combined_classifier.to_sentences_map(html_tags)
         result = list(result)
         # asser
         assert_that(result, only_contains(
@@ -211,7 +211,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             create_tag('p', 'Erfahrung wird überbewertet!')
         ]
         # act
-        result = jobtitle_fts_combined.to_sentences_map(html_tags)
+        result = jobtitle_combined_classifier.to_sentences_map(html_tags)
         result = list(result)
         # asser
         assert_that(result, only_contains(
@@ -227,7 +227,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             create_tag('p', 'Erfahrung wird überbewertet!')
         ]
         # act
-        result = jobtitle_fts_combined.to_wordlist_map(html_tags)
+        result = jobtitle_combined_classifier.to_wordlist_map(html_tags)
         result = list(result)
         # asser
         assert_that(result, only_contains(
@@ -243,7 +243,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             create_tag('p', 'Erfahrung wird überbewertet!')
         ]
         # act
-        result = jobtitle_fts_combined.to_pos_tagged_words_map(html_tags)
+        result = jobtitle_combined_classifier.to_pos_tagged_words_map(html_tags)
         result = list(result)
         # assert
         assert_that(result, contains(
@@ -258,7 +258,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             create_tag('h2', 'Polymechaniker / CNC Fräser 80% - 100% (m/w)')
         ]
         # act
-        result = jobtitle_fts_combined.to_pos_tagged_words_map(html_tags)
+        result = jobtitle_combined_classifier.to_pos_tagged_words_map(html_tags)
         result = list(result)
         # assert
         assert_that(result, contains(

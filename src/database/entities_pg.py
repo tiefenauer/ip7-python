@@ -62,6 +62,10 @@ class Fts_Classification_Results(Classification_Results):
     _discriminator_ = 'jobtitle-fts'
 
 
+class Combined_Classification_Results(Classification_Results):
+    _discriminator_ = 'jobtitle-combined'
+
+
 class Semantic_Avg_Classification_Results(Classification_Results):
     _discriminator_ = 'jobtitle-semantic-avg'
 
