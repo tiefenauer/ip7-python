@@ -1,4 +1,5 @@
 import unittest
+from unittest import skip
 
 from hamcrest import contains, assert_that, empty, is_, only_contains
 
@@ -28,6 +29,17 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # assert
         assert_that(result, is_('Polymechaniker / CNC Fräser'))
 
+    @skip("compound job names not supported yet")
+    def test_classify_with_compound_hit(self):
+        # arrange
+        html_tags = [
+            create_tag('h2', 'Team Head Compliance Officer Premium Clients Switzerland (80-100%)')
+        ]
+        # act
+        result = testee.classify(html_tags)
+        # assert
+        assert_that(result, is_('Team Head Compliance Officer Premium Clients Switzerland'))
+
     def test_find_positions_with_no_match_returns_empty_list(self):
         # arrange
         tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer")
@@ -54,6 +66,16 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         result = list(result)
         # assert
         assert_that(result, only_contains(3, 6))
+
+    @skip("compound job names not supported yet")
+    def test_find_positions_with_compound_jobname_returns_all_positions(self):
+        # arrange
+        tagged_words = to_tagged_words("Wir suchen einen Compliance Officer mit Erfahrung")
+        # act
+        result = jobtitle_fts_combined.find_positions(tagged_words, 'Compliance Officer')
+        result = list(result)
+        # assert
+        assert_that(result, only_contains(3))
 
     def test_find_variant_positions_returns_all_positions(self):
         # arrange
@@ -156,7 +178,8 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         # assert
         assert_that(result, is_('Polymechaniker / CNC Fräser'))
 
-    def test_improve_search_result_more_on_left_and_right(self):
+    @skip("compound job names not supported yet")
+    def test_improve_search_result_compound_job_name_returns_expanded_job_name(self):
         # arrange
         tagged_words = to_tagged_words('Team Head Compliance Officer Premium Clients Switzerland (80-100%)')
         # act

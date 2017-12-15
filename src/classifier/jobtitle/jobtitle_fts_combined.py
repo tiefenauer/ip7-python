@@ -1,7 +1,6 @@
 import collections
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
-# from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import job_name_variants
 from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesCombined
 from src.classifier.tag_classifier import TagClassifier
 from src.dataimport.known_job_variants import KnownJobVariants
