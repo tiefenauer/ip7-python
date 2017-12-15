@@ -4,8 +4,8 @@ from src.classifier.jobtitle import jobtitle_fts_features
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
 from src.classifier.tag_classifier import TagClassifier
-from src.dataimport.known_jobs import KnownJobs
-from src.util.jobtitle_util import count_variant, create_variants
+from src.dataimport.known_job_variants import KnownJobVariants
+from src.util.jobtitle_util import count_variant
 
 
 # {
@@ -39,7 +39,7 @@ def create_statistics(tags, job_name_variants):
 def count_variants(text, variants):
     """counts all occurrences of the job variants in a text string"""
     for variant in (variant for variant in variants if variant.lower() in text.lower()):
-        count = count_variant(variant.lower(), text.lower())
+        count = count_variant(variant, text)
         if count > 0:
             yield (variant, count)
 
@@ -71,12 +71,7 @@ def create_fts_features(features):
     return feature_list
 
 
-job_name_variants = [(job_name, create_variants(job_name)) for job_name in KnownJobs()]
-
-
-# with db_session:
-#     job_name_variants = [(job_class.job_name, set(variant.job_name_variant for variant in job_class.variants))
-#                          for job_class in Job_Class.select()]
+known_job_variants = KnownJobVariants()
 
 
 class FeatureBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
@@ -91,7 +86,7 @@ class FeatureBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
      """
 
     def classify(self, tags):
-        stats = create_statistics(tags, job_name_variants)
+        stats = create_statistics(tags, known_job_variants)
         features = create_fts_features(stats)
         if len(features) > 0:
             best_match = sorted(features)[0]

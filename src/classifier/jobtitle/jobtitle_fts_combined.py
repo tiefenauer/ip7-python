@@ -1,10 +1,10 @@
 import collections
 
-from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 # from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import job_name_variants
 from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesCombined
 from src.classifier.tag_classifier import TagClassifier
+from src.dataimport.known_job_variants import KnownJobVariants
 from src.preprocessing import preproc
 
 
@@ -83,6 +83,9 @@ def to_pos_tagged_words_map(html_tags):
         yield tag_name, preproc.pos_tag(words)
 
 
+known_job_variants = KnownJobVariants()
+
+
 class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
     """Combines different approaches to one single classifier:
     - FTS approach:
@@ -103,7 +106,7 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
 
     def classify(self, html_tags):
         # find occurrences of known jobs (including variants) in HTML tags together with positional and POS information
-        search_results = find_known_jobs(html_tags, jobtitle_fts_classifier_htmltag_based.job_name_variants)
+        search_results = find_known_jobs(html_tags, known_job_variants)
         features_list = []
         for tag_position, html_tag, variant, position, tagged_words in search_results:
             features = JobtitleFeaturesCombined(tag_position, variant, html_tag, tagged_words, position)
