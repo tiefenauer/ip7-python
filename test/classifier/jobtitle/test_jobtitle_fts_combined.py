@@ -4,11 +4,16 @@ from hamcrest import contains, assert_that, empty, is_, only_contains
 
 from src.classifier.jobtitle import jobtitle_fts_combined
 from src.classifier.jobtitle.jobtitle_fts_combined import CombinedJobtitleClassifier
+from src.preprocessing import preproc
 from src.preprocessing.preproc import create_tag
 from test import testutils
 
 args = testutils.create_dummy_args()
 testee = CombinedJobtitleClassifier(args)
+
+
+def to_tagged_words(text):
+    return preproc.pos_tag(preproc.to_words(text))
 
 
 class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
@@ -25,7 +30,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_positions_with_no_match_returns_empty_list(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
+        tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer")
         # act
         result = jobtitle_fts_combined.find_positions(tagged_words, 'Bäcker')
         result = list(result)
@@ -34,7 +39,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_positions_with_one_match_returns_position(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
+        tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer")
         # act
         result = jobtitle_fts_combined.find_positions(tagged_words, 'Geschäftsführer')
         result = list(result)
@@ -43,14 +48,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_positions_with_multiple_matches_returns_all_positions(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'),
-                        ('suchen', 'VVFIN'),
-                        ('einen', 'ART'),
-                        ('Geschäftsführer', 'NN'),
-                        ('oder', 'KON'),
-                        ('einen', 'ART'),
-                        ('Geschäftsführer', 'NN')
-                        ]
+        tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer oder einen Geschäftsführer")
         # act
         result = jobtitle_fts_combined.find_positions(tagged_words, 'Geschäftsführer')
         result = list(result)
@@ -59,15 +57,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_variant_positions_returns_all_positions(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'),
-                        ('suchen', 'VVFIN'),
-                        ('einen', 'ART'),
-                        ('Geschäftsführer', 'NN'),
-                        ('oder', 'KON'),
-                        ('eine', 'ART'),
-                        ('Geschäftsführerin', 'NN'),
-                        ('Geschäftsführerin', 'NN')
-                        ]
+        tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer oder eine Geschäftsführerin Geschäftsführerin")
         # act
         result = jobtitle_fts_combined.find_job_names_positions(tagged_words, ['Geschäftsführer', 'Geschäftsführerin'])
         result = list(result)
@@ -79,7 +69,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_job_names_one_match_returns_jobname_with_positions_and_tagged_words(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
+        tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer")
         job_names = ['Geschäftsführer', 'Geschäftsführerin']
         # act
         result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
@@ -91,8 +81,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_job_names_multi_different_matches_returns_all_jobname_with_positions_and_tagged_words(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
-                        ('oder', 'KON'), ('eine', 'ART'), ('Geschäftsführerin', 'NN')]
+        tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer oder eine Geschäftsführerin")
         job_names = ['Geschäftsführer', 'Geschäftsführerin']
         # act
         result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
@@ -105,8 +94,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_job_names_multi_same_matches_returns_jobname_with_all_positions(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
-                        ('und', 'KON'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
+        tagged_words = to_tagged_words("Wir suchen einen Geschäftsführer und einen Geschäftsführer")
         job_names = ['Geschäftsführer', 'Geschäftsführerin']
         # act
         result = jobtitle_fts_combined.find_job_names(tagged_words, job_names)
@@ -118,18 +106,20 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_find_known_jobs_returns_list_of_matches(self):
         # arrange
-        tagged_words_1 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
-        tagged_words_2 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('eine', 'ART'), ('Geschäftsführerin', 'NN')]
-        tagged_words_3 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
-                          ('oder', 'KON'), ('einen', 'ART'), ('Elektrotechniker', 'NN')]
-        tagged_words_4 = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN'),
-                          ('und', 'KON'), ('einen', 'ART'), ('Elektrotechniker/in', 'ADJA'), ('als', 'APPR'),
-                          ('Geschäftsführer', 'NN')]
+        text_1 = "Wir suchen einen Geschäftsführer"
+        text_2 = "Wir suchen eine Geschäftsführerin"
+        text_3 = "Wir suchen einen Geschäftsführer oder einen Elektrotechniker"
+        text_4 = "Wir suchen einen Geschäftsführer und einen Elektrotechniker/in als Geschäftsführer"
+        tagged_words_1 = to_tagged_words(text_1)
+        tagged_words_2 = to_tagged_words(text_2)
+        tagged_words_3 = to_tagged_words(text_3)
+        tagged_words_4 = to_tagged_words(text_4)
+
         tags = [
-            create_tag('h1', ' '.join(word for (word, tag) in tagged_words_1)),
-            create_tag('h2', ' '.join(word for (word, tag) in tagged_words_2)),
-            create_tag('h3', ' '.join(word for (word, tag) in tagged_words_3)),
-            create_tag('h4', ' '.join(word for (word, tag) in tagged_words_4))
+            create_tag('h1', text_1),
+            create_tag('h2', text_2),
+            create_tag('h3', text_3),
+            create_tag('h4', text_4)
         ]
         known_jobs = [
             ('Geschäftsführer', ['Geschäftsführer', 'Geschäftsführerin', 'Geschäftsführer/in']),
@@ -148,9 +138,9 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
             (3, 'h4', 'Elektrotechniker/in', [6], tagged_words_4)
         ))
 
-    def test_improve_search_result_no_improvement_possible_returns_matchin_job(self):
+    def test_improve_search_result_no_improvement_possible_returns_matching_job(self):
         # arrange
-        tagged_words = [('Wir', 'PPER'), ('suchen', 'VVFIN'), ('einen', 'ART'), ('Geschäftsführer', 'NN')]
+        tagged_words = to_tagged_words("Wir suchen einen Geshcäftsführer")
         matching_job = 'Geschäftsführer'
         position = 3
         # act
@@ -160,8 +150,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_improve_search_result_more_on_right_possible_returns_matchin_job(self):
         # arrange
-        tagged_words = [('Polymechaniker', 'NE'), ('/', '$('), ('CNC', 'NE'), ('Fräser', 'NE'), ('80', 'CARD'),
-                        ('%', 'NN'), ('-', '$('), ('100', 'CARD'), ('%', 'NN'), ('(', '$('), ('m/w', 'XY'), (')', '$(')]
+        tagged_words = to_tagged_words('Polymechaniker / CNC Fräser 80% - 100% (m/w)')
         # act
         result = jobtitle_fts_combined.improve_search_result(tagged_words, 'Polymechaniker', 0)
         # assert
@@ -169,9 +158,7 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
 
     def test_improve_search_result_more_on_left_and_right(self):
         # arrange
-        tagged_words = [('Team', 'NN'), ('Head', 'NE'), ('Compliance', 'FM'), ('Officer', 'FM'), ('Premium', 'FM'),
-                        ('Clients', 'FM'), ('Switzerland', 'FM'), ('(', '$('), ('80-100', 'CARD'), ('%', '$('),
-                        (')', '$(')]
+        tagged_words = to_tagged_words('Team Head Compliance Officer Premium Clients Switzerland (80-100%)')
         # act
         result = jobtitle_fts_combined.improve_search_result(tagged_words, 'Compliance Officer', 2)
         # assert
