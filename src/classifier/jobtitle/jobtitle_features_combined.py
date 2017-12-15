@@ -12,23 +12,26 @@ def calculate_tag_weight(tag):
 class JobtitleFeaturesCombined(object):
     """helper class to sort features"""
 
-    def __init__(self, job_name, highest_tag, first_position, num_occurrences, num_variants):
+    def __init__(self, tag_position, job_name, html_tag, tagged_words, job_positions):
+        self.tag_position = tag_position
         self.job_name = job_name
-        self.tag = highest_tag
+        self.html_tag = html_tag
+        self.tagged_words = tagged_words
+        self.positions = job_positions
         # lower tag weight means better
-        self.tag_weight = calculate_tag_weight(highest_tag)
+        self.tag_weight = calculate_tag_weight(html_tag)
         # lower position means better
-        self.first_position = first_position
-        # higher number of occurrences means better
-        self.num_occurrences = num_occurrences
-        # higher number of variants means better
-        self.num_variants = num_variants
+        self.min_job_position = min(job_positions)
 
     def __lt__(self, other):
         # note: The order of the attributes defines the sorting priority!
-        return (self.tag_weight, -self.num_occurrences, self.first_position, -self.num_variants) < \
-               (other.tag_weight, -other.num_occurrences, other.first_position, -other.num_variants)
+        return (self.tag_weight, self.tag_position, self.min_job_position) < \
+               (other.tag_weight, other.tag_position, other.min_job_position)
 
     def __eq__(self, other):
-        return (self.job_name, self.tag_weight, self.first_position, self.num_occurrences, self.num_variants) == \
-               (other.job_name, other.tag_weight, other.first_position, other.num_occurrences, other.num_variants)
+        return (self.tag_position, self.job_name, self.html_tag, self.tagged_words, self.positions) == \
+               (other.tag_position, other.job_name, other.html_tag, other.tagged_words, other.positions)
+
+
+def create_features(tag_position, html_tag, variant, positions, tagged_words):
+    return JobtitleFeaturesCombined()

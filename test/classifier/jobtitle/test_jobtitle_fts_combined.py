@@ -82,11 +82,11 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         result = list(result)
         # assert
         assert_that(result, only_contains(
-            ('h1', 'Geschäftsführer', [3], tagged_words_1),
-            ('h2', 'Geschäftsführerin', [3], tagged_words_2),
-            ('h3', 'Geschäftsführer', [3], tagged_words_3),
-            ('h3', 'Geschäftsführerin', [6], tagged_words_3),
-            ('h4', 'Geschäftsführer', [3, 6], tagged_words_4)
+            (0, 'h1', 'Geschäftsführer', [3], tagged_words_1),
+            (1, 'h2', 'Geschäftsführerin', [3], tagged_words_2),
+            (2, 'h3', 'Geschäftsführer', [3], tagged_words_3),
+            (2, 'h3', 'Geschäftsführerin', [6], tagged_words_3),
+            (3, 'h4', 'Geschäftsführer', [3, 6], tagged_words_4)
         ))
 
     def test_find_known_jobs_returns_list_of_matches(self):
@@ -113,12 +113,12 @@ class TestCombinedJobtitleFtsClassifier(unittest.TestCase):
         result = list(result)
         # assert
         assert_that(result, contains(
-            ('h1', 'Geschäftsführer', [3], tagged_words_1),
-            ('h2', 'Geschäftsführerin', [3], tagged_words_2),
-            ('h3', 'Geschäftsführer', [3], tagged_words_3),
-            ('h4', 'Geschäftsführer', [3, 8], tagged_words_4),
-            ('h3', 'Elektrotechniker', [6], tagged_words_3),
-            ('h4', 'Elektrotechniker/in', [6], tagged_words_4)
+            (0, 'h1', 'Geschäftsführer', [3], tagged_words_1),
+            (1, 'h2', 'Geschäftsführerin', [3], tagged_words_2),
+            (2, 'h3', 'Geschäftsführer', [3], tagged_words_3),
+            (3, 'h4', 'Geschäftsführer', [3, 8], tagged_words_4),
+            (2, 'h3', 'Elektrotechniker', [6], tagged_words_3),
+            (3, 'h4', 'Elektrotechniker/in', [6], tagged_words_4)
         ))
 
     def test_improve_search_result_no_improvement_possible_returns_matchin_job(self):
