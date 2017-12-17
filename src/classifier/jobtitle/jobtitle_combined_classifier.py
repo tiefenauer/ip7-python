@@ -3,8 +3,14 @@ import collections
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesCombined
 from src.classifier.tag_classifier import TagClassifier
-from src.dataimport.known_job_variants import KnownJobVariants
+from src.dataimport.known_jobs import KnownJobs
 from src.preprocessing import preproc
+
+
+def calculate_positions(job_name_tokens, sentence_tokens):
+    ix_from = [i for i, word in enumerate(sentence_tokens) if job_name_tokens[0] in word][0]
+    ix_to = ix_from + len(job_name_tokens)
+    return ix_from, ix_to
 
 
 def find_job(job_name, sentence):
@@ -13,12 +19,11 @@ def find_job(job_name, sentence):
     job_name_tokens = preproc.to_words(job_name)
     sentence_tokens = preproc.to_words(sentence)
 
-    jn_ix_from = sentence_tokens.index(job_name_tokens[0])
-    jn_ix_to = jn_ix_from + len(job_name_tokens)
+    ix_from, ix_to = calculate_positions(job_name_tokens, sentence_tokens)
 
     sentence_pos = preproc.pos_tag(sentence_tokens)
-    left = sentence_pos[:jn_ix_from]
-    right = sentence_pos[jn_ix_to:]
+    left = sentence_pos[:ix_from]
+    right = sentence_pos[ix_to:]
 
     tokens = collections.deque([job_name])
     i = len(left) - 1
@@ -46,17 +51,13 @@ def to_sentences_map(html_tags):
             yield tag.name, sent
 
 
-known_job_variants = KnownJobVariants()
-
-
-def search_jobs(html_tags, job_variants=known_job_variants):
-    for job_name, job_variants in job_variants:
-        for variant in job_variants:
-            sentences_with_variant = ((tag, sent) for (tag, sent) in to_sentences_map(html_tags) if variant in sent)
-            for tag_index, (html_tag, sentence) in enumerate(sentences_with_variant):
-                hit = find_job(variant, sentence)
-                if hit:
-                    yield tag_index, html_tag, hit
+def search_jobs(html_tags):
+    for job_name in KnownJobs():
+        sentences_with_job = ((tag, sent) for (tag, sent) in to_sentences_map(html_tags))
+        for tag_index, (html_tag, sentence) in enumerate(sentences_with_job):
+            hit = find_job(job_name, sentence)
+            if hit:
+                yield tag_index, html_tag, hit
 
 
 class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):

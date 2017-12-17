@@ -156,3 +156,19 @@ class TestCombinedJobtitleClassifier(unittest.TestCase):
             ('h1', 'Willst du dich bewerben?'),
             ('p', 'Erfahrung wird überbewertet!')
         ))
+
+    def test_calculate_positions_with_exact_match(self):
+        # arrange
+        job_name_tokenized = preproc.to_words('Erzieher')
+        sentence_tokenized = preproc.to_words('Erzieher / Gruppenleitung')
+        # act
+        result = jobtitle_combined_classifier.calculate_positions(job_name_tokenized, sentence_tokenized)
+        assert_that(result, is_((0, 1)))
+
+    def test_calculate_positions_with_fuzzy_match(self):
+        # arrange
+        job_name_tokenized = preproc.to_words('Erzieher')
+        sentence_tokenized = preproc.to_words('Erzieherin / Gruppenleitung')
+        # act
+        result = jobtitle_combined_classifier.calculate_positions(job_name_tokenized, sentence_tokenized)
+        assert_that(result, is_((0, 1)))
