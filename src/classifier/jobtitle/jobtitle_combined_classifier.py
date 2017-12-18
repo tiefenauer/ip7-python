@@ -28,6 +28,7 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         i_tag_sentence = list(enumerate(htmltag_sentences_map))
         for tag_index, (tag_name, sentence) in i_tag_sentence:
             job_hits = pos_util.find_jobs(sentence)
+            job_hits = list(job_hits)
             for hit in job_hits:
                 features = JobtitleFeaturesCombined(tag_index, hit, tag_name)
                 features_list.append(features)

@@ -6,7 +6,7 @@ from hamcrest import assert_that, is_, not_, has_item
 from src.preprocessing.html_preprocessor import HTMLPreprocessor, NON_HUMAN_READABLE_TAGS
 from test import testutils
 
-testee = HTMLPreprocessor()
+testee = HTMLPreprocessor(include_title=False)
 
 
 class TestHTMLPreprocessor(unittest.TestCase):

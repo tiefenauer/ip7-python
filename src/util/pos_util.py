@@ -12,6 +12,7 @@ def find_jobs(sentence):
     known_job = ''
     mw_job = ''
     percentage_job = ''
+    gender_job = ''
 
     for job_name in KnownJobs():
         if job_name in sentence:
@@ -20,6 +21,12 @@ def find_jobs(sentence):
 
     if known_job:
         yield known_job
+
+    # search by keyword: gender
+    # for match in jobtitle_util.find_all_genderized(sentence):
+    #     gender_job = expand_left_right(sentence.split(match[0])[0], sentence)
+    # if gender_job:
+    #     yield gender_job
 
     # search by keyword: m/w
     sentence_without_percentage = loe_util.remove_percentage(sentence)
@@ -30,7 +37,7 @@ def find_jobs(sentence):
     if mw_job:
         yield mw_job
 
-    # search by percentage
+    # search by keyword: percentage
     senntence_without_mw = jobtitle_util.remove_mw(sentence)
     for percentage_token in loe_util.find_all_loe(senntence_without_mw):
         percentage_job = expand_left_right(percentage_token, senntence_without_mw)

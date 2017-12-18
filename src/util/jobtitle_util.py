@@ -6,6 +6,10 @@ from src.preprocessing import preproc
 from src.util import loe_util
 
 pattern_hyphenated = re.compile(r'(?=\S*[-])([a-zA-Z-]+)')
+# gender patterns (not suffixes)
+# gender_pattern_slash_in = re.compile(r'\/[iI]n')
+gender_pattern_slash_in = re.compile(r'(\/-?(\(?[iI]n\)?))')
+
 # dynamic patterns
 pattern_suffix = "{}((in)|(euse)|(frau))"
 pattern_slashed = "{}((\/?-?in)|(\/?-?euse)|(\/?-?frau))"
@@ -236,3 +240,7 @@ def normalize_job_title(text):
     words = (preproc.remove_stop_words(words))
     words = (to_male_form(word) for word in words)
     return (word.strip() for word in preproc.stem(words) if word)
+
+
+def find_all_genderized(text):
+    return gender_pattern_slash_in.findall(text)

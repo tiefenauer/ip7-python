@@ -11,7 +11,7 @@ NON_HUMAN_READABLE_TAGS = ['script', 'noscript', 'meta', 'link', 'style', 'ifram
 class HTMLPreprocessor(Preprocessor):
     """parses markup as HTML and extracts all tags with human readable content, i.e. no script, meta, etc..."""
 
-    def __init__(self, data_source, include_title):
+    def __init__(self, data_source=None, include_title=True):
         super(HTMLPreprocessor, self).__init__(data_source)
         self.include_title = include_title
 

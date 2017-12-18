@@ -42,6 +42,7 @@ class DummyRow(object):
 
 def create_dummy_row(plaintext=None, html=None):
     row = DummyRow()
+    row.title = ''
     row.html = html
     row.plaintext = plaintext
     return row

@@ -33,6 +33,11 @@ class TestPOSUtil(unittest.TestCase):
         # assert
         assert_that(result, only_contains('Vertriebsleiter Einkauf'))
 
+    def test_find_job_name_with_unknown_job_findy_by_gender_form(self):
+        result = pos_util.find_jobs('Leiter/in Familienausgleichskassen')
+        result = list(result)
+        assert_that(result, only_contains('Leiter Familienausgleichskassen'))
+
     def test_find_job_name_with_unknown_job_findy_by_mw(self):
         # single word
         assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung (m/w)'), only_contains('Geschäftsführung'))
