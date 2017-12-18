@@ -35,7 +35,7 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
 
     def train_model(self, labeled_data):
         """Train a Naive Bayes classifier as the internal model"""
-        self.count = labeled_data.count
+        self.count = len(labeled_data)
 
         data = (row_processed for row, row_processed in labeled_data)
         labels = clean_labels(row.title for row, row_processed in labeled_data)

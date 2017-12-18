@@ -42,8 +42,17 @@ class TestJobTitleUtil(unittest.TestCase):
 
     def test_to_male_form_mw_returns_male_form(self):
         assert_that(testee.to_male_form("Schreiner (m/w)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner (M/W)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (m/w)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (M/W)"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreiner m/w"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner M/W"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   m/w"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   M/W"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreiner mw"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner MW"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   mw"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   MW"), is_("Schreiner"))
 
     def test_to_male_form_wm_returns_male_form(self):
         assert_that(testee.to_male_form("Schreiner (w/m)"), is_("Schreiner"))
