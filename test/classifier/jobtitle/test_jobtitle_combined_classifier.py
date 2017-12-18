@@ -1,11 +1,10 @@
 import unittest
 
-from hamcrest import assert_that, is_, only_contains
+from hamcrest import assert_that, is_
 
 from src.classifier.jobtitle import jobtitle_combined_classifier
 from src.classifier.jobtitle.jobtitle_combined_classifier import CombinedJobtitleClassifier
 from src.preprocessing import preproc
-from src.preprocessing.preproc import create_tag
 
 testee = CombinedJobtitleClassifier()
 
@@ -103,14 +102,15 @@ class TestCombinedJobtitleClassifier(unittest.TestCase):
         result = jobtitle_combined_classifier.find_job(job_name, sentence)
         assert_that(result, is_('Compliance Officer'))
 
-    def test_find_job_with_expandable_compound_job_name_returns_expandable_job_name(self):
+    def test_find_job_with_expandable_job_name_returns_expandable_job_name(self):
         # arrange
         job_name_1 = 'Polymechaniker'
-        job_name_1 = 'CNC Fräser'
+        job_name_2 = 'CNC Fräser'
         sentence = 'Polymechaniker / CNC Fräser 80% - 100% (m/w)'
         # act
         result_1 = jobtitle_combined_classifier.find_job(job_name_1, sentence)
         result_2 = jobtitle_combined_classifier.find_job(job_name_2, sentence)
+        # assert
         assert_that(result_1, is_('Polymechaniker / CNC Fräser'))
         assert_that(result_2, is_('Polymechaniker / CNC Fräser'))
 
@@ -121,8 +121,6 @@ class TestCombinedJobtitleClassifier(unittest.TestCase):
         # act
         result = jobtitle_combined_classifier.find_job(job_name, sentence)
         assert_that(result, is_('Team Head Compliance Officer Premium Clients Switzerland'))
-
-
 
     def test_calculate_positions_with_exact_match(self):
         # arrange
