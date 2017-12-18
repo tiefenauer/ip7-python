@@ -13,24 +13,24 @@ class SplitDataSource(DataSource):
     @db_session
     def __init__(self, args, Entity):
         super(SplitDataSource, self).__init__(args, Entity)
-        # calculate row for split (will be part of first split)
         self._count = self.query.count()
-        split = args.split if hasattr(args, 'split') and args.split else 1
-        self.split_row = int((split or 1) * self._count)
 
-        # split data
-        row_from = self.row_from()
-        row_to = self.row_to()
-        self.query_split = self.query[row_from:row_to]
+        # calculate row for split (will be part of first split)
+        split = args.split if hasattr(args, 'split') and args.split else 1
+        self._split_row = int((split or 1) * self._count)
+
+        # calculate indices of first and last row
+        self._row_from = self.row_from()
+        self._row_to = self.row_to()
 
     @db_session
     def __iter__(self):
-        for row in self.query_split:
+        for row in self.query[self._row_from:self._row_to]:
             yield row
 
     @db_session
     def __len__(self):
-        return len(self.query_split)
+        return len(self.query[self._row_from:self._row_to])
 
     @abstractmethod
     def row_from(self):

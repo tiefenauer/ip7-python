@@ -39,6 +39,6 @@ class TestTestData(unittest.TestCase):
         # assert
         assert_that(count_items(testee), is_(expected_count))
         assert_that(len(testee), is_(expected_count))
-        assert_that(testee.split_row, is_(expected_split))
+        assert_that(testee._split_row, is_(expected_split))
         assert_that(testee.row_from(), is_(expected_split))
         assert_that(testee.row_to(), is_(train_data_count))
