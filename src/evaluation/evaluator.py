@@ -19,6 +19,7 @@ class Evaluator(object):
     num_classified = 0
 
     def __init__(self, args, ResultEntity):
+        self.calculate_score = args.calculate_score if hasattr(args, 'calculate_score') else False
         self.visualize = args.visualize if hasattr(args, 'visualize') else False
         self.write = args.write if hasattr(args, 'write') else False
         if hasattr(args, 'truncate') and args.truncate:
@@ -40,7 +41,7 @@ class Evaluator(object):
             num_processed += 1
             if self.is_classified(predicted_class):
                 num_classified += 1
-            scores = self.calculate_scores(actual_class, predicted_class)
+            scores = self.calculate_scores(actual_class, predicted_class) if self.calculate_score else [0, 0, 0]
             if self.visualize:
                 self.plotter.update_plots(num_total, num_processed, num_classified)
 
