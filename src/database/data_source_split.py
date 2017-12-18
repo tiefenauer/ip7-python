@@ -19,18 +19,14 @@ class SplitDataSource(DataSource):
         split = args.split if hasattr(args, 'split') and args.split else 1
         self._split_row = int((split or 1) * self._count)
 
-        # calculate indices of first and last row
-        self._row_from = self.row_from()
-        self._row_to = self.row_to()
-
-    @db_session
-    def __iter__(self):
-        for row in self.query[self._row_from:self._row_to]:
-            yield row
+        # split original query
+        row_from = self.row_from()
+        row_to = self.row_to()
+        self.query = self.query[row_from:row_to]
 
     @db_session
     def __len__(self):
-        return len(self.query[self._row_from:self._row_to])
+        return len(self.query)
 
     @abstractmethod
     def row_from(self):
