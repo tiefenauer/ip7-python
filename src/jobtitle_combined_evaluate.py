@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description="""
 Reads training data and classifies it using full text search.
 """)
 parser.add_argument('id', nargs='?', type=int, help='(optional) single id to process')
-parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
+parser.add_argument('-s', '--split', nargs='?', type=float, default=1.0,
                     help='(optional) fraction value of labeled data to use for training')
 parser.add_argument('-t', '--truncate', action='store_true',
                     help='truncate target tables before extraction (default=True)')

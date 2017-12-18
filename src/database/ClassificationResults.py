@@ -22,7 +22,7 @@ class ClassificationResults(object):
         sc_lin = scores[2]
 
         job_row = X28_HTML.get(lambda d: d.id == rowid)
-        classification_result = self.create_entity(job_row, predicted_class, sc_str, sc_tol, sc_lin)
+        classification_result = self.create_entity(job_row, predicted_class[:255], sc_str, sc_tol, sc_lin)
         commit()
         return classification_result
 

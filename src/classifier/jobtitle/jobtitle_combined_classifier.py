@@ -5,6 +5,7 @@ from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesC
 from src.classifier.tag_classifier import TagClassifier
 from src.dataimport.known_jobs import KnownJobs
 from src.preprocessing import preproc
+from src.preprocessing.sentence_preprocessor import SentencePreprocessor
 
 
 def calculate_positions(job_name_tokens, sentence_tokens):
@@ -78,10 +79,19 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         - hit is expanded with
     """
 
-    def classify(self, html_tags):
+    def __init__(self, args):
+        super(CombinedJobtitleClassifier, self).__init__(args, SentencePreprocessor)
+
+    def classify(self, tag_sentence):
         # find occurrences of known jobs (including variants) in HTML tags together with positional and POS information
-        features_list = [JobtitleFeaturesCombined(tag_index, hit, html_tag)
-                         for tag_index, html_tag, hit in search_jobs(html_tags)]
+        features_list = []
+        i_tag_sentence = list(enumerate(tag_sentence))
+        for job_name in KnownJobs():
+            for tag_index, (tag_name, sentence) in i_tag_sentence:
+                hit = find_job(job_name, sentence)
+                if hit:
+                    features = JobtitleFeaturesCombined(tag_index, hit, tag_name)
+                    features_list.append(features)
 
         if len(features_list) > 0:
             best_match = sorted(features_list)[0]
