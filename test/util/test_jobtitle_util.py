@@ -13,6 +13,8 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.to_male_form("SchreinerIn"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreiner/in"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreiner/In"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner/innen"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner/Innen"), is_("Schreiner"))
         assert_that(testee.to_male_form('Schreiner/-in'), is_('Schreiner'))
         assert_that(testee.to_male_form('Schreiner/-In'), is_('Schreiner'))
         assert_that(testee.to_male_form("Schreiner(in)"), is_("Schreiner"))

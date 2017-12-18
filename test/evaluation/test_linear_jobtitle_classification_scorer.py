@@ -36,6 +36,9 @@ class TestLinearJobtitleClassificationScorer(unittest.TestCase):
         assert_that(testee.calculate_similarity('Verkaufsberater (70-80%)', 'Verkaufsberater'), is_(1))
         assert_that(testee.calculate_similarity('Verkaufsberater (70-100%)', 'Verkaufsberater'), is_(1))
 
+    def test_calculate_similarity_partial_match_includes_partial_words(self):
+        assert_that(testee.calculate_similarity('erfahrene Servicemitarbeiter/-innen', 'Servicemitarbeiter'), is_(0.5))
+
     def test_calculate_similarity_with_common_patterns(self):
         assert_that(testee.calculate_similarity('Junior Accountant (m/w) 80 - 100%', 'Junior Accountant'), is_(1))
 
