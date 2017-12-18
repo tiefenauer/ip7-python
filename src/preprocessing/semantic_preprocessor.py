@@ -3,8 +3,8 @@ from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocesso
 
 
 class SemanticPreprocessor(RelevantTagsPreprocessor):
-    def __init__(self, raw_data, remove_stopwords=False):
-        super(SemanticPreprocessor, self).__init__(raw_data)
+    def __init__(self, data_source, remove_stopwords=False):
+        super(SemanticPreprocessor, self).__init__(data_source)
         self.remove_stopwords = remove_stopwords
 
     def preprocess_single(self, row):

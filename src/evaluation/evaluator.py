@@ -18,37 +18,40 @@ log = logging.getLogger(__name__)
 class Evaluator(object):
     num_classified = 0
 
-    def __init__(self, args, classifier, results):
+    def __init__(self, args, ResultEntity):
+        self.visualize = args.visualize if hasattr(args, 'visualize') else False
         self.write = args.write if hasattr(args, 'write') else False
         if hasattr(args, 'truncate') and args.truncate:
-            results.truncate()
+            ResultEntity.truncate()
 
-        self.classifier = classifier
-        self.results = results
+        self.ResultEntity = ResultEntity
         self.start_time = datetime.datetime.today()
 
+    def evaluate(self, classifier, processed_data):
         # show plot
-        self.plotter = EvaluationPlotter(self)
+        if self.visualize:
+            self.plotter = EvaluationPlotter(classifier.label(), self.get_scorers())
 
-    def evaluate(self, data_test):
-        num_total = data_test.count
+        num_total = processed_data.count
         num_processed = 0
         num_classified = 0
 
-        for rowid, actual_class, predicted_class in self.classifier.classify_all(data_test):
+        for row, actual_class, predicted_class in classifier.classify(processed_data):
             num_processed += 1
             if self.is_classified(predicted_class):
                 num_classified += 1
             scores = self.calculate_scores(actual_class, predicted_class)
-            self.plotter.update_plots(num_total, num_processed, num_classified)
+            if self.visualize:
+                self.plotter.update_plots(num_total, num_processed, num_classified)
 
             # only write results if not dry run and class could be predicted
             if self.write and predicted_class:
-                self.results.update_classification(rowid, predicted_class, scores)
-        self.stop()
+                self.ResultEntity.update_classification(row, predicted_class, scores)
+                pass
+        self.stop(classifier)
 
-    def stop(self):
-        filename = self.classifier.filename + '_' + time.strftime(util.DATE_PATTERN)
+    def stop(self, classifier):
+        filename = classifier.filename + '_' + time.strftime(util.DATE_PATTERN)
         path = path_to_file(filename)
         plt.savefig(path)
 

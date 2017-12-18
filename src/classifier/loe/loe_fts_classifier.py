@@ -4,7 +4,6 @@ import re
 from src.classifier.loe.loe_classifier import LoeClassifier
 from src.classifier.loe.loe_fts_features import LoeFtsFeatures
 from src.classifier.tag_classifier import TagClassifier
-from src.preprocessing.loe_preprocessor import LoePreprocessor
 
 log = logging.getLogger(__name__)
 
@@ -65,10 +64,7 @@ class LoeFtsClassifier(TagClassifier, LoeClassifier):
     """Predict level of employment (LOE) by performing a full text search (FTS) on the processed data for numeric
     information."""
 
-    def __init__(self, args, preprocessor=LoePreprocessor):
-        super(LoeFtsClassifier, self).__init__(args, preprocessor)
-
-    def classify(self, tags):
+    def predict_class(self, tags):
         matches = group_loe_patterns_by_count(tags)
         workquota_min = '100'
         workquota_max = '100'

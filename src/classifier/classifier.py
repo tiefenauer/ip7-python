@@ -17,19 +17,16 @@ class Classifier(ABC):
     """Abstract base class for a classifier. A classifier takes input data of any kind and converts it using a
     preprocessor. The converted format is used to make the classification."""
 
-    def __init__(self, args, preprocessor):
-        self.preprocessor = preprocessor
+    def __init__(self):
         self.filename = self.default_filename()
 
-    def classify_all(self, raw_data):
+    def classify(self, processed_data):
         """Preprocess each item of an iterable set of raw data. The  by preprocessing it and forwarding the preprocessed data to the
         abstract method whose further logic depends on the implementing subclass"""
-        processed_data = self.preprocessor(raw_data) if callable(self.preprocessor) else self.preprocessor
-        for row in processed_data:
-            rowid = row.id
+        for row, row_processed in processed_data:
             actual_class = self.get_actual_class(row)
-            predicted_class = self.classify(row.processed)
-            yield rowid, actual_class, predicted_class
+            predicted_class = self.predict_class(row_processed)
+            yield row, actual_class, predicted_class
 
     def default_filename(self):
         time_str = time.strftime(util.DATE_PATTERN)
@@ -41,7 +38,7 @@ class Classifier(ABC):
         return filename
 
     @abstractmethod
-    def classify(self, preprocessed_data):
+    def predict_class(self, processed_data):
         """classify the peprocessed data of a single input row and return the predicted class"""
         return
 

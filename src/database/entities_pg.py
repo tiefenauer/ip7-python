@@ -50,7 +50,7 @@ class Job_Class_To_Job_Class_Similar(pg.Entity):
 
 class Classification_Results(pg.Entity):
     clf_method = Discriminator(str)
-    job = Required(X28_HTML, column='job_id')
+    x28_row = Required(X28_HTML, column='job_id')
     job_name = Optional(str)
     workquota_min = Optional(int)
     workquota_max = Optional(int)

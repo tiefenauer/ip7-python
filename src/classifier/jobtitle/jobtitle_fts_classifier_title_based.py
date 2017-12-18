@@ -5,7 +5,7 @@ from src.classifier.tag_classifier import TagClassifier
 class TitleBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
     """Extracts a jobtitle by only looking at the title tag of a DOM. The title tag is used as extracted information."""
 
-    def classify(self, tags):
+    def predict_class(self, tags):
         title = None
         for tag in (tag for tag in tags if tag.name and tag.name == 'title'):
             title = tag.getText()

@@ -11,7 +11,7 @@ class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
     """Predicts a jobtitle using a pre-trained Word2Vec model. The classification is made by calculating the average
     of all word vectors from the vacancy that are indexed in the model."""
 
-    def classify(self, word_list):
+    def predict_class(self, word_list):
         feature_vec = self.to_average_vector(word_list, self.model)
         # query w2v model
         top10 = self.model.similar_by_vector(feature_vec, 1)

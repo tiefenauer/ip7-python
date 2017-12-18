@@ -8,7 +8,6 @@ from sklearn.ensemble import RandomForestClassifier
 from src.classifier.classifier import model_dir
 from src.classifier.jobtitle.jobtitle_semantic_classifier import JobtitleSemanticClassifier
 from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
-from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
@@ -18,25 +17,25 @@ class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
     is used as the internal model and overrides the Word2Vec model once the forest has been trained .
     """
 
-    def __init__(self, args, preprocessor=SemanticPreprocessor(remove_stopwords=False)):
-        super(JobtitleSemanticClassifierRF, self).__init__(args, preprocessor)
+    def __init__(self, args):
+        super(JobtitleSemanticClassifierRF, self).__init__(args)
         self.w2v_model = None
         if hasattr(args, 'w2vmodel') and args.w2vmodel:
             self.filename = args.w2vmodel
             self.w2v_model = JobtitleSemanticClassifierAvg(args).load_model()
             log.info('loaded pre-trained Word2Vec-Model')
 
-    def classify(self, word_list):
+    def predict_class(self, word_list):
         # TODO: predict a single item, not the whole matrix!
         pass
 
-    def train_model(self, processed_rows, labels, num_rows):
+    def train_model(self, labeled_data):
         # use pre-trained W2V-Model, if available
         if self.w2v_model:
             log.info('using pre-trained W2V-Model')
             w2v_model = self.w2v_model
         else:
-            w2v_model = self.train_w2v_model(processed_rows)
+            w2v_model = self.train_w2v_model(sentences)
         # use the trained Word2Vec model to train a RandomForest
         path = os.path.join(model_dir, 'vecs')
         if os.path.exists(path):
@@ -45,7 +44,7 @@ class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
             vecs = [vec for (vec, label) in vecs_labels]
             labels = [label for (vec, label) in vecs_labels]
         else:
-            vecs = self.create_average_vectors(w2v_model, processed_rows, num_rows)
+            vecs = self.create_average_vectors(w2v_model, labeled_data, labeled_data.count)
             labels = list(labels)
             log.info('Saving vectors for later use')
             pickle.dump(list(zip(vecs, labels)), open(path, 'wb'))

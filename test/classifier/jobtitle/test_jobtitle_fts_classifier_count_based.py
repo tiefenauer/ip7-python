@@ -13,13 +13,13 @@ testee = CountBasedJobtitleFtsClassifier(args)
 
 
 class TestCountBasedJobtitleFtsClassifier(unittest.TestCase):
-    def test_classify_should_return_best_match(self):
+    def test_predict_class_should_return_best_match(self):
         # arrange
         row = create_dummy_row(html='<p>Schneider Schneider Schneider Koch Koch Koch Koch Sekretär</p>')
         processed_data = preprocessor.preprocess_single(row)
         testee.known_jobs = ['Schneider', 'Koch', 'Sekretär']
         # act
-        result = testee.classify(processed_data)
+        result = testee.predict_class(processed_data)
         # assert
         assert_that(result, is_('Koch'))
 

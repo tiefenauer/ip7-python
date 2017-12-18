@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class Scorer(ABC):
-    def __init__(self, label='score', threshold=0):
+    def __init__(self, label, threshold=0):
         self.lbl = label
         self.threshold = threshold
         self.total_classified = 0

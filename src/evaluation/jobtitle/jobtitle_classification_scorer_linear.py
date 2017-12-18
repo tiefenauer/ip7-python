@@ -5,6 +5,9 @@ from src.util import jobtitle_util
 class LinearJobtitleClassificationScorer(ClassificationScorer):
     scores = 0
 
+    def __init__(self):
+        super(LinearJobtitleClassificationScorer, self).__init__(label='linear')
+
     def calculate_similarity(self, actual_class, predicted_class):
         """calculates similarity as number of words in predicted class that also appear in actual class"""
         if not predicted_class or len(predicted_class) == 0:

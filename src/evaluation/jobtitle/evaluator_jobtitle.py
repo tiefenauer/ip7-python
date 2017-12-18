@@ -6,11 +6,11 @@ from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import Tole
 
 class JobtitleEvaluator(Evaluator):
 
-    def __init__(self, args, classifier, results):
-        self.scorer_strict = StrictJobtitleClassificationScorer(classifier.label())
-        self.scorer_tolerant = TolerantJobtitleClassificationScorer(classifier.label())
-        self.scorer_linear = LinearJobtitleClassificationScorer(classifier.label())
-        super(JobtitleEvaluator, self).__init__(args, classifier, results)
+    def __init__(self, args, ResultEntity):
+        super(JobtitleEvaluator, self).__init__(args, ResultEntity)
+        self.scorer_strict = StrictJobtitleClassificationScorer()
+        self.scorer_tolerant = TolerantJobtitleClassificationScorer()
+        self.scorer_linear = LinearJobtitleClassificationScorer()
 
     def get_scorers(self):
         return [self.scorer_strict, self.scorer_tolerant, self.scorer_linear]

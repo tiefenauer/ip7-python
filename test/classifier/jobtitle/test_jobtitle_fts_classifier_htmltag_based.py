@@ -52,161 +52,161 @@ testee = FeatureBasedJobtitleFtsClassifier(args)
 
 
 class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
-    def test_classify_one_tag_one_job_one_variant_returns_correct_variant(self):
+    def test_predict_class_one_tag_one_job_one_variant_returns_correct_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Wir suchen eine/n Polymechaniker/-in mit Freude an der Arbeit.')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_one_tag_one_job_multi_variants_returns_longer_variant(self):
+    def test_predict_class_one_tag_one_job_multi_variants_returns_longer_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Polymechaniker/-in Polymechaniker')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_one_tag_one_job_multi_variants_returns_most_frequent_variant(self):
+    def test_predict_class_one_tag_one_job_multi_variants_returns_most_frequent_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Polymechaniker/-in Polymechaniker Polymechaniker')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_one_tag_multi_jobs_one_variant_returns_most_frequent_job(self):
+    def test_predict_class_one_tag_multi_jobs_one_variant_returns_most_frequent_job(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Koch Koch Polymechaniker Polymechaniker Polymechaniker Priester'),
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_one_tag_multi_jobs_multi_variants_returns_most_frequent_job(self):
+    def test_predict_class_one_tag_multi_jobs_multi_variants_returns_most_frequent_job(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Koch Priester Priester'),
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Priester'))
 
-    def test_classify_one_tag_multi_jobs_multi_variants_returns_most_frequent_job_variant(self):
+    def test_predict_class_one_tag_multi_jobs_multi_variants_returns_most_frequent_job_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Koch Priester Priester Priester/in'),
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Priester'))
 
-    def test_classify_one_tag_multi_job_same_frequency_result_is_the_one_with_more_diversity(self):
+    def test_predict_class_one_tag_multi_job_same_frequency_result_is_the_one_with_more_diversity(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Koch Koch Koch Priester Priester/in Priester/in')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Priester'))
 
-    def test_classify_multi_tag_one_tagtype_one_job_one_variant_returns_correct_variant(self):
+    def test_predict_class_multi_tag_one_tagtype_one_job_one_variant_returns_correct_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Coiffeur'),
             preproc.create_tag('h1', 'Coiffeur')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Coiffeur'))
 
-    def test_classify_multi_tag_one_tagtype_one_job_multi_variants_returns_longer_variant(self):
+    def test_predict_class_multi_tag_one_tagtype_one_job_multi_variants_returns_longer_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Coiffeur'),
             preproc.create_tag('h1', 'Coiffeuse')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Coiffeur'))
 
-    def test_classify_multi_tag_multi_tagtype_one_job_multi_variants_returns_higher_ranked_variant(self):
+    def test_predict_class_multi_tag_multi_tagtype_one_job_multi_variants_returns_higher_ranked_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Coiffeur'),
             preproc.create_tag('h2', 'Coiffeuse')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Coiffeur'))
 
-    def test_classify_multi_tag_one_tagtype_one_job_multi_variants_returns_most_frequent_variant(self):
+    def test_predict_class_multi_tag_one_tagtype_one_job_multi_variants_returns_most_frequent_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Coiffeur Coiffeuse'),
             preproc.create_tag('h1', 'Coiffeuse')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Coiffeur'))
 
-    def test_classify_multi_tag_one_tagtype_multi_job_one_variant_result_is_most_frequent_job(self):
+    def test_predict_class_multi_tag_one_tagtype_multi_job_one_variant_result_is_most_frequent_job(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Koch Koch Priester'),
             preproc.create_tag('h1', 'Priester Priester')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Priester'))
 
-    def test_classify_multi_tag_one_tagtype_multi_job_multi_variants_result_is_most_frequent_variant(self):
+    def test_predict_class_multi_tag_one_tagtype_multi_job_multi_variants_result_is_most_frequent_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Koch Koch Priester/in'),
             preproc.create_tag('h1', 'Priester/in Priester')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Priester'))
 
-    def test_classify_multi_tag_one_tagtype_multi_job_multi_variants_result_is_longest_variant(self):
+    def test_predict_class_multi_tag_one_tagtype_multi_job_multi_variants_result_is_longest_variant(self):
         # arrange
         tags = [
             preproc.create_tag('h1', 'Koch Koch Priester/-in'),
             preproc.create_tag('h1', 'Priester/in Priester')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Priester'))
 
-    def test_classify_multi_tag_multi_job_result_is_the_one_with_lower_tag(self):
+    def test_predict_class_multi_tag_multi_job_result_is_the_one_with_lower_tag(self):
         # arrange
         tags = [
             preproc.create_tag('h2', 'Coiffeur'),
             preproc.create_tag('h1', 'Polymechaniker/in')
         ]
         # act
-        result = testee.classify(tags)
+        result = testee.predict_class(tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 

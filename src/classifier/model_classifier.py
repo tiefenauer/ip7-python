@@ -20,8 +20,8 @@ class ModelClassifier(Classifier):
     If no filename is supplied, the file does not exist or the model can not be loaded for any other reason, a new
     model will be trained. Training of a new model can take considerably more time than loading a pre-trained model!"""
 
-    def __init__(self, args, preprocessor):
-        super(ModelClassifier, self).__init__(args, preprocessor)
+    def __init__(self, args):
+        super(ModelClassifier, self).__init__()
         self.model = None
 
         # try to load model from model file (if specified)
@@ -69,12 +69,12 @@ class ModelClassifier(Classifier):
         return model
 
     @abstractmethod
-    def classify(self, processed_data):
+    def predict_class(self, processed_data):
         """get class for a single item of """
 
     @abstractmethod
-    def train_model(self, train_data):
-        """train classifier with suitable given data"""
+    def train_model(self, labeled_data):
+        """train classifier with given labeled data"""
         return
 
     @abstractmethod

@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 from pony.orm import commit, db_session
 
-from src.database.entities_pg import Semantic_Avg_Classification_Results, Fts_Classification_Results, X28_HTML, \
+from src.database.entities_pg import Semantic_Avg_Classification_Results, Fts_Classification_Results, \
     Semantic_Rf_Classification_Results, Structural_Classification_NV_Results, Structural_Classification_NVT_Results, \
     Loe_Classification_Result, Combined_Classification_Results
 
@@ -16,13 +16,12 @@ class ClassificationResults(object):
         self.Entity = Entity
 
     @db_session
-    def update_classification(self, rowid, predicted_class, scores):
+    def update_classification(self, row, predicted_class, scores):
         sc_str = scores[0]
         sc_tol = scores[1]
         sc_lin = scores[2]
 
-        job_row = X28_HTML.get(lambda d: d.id == rowid)
-        classification_result = self.create_entity(job_row, predicted_class[:255], sc_str, sc_tol, sc_lin)
+        classification_result = self.create_entity(row.id, predicted_class[:255], sc_str, sc_tol, sc_lin)
         commit()
         return classification_result
 
@@ -42,8 +41,8 @@ class FtsClassificationResults(ClassificationResults):
     def __init__(self):
         super(FtsClassificationResults, self).__init__(Fts_Classification_Results)
 
-    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
-        return Fts_Classification_Results(job=job_entity,
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
+        return Fts_Classification_Results(x28_row=x28_id,
                                           job_name=predicted_class,
                                           score_strict=sc_str,
                                           score_tolerant=sc_tol,
@@ -54,8 +53,8 @@ class CombinedClassificationResults(ClassificationResults):
     def __init__(self):
         super(CombinedClassificationResults, self).__init__(Combined_Classification_Results)
 
-    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
-        return Combined_Classification_Results(job=job_entity,
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
+        return Combined_Classification_Results(x28_row=x28_id,
                                                job_name=predicted_class,
                                                score_strict=sc_str,
                                                score_tolerant=sc_tol,
@@ -66,8 +65,8 @@ class SemanticAvgClassificationResults(ClassificationResults):
     def __init__(self):
         super(SemanticAvgClassificationResults, self).__init__(Semantic_Avg_Classification_Results)
 
-    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
-        return Semantic_Avg_Classification_Results(job=job_entity,
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
+        return Semantic_Avg_Classification_Results(x28_row=x28_id,
                                                    job_name=predicted_class,
                                                    score_strict=sc_str,
                                                    score_tolerant=sc_tol,
@@ -78,8 +77,8 @@ class SemanticRfClassificationResults(ClassificationResults):
     def __init__(self):
         super(SemanticRfClassificationResults, self).__init__(Semantic_Rf_Classification_Results)
 
-    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
-        return Semantic_Rf_Classification_Results(job=job_entity,
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
+        return Semantic_Rf_Classification_Results(x28_row=x28_id,
                                                   job_name=predicted_class,
                                                   score_strict=sc_str,
                                                   score_tolerant=sc_tol,
@@ -90,8 +89,8 @@ class StructuralClassificationNVResults(ClassificationResults):
     def __init__(self):
         super(StructuralClassificationNVResults, self).__init__(Structural_Classification_NV_Results)
 
-    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
-        return Structural_Classification_NV_Results(job=job_entity,
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
+        return Structural_Classification_NV_Results(x28_row=x28_id,
                                                     job_name=predicted_class,
                                                     score_strict=sc_str,
                                                     score_tolerant=sc_tol,
@@ -102,8 +101,8 @@ class StructuralClassificationNVTResults(ClassificationResults):
     def __init__(self):
         super(StructuralClassificationNVTResults, self).__init__(Structural_Classification_NVT_Results)
 
-    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
-        return Structural_Classification_NVT_Results(job=job_entity,
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
+        return Structural_Classification_NVT_Results(x28_row=x28_id,
                                                      job_name=predicted_class,
                                                      score_strict=sc_str,
                                                      score_tolerant=sc_tol,
@@ -115,9 +114,9 @@ class LoeClassificationResults(ClassificationResults):
     def __init__(self):
         super(LoeClassificationResults, self).__init__(Loe_Classification_Result)
 
-    def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
         workquota_min, workquota_max = predicted_class
-        return Loe_Classification_Result(job=job_entity,
+        return Loe_Classification_Result(x28_row=x28_id,
                                          workquota_min=workquota_min,
                                          workquota_max=workquota_max,
                                          score_strict=sc_str,

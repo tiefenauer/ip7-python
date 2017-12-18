@@ -18,66 +18,66 @@ def to_tagged_words(text):
 
 class TestCombinedJobtitleClassifier(unittest.TestCase):
 
-    def test_classify_with_normal_hit(self):
+    def test_predict_class_with_normal_hit(self):
         # arrange
         html_tags = [
             create_tag('h2', 'Wir suchen einen Polymechaniker')
         ]
         # act
-        result = testee.classify(html_tags)
+        result = testee.predict_class(html_tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_with_normal_hit_finds_hits_in_multiple_equal_tags(self):
+    def test_predict_class_with_normal_hit_finds_hits_in_multiple_equal_tags(self):
         # arrange
         html_tags = [
             create_tag('h2', 'Nothing to see here'),
             create_tag('h2', 'Wir suchen einen Polymechaniker')
         ]
         # act
-        result = testee.classify(html_tags)
+        result = testee.predict_class(html_tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_with_normal_hit_sorts_hits_by_tag_position(self):
+    def test_predict_class_with_normal_hit_sorts_hits_by_tag_position(self):
         # arrange
         html_tags = [
             create_tag('h2', 'Wir suchen einen Bäcker'),
             create_tag('h2', 'Wir suchen einen Polymechaniker')
         ]
         # act
-        result = testee.classify(html_tags)
+        result = testee.predict_class(html_tags)
         # assert
         assert_that(result, is_('Bäcker'))
 
-    def test_classify_with_normal_hit_sorts_hits_by_tag_weight(self):
+    def test_predict_class_with_normal_hit_sorts_hits_by_tag_weight(self):
         # arrange
         html_tags = [
             create_tag('h2', 'Wir suchen einen Bäcker'),
             create_tag('h1', 'Wir suchen einen Polymechaniker')
         ]
         # act
-        result = testee.classify(html_tags)
+        result = testee.predict_class(html_tags)
         # assert
         assert_that(result, is_('Polymechaniker'))
 
-    def test_classify_with_improvable_hit(self):
+    def test_predict_class_with_improvable_hit(self):
         # arrange
         html_tags = [
             create_tag('h2', 'Polymechaniker / CNC Fräser 80% - 100% (m/w)')
         ]
         # act
-        result = testee.classify(html_tags)
+        result = testee.predict_class(html_tags)
         # assert
         assert_that(result, is_('Polymechaniker / CNC Fräser'))
 
-    def test_classify_with_compound_hit(self):
+    def test_predict_class_with_compound_hit(self):
         # arrange
         html_tags = [
             create_tag('h2', 'Team Head Compliance Officer Premium Clients Switzerland (80-100%)')
         ]
         # act
-        result = testee.classify(html_tags)
+        result = testee.predict_class(html_tags)
         # assert
         assert_that(result, is_('Team Head Compliance Officer Premium Clients Switzerland'))
 

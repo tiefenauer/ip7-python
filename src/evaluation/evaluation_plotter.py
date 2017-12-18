@@ -55,13 +55,11 @@ def update_title(num_processed, num_total, num_classified):
 
 class EvaluationPlotter(object):
 
-    def __init__(self, evaluator):
-        self.evaluator = evaluator
+    def __init__(self, label, scorers):
+        self.scorers = scorers
 
-        title = evaluator.classifier.label()
-        xlabels = [scorer.label() for scorer in evaluator.get_scorers()]
-
-        create_figure(title)
+        xlabels = [scorer.label() for scorer in scorers]
+        create_figure(label)
 
         num_plots = len(xlabels)
         self.plots1, self.plots2 = create_plots(xlabels)
@@ -70,7 +68,7 @@ class EvaluationPlotter(object):
     def update_plots(self, num_total, num_processed, num_classified):
         update_figure(num_processed, num_total, num_classified)
 
-        for i, scorer in enumerate(self.evaluator.get_scorers()):
+        for i, scorer in enumerate(self.scorers):
             acc = scorer.accuracy
             overall_acc = scorer.overall_accuracy
 

@@ -23,27 +23,27 @@ testee = LoeFtsClassifier(args)
 
 class TestLoeFtsClassifier(unittest.TestCase):
 
-    def test_classify_without_patterns_returns_none(self):
+    def test_predict_class_without_patterns_returns_none(self):
         # arrange
         tags = preproc.create_tags([
             ('h1', 'Anstellung als Maurer'),
             ('h1', 'Anstellung als Baggeführer')
         ])
         # act
-        result_min, result_max = testee.classify(tags)
+        result_min, result_max = testee.predict_class(tags)
         # assert
         assert_that(result_min, is_(100))
         assert_that(result_max, is_(100))
 
-    def test_classify_xxxP_returns_xxx_for_min_and_max(self):
+    def test_predict_class_xxxP_returns_xxx_for_min_and_max(self):
         # arrange
         tags1 = preproc.create_tags([('h1', 'Anstellung 80% als Maurer')])
         tags2 = preproc.create_tags([('h1', 'Anstellung 80 % als Maurer')])
         # act / Assert
-        assert_that(testee.classify(tags1), is_((80, 80)))
-        assert_that(testee.classify(tags2), is_((80, 80)))
+        assert_that(testee.predict_class(tags1), is_((80, 80)))
+        assert_that(testee.predict_class(tags2), is_((80, 80)))
 
-    def test_classify_xxx_yyyP_returns_xxx_for_min_and_yyy_max(self):
+    def test_predict_class_xxx_yyyP_returns_xxx_for_min_and_yyy_max(self):
         # arrange
         tags1 = preproc.create_tags([('h1', 'Anstellung 80-100% als Maurer')])
         tags2 = preproc.create_tags([('h1', 'Anstellung 80 -100% als Maurer')])
@@ -52,14 +52,14 @@ class TestLoeFtsClassifier(unittest.TestCase):
         tags5 = preproc.create_tags([('h1', 'Anstellung 80 - 100 % als Maurer')])
         tags6 = preproc.create_tags([('h1', 'Anstellung 80 - 100% als Maurer')])
         # act/assert
-        assert_that(testee.classify(tags1), is_((80, 100)))
-        assert_that(testee.classify(tags2), is_((80, 100)))
-        assert_that(testee.classify(tags3), is_((80, 100)))
-        assert_that(testee.classify(tags4), is_((80, 100)))
-        assert_that(testee.classify(tags5), is_((80, 100)))
-        assert_that(testee.classify(tags6), is_((80, 100)))
+        assert_that(testee.predict_class(tags1), is_((80, 100)))
+        assert_that(testee.predict_class(tags2), is_((80, 100)))
+        assert_that(testee.predict_class(tags3), is_((80, 100)))
+        assert_that(testee.predict_class(tags4), is_((80, 100)))
+        assert_that(testee.predict_class(tags5), is_((80, 100)))
+        assert_that(testee.predict_class(tags6), is_((80, 100)))
 
-    def test_classify_xxxP_yyyP_returns_xxx_for_min_and_yyy_max(self):
+    def test_predict_class_xxxP_yyyP_returns_xxx_for_min_and_yyy_max(self):
         # arrange
         tags1 = preproc.create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
         tags2 = preproc.create_tags([('h1', 'Anstellung 80 %-100% als Maurer')])
@@ -70,16 +70,16 @@ class TestLoeFtsClassifier(unittest.TestCase):
         tags7 = preproc.create_tags([('h1', 'Anstellung 80% - 100% als Maurer')])
         tags8 = preproc.create_tags([('h1', 'Anstellung 80%-100% als Maurer')])
         # act/assert
-        assert_that(testee.classify(tags1), is_((80, 100)))
-        assert_that(testee.classify(tags2), is_((80, 100)))
-        assert_that(testee.classify(tags3), is_((80, 100)))
-        assert_that(testee.classify(tags4), is_((80, 100)))
-        assert_that(testee.classify(tags5), is_((80, 100)))
-        assert_that(testee.classify(tags6), is_((80, 100)))
-        assert_that(testee.classify(tags7), is_((80, 100)))
-        assert_that(testee.classify(tags8), is_((80, 100)))
+        assert_that(testee.predict_class(tags1), is_((80, 100)))
+        assert_that(testee.predict_class(tags2), is_((80, 100)))
+        assert_that(testee.predict_class(tags3), is_((80, 100)))
+        assert_that(testee.predict_class(tags4), is_((80, 100)))
+        assert_that(testee.predict_class(tags5), is_((80, 100)))
+        assert_that(testee.predict_class(tags6), is_((80, 100)))
+        assert_that(testee.predict_class(tags7), is_((80, 100)))
+        assert_that(testee.predict_class(tags8), is_((80, 100)))
 
-    def test_classify_with_multiple_patterns_returns_most_frequent_pattern(self):
+    def test_predict_class_with_multiple_patterns_returns_most_frequent_pattern(self):
         # arrange
         tags = preproc.create_tags([
             ('h1', 'Anstellung 80%-100% als Maurer'),
@@ -90,7 +90,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
             ('h2', 'Anstellung 60-80% als Maurer')
         ])
         # act
-        loe_min, loe_max = testee.classify(tags)
+        loe_min, loe_max = testee.predict_class(tags)
         # assert
         assert_that(loe_min, is_(80))
         assert_that(loe_max, is_(100))

@@ -7,6 +7,9 @@ class TolerantJobtitleClassificationScorer(ClassificationScorer):
     predicted and actual class are normalized in order to compare them.
     """
 
+    def __init__(self):
+        super(TolerantJobtitleClassificationScorer, self).__init__(label='tolerant')
+
     def calculate_similarity(self, actual_class, predicted_class):
         similarity = 0
         # normalize before comparison

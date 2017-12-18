@@ -24,7 +24,7 @@ class CountBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
         super(CountBasedJobtitleFtsClassifier, self).__init__(args)
         self.known_jobs = KnownJobs()
 
-    def classify(self, relevant_tags):
+    def predict_class(self, relevant_tags):
         best_count = 0
         best_match = None
         for (count, name) in count_job_names(relevant_tags, self.known_jobs):

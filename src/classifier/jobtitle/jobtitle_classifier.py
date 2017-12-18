@@ -7,7 +7,7 @@ class JobtitleClassifier(Classifier):
     """Uses row.title attribute as the actual class"""
 
     @abstractmethod
-    def classify(self, preprocessed_data):
+    def predict_class(self, processed_data):
         """to be implemented in subclass"""
         return
 

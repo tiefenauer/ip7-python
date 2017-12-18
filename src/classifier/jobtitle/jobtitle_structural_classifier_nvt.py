@@ -2,7 +2,6 @@ import itertools
 import operator
 
 from src.classifier.jobtitle.jobtitle_structural_classifier import JobtitleStructuralClassifier
-from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
 
 html_tags = ['title', 'h1', 'h2', 'h3', 'h4']
 
@@ -58,9 +57,6 @@ class JobtitleStructuralClassifierNVT(JobtitleStructuralClassifier):
     is evaluated using an internal list going from 'h1' (more important) to 'p' (less important).
     This means, in order to train the model the preprocessed data must be must be supplied as word tokens together
     with their POS tags and the HTML tags they appear in."""
-
-    def __init__(self, args, preprocessor=StructuralPreprocessorNVT):
-        super(JobtitleStructuralClassifierNVT, self).__init__(args, preprocessor)
 
     def extract_features(self, tagged_words):
         # convert to list because of two passes!

@@ -6,7 +6,6 @@ from gensim.models import word2vec
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.model_classifier import ModelClassifier
-from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 
 log = logging.getLogger(__name__)
 
@@ -15,11 +14,11 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
     """Predicts a job title by exploiting semantic information from the vacancy. A Word2Vec model is trained as an
     internal model."""
 
-    def __init__(self, args, preprocessor=SemanticPreprocessor):
+    def __init__(self, args):
+        super(JobtitleSemanticClassifier, self).__init__(args)
         self.num_features = 300
         self.min_word_count = 40
         self.context = 10
-        super(JobtitleSemanticClassifier, self).__init__(args, preprocessor)
         self.num_workers = 6
         self.downsampling = 1e-3
 
@@ -59,6 +58,6 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
                                                                                context=self.context)
 
     @abstractmethod
-    def classify(self, word_list):
+    def predict_class(self, word_list):
         """to be implemented in subclass"""
         return

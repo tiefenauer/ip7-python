@@ -27,28 +27,29 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
     A Naive Bayes classifier is trained to make predictions about the job title for unkown instances.
     """
 
-    def __init__(self, args, preprocessor):
-        self.num_rows = 0
-        super(JobtitleStructuralClassifier, self).__init__(args, preprocessor)
+    def __init__(self):
+        super(JobtitleStructuralClassifier, self).__init__()
+        self.count = 0
 
-    def classify(self, tagged_word_tokens):
+    def predict_class(self, tagged_word_tokens):
         features = self.extract_features(tagged_word_tokens)
         result = self.model.classify(features)
         return result
 
-    def train_model(self, data_train):
+    def train_model(self, labeled_data):
         """Train a Naive Bayes classifier as the internal model"""
-        self.num_rows = data_train.num_rows
-        processed_data = self.preprocessor(data_train)
-        data = (row.processed for row in processed_data)
-        labels = clean_labels(row.title for row in processed_data)
+        self.count = labeled_data.count
+
+        data = (row_processed for row, row_processed in labeled_data)
+        labels = clean_labels(row.title for row, row_processed in labeled_data)
+
         labeled_data = zip(data, labels)
         train_set = ((self.extract_features(words), label) for words, label in labeled_data)
         model = nltk.NaiveBayesClassifier.train(train_set)
         return model
 
     def get_filename_postfix(self):
-        return '{}rows'.format(self.num_rows)
+        return '{}rows'.format(self.count)
 
     def serialize_model(self, model, path):
         with open(path, 'wb') as f:

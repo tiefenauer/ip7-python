@@ -85,7 +85,7 @@ class FeatureBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
      - in how many variants does the job title appear?
      """
 
-    def classify(self, tags):
+    def predict_class(self, tags):
         stats = create_statistics(tags, known_job_variants)
         features = create_fts_features(stats)
         if len(features) > 0:
