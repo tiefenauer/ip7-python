@@ -3,13 +3,13 @@ import unittest
 from bs4 import BeautifulSoup
 from hamcrest import assert_that, is_
 
-from src.preprocessing.tags_preprocessor import TagsPreprocessor
+from src.preprocessing.html_preprocessor import HTMLPreprocessor
 from test import testutils
 
-testee = TagsPreprocessor()
+testee = HTMLPreprocessor()
 
 
-class TestTagsPreprocessor(unittest.TestCase):
+class TestHTMLPreprocessor(unittest.TestCase):
 
     def test_preprocess_single_extracts_all_tags(self):
         # arrange

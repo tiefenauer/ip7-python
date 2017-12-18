@@ -4,8 +4,8 @@ from src.preprocessing import preproc
 from src.preprocessing.preprocessor import Preprocessor
 
 
-class TagsPreprocessor(Preprocessor):
-    """extracts all tags with readable content, i.e. no script, meta, etc..."""
+class HTMLPreprocessor(Preprocessor):
+    """parses markup as HTML and extracts all tags with human readable content, i.e. no script, meta, etc..."""
 
     def preprocess_single(self, row):
         soup = preproc.parse(row.html)
