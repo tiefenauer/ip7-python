@@ -212,11 +212,11 @@ def normalize_job_name(job_name):
     return preproc.stem(to_male_form(job_name)).lower()
 
 
-def normalize_text(text):
+def normalize_job_title(text):
     if not text:
         return text
     no_special_chars = preproc.remove_special_chars(text)
     words = preproc.to_words(no_special_chars)
     no_stopwords = (preproc.remove_stop_words(words))
     no_gender = (to_male_form(word) for word in no_stopwords)
-    return (word for word in preproc.stem(no_gender))
+    return (word.strip() for word in preproc.stem(no_gender) if word)

@@ -4,11 +4,10 @@ from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
 from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based as clf_htmltag_based
-from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
 from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
+from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
 from src.preprocessing import preproc
 from src.util.jobtitle_util import create_gender_variants
-from test.testutils import create_dummy_args
 
 
 def feature_matching(job_name, variant_name, tag_name, pos_counts):
@@ -47,8 +46,7 @@ def create_job_name_tuple(*job_names):
         yield job_name, create_gender_variants(job_name)
 
 
-args = create_dummy_args()
-testee = FeatureBasedJobtitleFtsClassifier(args)
+testee = FeatureBasedJobtitleFtsClassifier()
 
 
 class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
@@ -335,7 +333,8 @@ class TestFeatureBasedJobtitleFtsClassifier(unittest.TestCase):
         result = clf_htmltag_based.create_fts_features(features)
         # assert
         assert_that(result, contains_inanyorder(
-            JobtitleFtsFeatures('Polymechaniker', highest_tag='h1', first_position=1, num_occurrences=11, num_variants=2),
+            JobtitleFtsFeatures('Polymechaniker', highest_tag='h1', first_position=1, num_occurrences=11,
+                                num_variants=2),
             JobtitleFtsFeatures('Elektriker', highest_tag='h3', first_position=2, num_occurrences=10, num_variants=3)
         ))
 

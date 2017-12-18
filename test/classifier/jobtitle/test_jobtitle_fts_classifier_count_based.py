@@ -4,22 +4,20 @@ from hamcrest import *
 
 from src.classifier.jobtitle.jobtitle_fts_classifier_count_based import CountBasedJobtitleFtsClassifier, \
     count_job_names
-from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
-from test.testutils import create_dummy_args, create_dummy_row
+from src.preprocessing.preproc import create_tag
 
-args = create_dummy_args()
-preprocessor = RelevantTagsPreprocessor()
-testee = CountBasedJobtitleFtsClassifier(args)
+testee = CountBasedJobtitleFtsClassifier()
 
 
 class TestCountBasedJobtitleFtsClassifier(unittest.TestCase):
     def test_predict_class_should_return_best_match(self):
         # arrange
-        row = create_dummy_row(html='<p>Schneider Schneider Schneider Koch Koch Koch Koch Sekretär</p>')
-        processed_data = preprocessor.preprocess_single(row)
+        relevant_tags = [
+            create_tag('p', 'Schneider Schneider Schneider Koch Koch Koch Koch Sekretär')
+        ]
         testee.known_jobs = ['Schneider', 'Koch', 'Sekretär']
         # act
-        result = testee.predict_class(processed_data)
+        result = testee.predict_class(relevant_tags)
         # assert
         assert_that(result, is_('Koch'))
 

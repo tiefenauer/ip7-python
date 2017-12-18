@@ -1,9 +1,7 @@
-from src.evaluation.classification_scorer import ClassificationScorer
+from src.evaluation.classification_scorer_strict import StrictClassificationScorer
 
 
-class StrictJobtitleClassificationScorer(ClassificationScorer):
-    def __init__(self):
-        super(StrictJobtitleClassificationScorer, self).__init__(label='strict')
+class StrictJobtitleClassificationScorer(StrictClassificationScorer):
 
     def calculate_similarity(self, actual_class, predicted_class):
         return int(actual_class == predicted_class)

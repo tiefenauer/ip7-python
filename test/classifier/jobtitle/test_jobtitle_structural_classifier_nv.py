@@ -1,6 +1,6 @@
+import os
 import unittest
 
-import os
 from hamcrest import assert_that, contains, is_, not_
 
 from src.classifier.jobtitle import jobtitle_structural_classifier_nv
@@ -78,8 +78,9 @@ class TestJobtitleStructuralClassifierNV(unittest.TestCase):
     def test_save_load(self):
         # arrange
         testee.filename = 'test.pickle'
-        data_train = X28TrainData(create_dummy_args(split=0.00001))
-        testee.train_classifier(data_train)
+        labeled_data = X28TrainData(create_dummy_args(split=0.00001))
+        processed_Data = StructuralPreprocessorNV(labeled_data)
+        testee.train_classifier(processed_Data)
         # act
         path = testee.save_model()
         testee.filename = path

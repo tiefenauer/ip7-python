@@ -15,6 +15,9 @@ class DataSource(ABC):
         for row in self.query:
             yield row
 
+    def __len__(self):
+        return self.count
+
     def create_query(self, args):
         """create Pony ORM query"""
         where_clause = self.create_where_clause(args)

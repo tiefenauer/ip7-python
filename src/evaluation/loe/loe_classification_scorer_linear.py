@@ -1,7 +1,7 @@
-from src.evaluation.classification_scorer import ClassificationScorer
+from src.evaluation.classification_scorer_linear import LinearClassificationScorer
 
 
-class LinearLoeClassificationScorer(ClassificationScorer):
+class LinearLoeClassificationScorer(LinearClassificationScorer):
     scores = 0
 
     def calculate_similarity(self, loe_actual, loe_predicted):
@@ -11,6 +11,3 @@ class LinearLoeClassificationScorer(ClassificationScorer):
         sum += int(actual_min == predicted_min)
         sum += int(actual_max == predicted_max)
         return sum / len(loe_actual)
-
-    def label(self):
-        return "linear"

@@ -354,18 +354,18 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.normalize_job_name('Coiffeur/-euse'), is_('coiffeur'))
         assert_that(testee.normalize_job_name('Coiffeur/-Euse'), is_('coiffeur'))
 
-    def test_normalize_text_with_empty_values_normalizes_text(self):
-        assert_that(testee.normalize_text(None), is_(None))
-        assert_that(testee.normalize_text(''), is_(''))
+    def test_normalize_job_title_with_empty_values_returns_original_values(self):
+        assert_that(testee.normalize_job_title(None), is_(None))
+        assert_that(testee.normalize_job_title(''), is_(''))
 
-    def test_normalize_text_normalizes_text(self):
+    def test_normalize_job_title_normalizes_text(self):
         # arrange
-        text = "Text, Fachperson und Arzt oder Schreinerin"
+        text = "Text, Fachperson und Arzt oder Schreinerin Polymechaniker/in (m/w)"
         # act
-        result = testee.normalize_text(text)
+        result = testee.normalize_job_title(text)
         result_text = ' '.join(item for item in result)
         # assert
-        assert_that(result_text, is_('text fachmann arzt schrein'))
+        assert_that(result_text, is_('text fachmann arzt schrein polymechan'))
 
 
 def match_item_for_job_name(job_name):

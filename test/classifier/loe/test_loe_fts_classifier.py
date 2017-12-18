@@ -5,7 +5,6 @@ from hamcrest import assert_that, contains, is_
 from src.classifier.loe import loe_fts_classifier
 from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
 from src.preprocessing import preproc
-from test.testutils import create_dummy_args
 
 """
 Anstellung 100% als Maurer
@@ -17,8 +16,7 @@ Anstellung 60%-80% als Maurer
 
 """
 
-args = create_dummy_args()
-testee = LoeFtsClassifier(args)
+testee = LoeFtsClassifier()
 
 
 class TestLoeFtsClassifier(unittest.TestCase):

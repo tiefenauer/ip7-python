@@ -26,10 +26,7 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
     consists of the tokenized words and some additional information about the inner structure of the text.
     A Naive Bayes classifier is trained to make predictions about the job title for unkown instances.
     """
-
-    def __init__(self):
-        super(JobtitleStructuralClassifier, self).__init__()
-        self.count = 0
+    count = 0
 
     def predict_class(self, tagged_word_tokens):
         features = self.extract_features(tagged_word_tokens)

@@ -78,10 +78,10 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         - hit is expanded with
     """
 
-    def predict_class(self, tag_sentence):
+    def predict_class(self, htmltag_sentences_map):
         # find occurrences of known jobs (including variants) in HTML tags together with positional and POS information
         features_list = []
-        i_tag_sentence = list(enumerate(tag_sentence))
+        i_tag_sentence = list(enumerate(htmltag_sentences_map))
         for job_name in KnownJobs():
             for tag_index, (tag_name, sentence) in i_tag_sentence:
                 hit = find_job(job_name, sentence)

@@ -15,19 +15,18 @@ def count_job_names(tags, job_names):
             yield (count, job_name)
 
 
+known_jobs = KnownJobs()
+
+
 class CountBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
     """Predict a jobtitle by performing a full text search (FTS) on the processed data. The processed data is searched
     for occurrences of known job names, including variants (such as male/female form, hyphenated forms etc...).
     The job name with the highest occurrence is used as extracted job title."""
 
-    def __init__(self, args):
-        super(CountBasedJobtitleFtsClassifier, self).__init__(args)
-        self.known_jobs = KnownJobs()
-
     def predict_class(self, relevant_tags):
         best_count = 0
         best_match = None
-        for (count, name) in count_job_names(relevant_tags, self.known_jobs):
+        for (count, name) in count_job_names(relevant_tags, known_jobs):
             if count > best_count:
                 best_count = count
                 best_match = name
