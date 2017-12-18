@@ -9,17 +9,14 @@ log = logging.getLogger(__name__)
 class Preprocessor(ABC):
 
     def __init__(self, data_source=None):
-        if data_source:
-            self.raw_data = data_source
-            self.count = len(data_source)
-        else:
-            self.raw_data = []
-            self.count = 0
+        self.raw_data = data_source if data_source else []
 
     def __iter__(self):
-        for row in tqdm((row for row in self.raw_data if row.html), total=self.count):
-            row_processed = self.preprocess_single(row)
-            yield row, row_processed
+        for row in tqdm(self.raw_data, unit=' rows'):
+            yield row, self.preprocess_single(row)
+
+    def __len__(self):
+        return len(self.raw_data)
 
     @abstractmethod
     def preprocess_single(self, row):

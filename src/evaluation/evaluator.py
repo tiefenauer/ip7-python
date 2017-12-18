@@ -32,7 +32,7 @@ class Evaluator(object):
         if self.visualize:
             self.plotter = EvaluationPlotter(classifier.label(), self.get_scorers())
 
-        num_total = processed_data.count
+        num_total = len(processed_data)
         num_processed = 0
         num_classified = 0
 
