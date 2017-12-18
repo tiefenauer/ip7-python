@@ -7,6 +7,5 @@ class SentencePreprocessor(RelevantTagsPreprocessor):
     def preprocess_single(self, row):
         relevant_tags = super(SentencePreprocessor, self).preprocess_single(row)
         for tag in relevant_tags:
-            sentences = preproc.to_sentences(tag.getText())
-            for sent in sentences:
+            for sent in preproc.to_sentences(tag.getText()):
                 yield tag.name, sent

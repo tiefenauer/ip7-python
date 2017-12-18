@@ -45,21 +45,6 @@ def find_job(job_name, sentence):
     return ' '.join(tokens)
 
 
-def to_sentences_map(html_tags):
-    for tag in html_tags:
-        for sent in preproc.to_sentences(tag.getText()):
-            yield tag.name, sent
-
-
-def search_jobs(html_tags):
-    for job_name in KnownJobs():
-        sentences_with_job = ((tag, sent) for (tag, sent) in to_sentences_map(html_tags))
-        for tag_index, (html_tag, sentence) in enumerate(sentences_with_job):
-            hit = find_job(job_name, sentence)
-            if hit:
-                yield tag_index, html_tag, hit
-
-
 class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
     """Combines different approaches to one single classifier:
     - FTS approach:
