@@ -2,7 +2,6 @@ import unittest
 
 from hamcrest import assert_that, is_
 
-from src.classifier.jobtitle import jobtitle_combined_classifier
 from src.classifier.jobtitle.jobtitle_combined_classifier import CombinedJobtitleClassifier
 from src.preprocessing import preproc
 
@@ -77,63 +76,3 @@ class TestCombinedJobtitleClassifier(unittest.TestCase):
         result = testee.predict_class(htmltag_sentence_map)
         # assert
         assert_that(result, is_('Team Head Compliance Officer Premium Clients Switzerland'))
-
-    def test_find_job_without_match_returns_None(self):
-        # arrange
-        job_name = 'Bäcker'
-        sentence = 'Wir suchen einen Geschäftsführer'
-        # act
-        result = jobtitle_combined_classifier.find_job(job_name, sentence)
-        assert_that(result, is_(None))
-
-    def test_find_job_with_simple_name_returns_exact_match(self):
-        # arrange
-        job_name = 'Polymechaniker'
-        sentence = 'Wir suchen einen Polymechaniker'
-        # act
-        result = jobtitle_combined_classifier.find_job(job_name, sentence)
-        assert_that(result, is_('Polymechaniker'))
-
-    def test_find_job_with_compound_name_returns_compound_name(self):
-        # arrange
-        job_name = 'Compliance Officer'
-        sentence = 'Wir suchen einen Compliance Officer mit Erfahrung'
-        # act
-        result = jobtitle_combined_classifier.find_job(job_name, sentence)
-        assert_that(result, is_('Compliance Officer'))
-
-    def test_find_job_with_expandable_job_name_returns_expandable_job_name(self):
-        # arrange
-        job_name_1 = 'Polymechaniker'
-        job_name_2 = 'CNC Fräser'
-        sentence = 'Polymechaniker / CNC Fräser 80% - 100% (m/w)'
-        # act
-        result_1 = jobtitle_combined_classifier.find_job(job_name_1, sentence)
-        result_2 = jobtitle_combined_classifier.find_job(job_name_2, sentence)
-        # assert
-        assert_that(result_1, is_('Polymechaniker / CNC Fräser'))
-        assert_that(result_2, is_('Polymechaniker / CNC Fräser'))
-
-    def test_find_job_with_expandable_compound_job_name_returns_expandable_job_name(self):
-        # arrange
-        job_name = 'Compliance Officer'
-        sentence = 'Team Head Compliance Officer Premium Clients Switzerland (80-100%)'
-        # act
-        result = jobtitle_combined_classifier.find_job(job_name, sentence)
-        assert_that(result, is_('Team Head Compliance Officer Premium Clients Switzerland'))
-
-    def test_calculate_positions_with_exact_match(self):
-        # arrange
-        job_name_tokenized = preproc.to_words('Erzieher')
-        sentence_tokenized = preproc.to_words('Erzieher / Gruppenleitung')
-        # act
-        result = jobtitle_combined_classifier.calculate_positions(job_name_tokenized, sentence_tokenized)
-        assert_that(result, is_((0, 1)))
-
-    def test_calculate_positions_with_fuzzy_match(self):
-        # arrange
-        job_name_tokenized = preproc.to_words('Erzieher')
-        sentence_tokenized = preproc.to_words('Erzieherin / Gruppenleitung')
-        # act
-        result = jobtitle_combined_classifier.calculate_positions(job_name_tokenized, sentence_tokenized)
-        assert_that(result, is_((0, 1)))

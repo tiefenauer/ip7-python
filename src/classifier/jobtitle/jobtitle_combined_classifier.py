@@ -1,48 +1,8 @@
-import collections
-
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesCombined
 from src.classifier.tag_classifier import TagClassifier
 from src.dataimport.known_jobs import KnownJobs
-from src.preprocessing import preproc
-
-
-def calculate_positions(job_name_tokens, sentence_tokens):
-    ix_from = [i for i, word in enumerate(sentence_tokens) if job_name_tokens[0] in word][0]
-    ix_to = ix_from + len(job_name_tokens)
-    return ix_from, ix_to
-
-
-def find_job(job_name, sentence):
-    if job_name not in sentence:
-        return None
-    job_name_tokens = preproc.to_words(job_name)
-    sentence_tokens = preproc.to_words(sentence)
-
-    ix_from, ix_to = calculate_positions(job_name_tokens, sentence_tokens)
-
-    sentence_pos = preproc.pos_tag(sentence_tokens)
-    left = sentence_pos[:ix_from]
-    right = sentence_pos[ix_to:]
-
-    tokens = collections.deque([job_name])
-    i = len(left) - 1
-    while 0 <= i:
-        word, pos_tag = left[i]
-        if pos_tag[0] in ['N', 'F'] or pos_tag[0] == '$' and word in ['/']:
-            tokens.appendleft(word)
-        else:
-            break
-        i -= 1
-    i = 0
-    while 0 <= i < len(right):
-        word, pos_tag = right[i]
-        if pos_tag[0] in ['N', 'F'] or pos_tag[0] == '$' and word in ['/']:
-            tokens.append(word)
-        else:
-            break
-        i += 1
-    return ' '.join(tokens)
+from src.util import pos_util
 
 
 class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
@@ -69,7 +29,7 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         i_tag_sentence = list(enumerate(htmltag_sentences_map))
         for job_name in KnownJobs():
             for tag_index, (tag_name, sentence) in i_tag_sentence:
-                hit = find_job(job_name, sentence)
+                hit = pos_util.expand_left_right(job_name, sentence)
                 if hit:
                     features = JobtitleFeaturesCombined(tag_index, hit, tag_name)
                     features_list.append(features)
