@@ -11,14 +11,6 @@ class HTMLPreprocessor(Preprocessor):
 
     def preprocess_single(self, row):
         soup = preproc.parse(row.html)
-        [tag.extract() for tag in soup('script')]
-        [tag.extract() for tag in soup('noscript')]
-        [tag.extract() for tag in soup('meta')]
-        [tag.extract() for tag in soup('link')]
-        [tag.extract() for tag in soup('style')]
-        [tag.extract() for tag in soup('iframe')]
-        [tag.extract() for tag in soup('input')]
-        [tag.extract() for tag in soup('img')]
-        # remove comments
+        [tag.extract() for tag in soup.findAll() if tag.name in NON_HUMAN_READABLE_TAGS]
         [tag.extract() for tag in soup.findAll(text=lambda text: isinstance(text, Comment))]
         return (tag for tag in soup.findAll())
