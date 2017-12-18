@@ -2,27 +2,40 @@ import collections
 
 from src.dataimport.known_jobs import KnownJobs
 from src.preprocessing import preproc
-from src.util import loe_util
+from src.util import loe_util, jobtitle_util
 
 mw_tokens = ['m/w', 'w/m', 'm/f', 'f/m']
 
 
-def find_job(sentence):
+def find_jobs(sentence):
     # search for known job names
+    known_job = ''
+    mw_job = ''
+    percentage_job = ''
+
     for job_name in KnownJobs():
         if job_name in sentence:
-            return expand_left_right(job_name, sentence)
+            known_job = expand_left_right(job_name, sentence)
+            break
 
-    # no known job found: search by keyword: m/w
+    if known_job:
+        yield known_job
+
+    # search by keyword: m/w
+    sentence_without_percentage = loe_util.remove_percentage(sentence)
     for mw_token in mw_tokens:
-        if mw_token in sentence:
-            return expand_left_right(mw_token, sentence)
+        if mw_token in sentence_without_percentage:
+            mw_job = expand_left_right(mw_token, sentence_without_percentage)
+            break
+    if mw_job:
+        yield mw_job
 
-    # no m/w keywords found: search by percentage
-    for percentage_token in loe_util.find_all_loe(sentence):
-        return expand_left_right(percentage_token, sentence)
-    # all hope is lost: no job name could be guessed....
-    return None
+    # search by percentage
+    senntence_without_mw = jobtitle_util.remove_mw(sentence)
+    for percentage_token in loe_util.find_all_loe(senntence_without_mw):
+        percentage_job = expand_left_right(percentage_token, senntence_without_mw)
+    if percentage_job:
+        yield percentage_job
 
 
 def expand_left_right(token, sentence):

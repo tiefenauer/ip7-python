@@ -211,6 +211,14 @@ def count_variant(variant, string):
     return len(matches)
 
 
+def remove_mw(text):
+    text = re.sub(suffix_pattern_mw, '', text)
+    text = re.sub(suffix_pattern_wm, '', text)
+    text = re.sub(suffix_pattern_mf, '', text)
+    text = re.sub(suffix_pattern_fm, '', text)
+    return text
+
+
 def normalize_job_name(job_name):
     if not job_name:
         return job_name

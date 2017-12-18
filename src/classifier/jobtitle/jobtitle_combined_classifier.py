@@ -27,12 +27,13 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         features_list = []
         i_tag_sentence = list(enumerate(htmltag_sentences_map))
         for tag_index, (tag_name, sentence) in i_tag_sentence:
-            job_hit = pos_util.find_job(sentence)
-            if job_hit:
-                features = JobtitleFeaturesCombined(tag_index, job_hit, tag_name)
+            job_hits = pos_util.find_jobs(sentence)
+            for hit in job_hits:
+                features = JobtitleFeaturesCombined(tag_index, hit, tag_name)
                 features_list.append(features)
 
         if len(features_list) > 0:
+            # print([(list(f.job_name), f.html_tag) for f in features_list])
             best_match = sorted(features_list)[0]
             return best_match.job_name
 

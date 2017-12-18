@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import assert_that, contains, is_
+from hamcrest import assert_that, contains, is_, only_contains, empty
 
 from src.preprocessing import preproc
 from src.util import pos_util
@@ -13,49 +13,72 @@ class TestPOSUtil(unittest.TestCase):
         sentence = """An über 60 Standorten in der gesamten Schweiz machen über 400 Lernende ihre Ausbildung in den 
         verschiedensten Berufsrichtungen"""
         # act
-        result = pos_util.find_job(sentence)
+        result = pos_util.find_jobs(sentence)
         # asser
-        assert_that(result, is_(None))
+        assert_that(list(result), is_(empty()))
 
     def test_find_job_name_with_known_job_single_word_returns_known_job(self):
         # arrange
         sentence = 'Wir suchen einen Geschäftsführer'
         # act
-        result = pos_util.find_job(sentence)
+        result = pos_util.find_jobs(sentence)
         # assert
-        assert_that(result, is_('Geschäftsführer'))
+        assert_that(result, only_contains('Geschäftsführer'))
 
     def test_find_job_name_with_known_job_multi_word_returns_known_job(self):
         # arrange
         sentence = 'Wir suchen einen Vertriebsleiter Einkauf'
         # act
-        result = pos_util.find_job(sentence)
+        result = pos_util.find_jobs(sentence)
         # assert
-        assert_that(result, is_('Vertriebsleiter Einkauf'))
+        assert_that(result, only_contains('Vertriebsleiter Einkauf'))
 
     def test_find_job_name_with_unknown_job_findy_by_mw(self):
         # single word
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung (m/w)'), is_('Geschäftsführung'))
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung m/w'), is_('Geschäftsführung'))
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung (w/m)'), is_('Geschäftsführung'))
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung w/m'), is_('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung (m/w)'), only_contains('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung m/w'), only_contains('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung (w/m)'), only_contains('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung w/m'), only_contains('Geschäftsführung'))
         # multi word
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf (m/w)'), is_('Geschäftsführung Einkauf'))
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf m/w'), is_('Geschäftsführung Einkauf'))
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf (w/m)'), is_('Geschäftsführung Einkauf'))
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf w/m'), is_('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf (m/w)'),
+                    only_contains('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf m/w'),
+                    only_contains('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf (w/m)'),
+                    only_contains('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf w/m'),
+                    only_contains('Geschäftsführung Einkauf'))
 
-    def test_find_job_name_with_unknown_job_findy_by_percentage(self):
+    def test_find_job_name_with_unknown_job_find_by_by_percentage(self):
         # single word
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung 100%'), is_('Geschäftsführung'))
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung 80%'), is_('Geschäftsführung'))
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung 80-100%'), is_('Geschäftsführung'))
-        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung 80%-100%'), is_('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung 100%'), only_contains('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung 80%'), only_contains('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung 80-100%'), only_contains('Geschäftsführung'))
+        assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung 80%-100%'), only_contains('Geschäftsführung'))
         # multi word
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf 100%'), is_('Geschäftsführung Einkauf'))
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf 80%'), is_('Geschäftsführung Einkauf'))
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf 80-100%'), is_('Geschäftsführung Einkauf'))
-        assert_that(pos_util.find_job('Wir suchen Geschäftsführung Einkauf 80%-100%'), is_('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf 100%'),
+                    only_contains('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf 80%'),
+                    only_contains('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf 80-100%'),
+                    only_contains('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf 80%-100%'),
+                    only_contains('Geschäftsführung Einkauf'))
+
+    def test_find_job_name_with_unknown_job_find_by_mw_and_percentage(self):
+        # arrange
+        sentence_1 = 'Wir suchen eine Geschäftsführung (m/w) 100%'
+        sentence_2 = 'Wir suchen eine Geschäftsführung 100% (m/w)'
+        # act/assert
+        result_1 = pos_util.find_jobs(sentence_1)
+        result_2 = pos_util.find_jobs(sentence_2)
+        result_1 = list(result_1)
+        result_2 = list(result_2)
+        assert_that(result_1, only_contains('Geschäftsführung'))
+        assert_that(result_2, only_contains('Geschäftsführung'))
+
+    def test_find_job_name_with_unknown_job_find_by_gender_form(self):
+        pass
 
     def test_search_left_returns_all_nouns(self):
         # arrange

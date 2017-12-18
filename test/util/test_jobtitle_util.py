@@ -467,6 +467,21 @@ class TestJobTitleUtil(unittest.TestCase):
         # assert
         assert_that(result_text, is_('text fachmann arzt schrein polymechan'))
 
+    def test_remove_mw_removes_mw(self):
+        assert_that(testee.remove_mw('Fachperson (w/m)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson (W/M)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson w/m')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson W/M')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson wm')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson WM')), is_('Fachperson')
+
+        assert_that(testee.remove_mw('Fachperson (f/m)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson (F/M)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson f/m')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson F/M')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson fm')), is_('Fachperson fm')  # do NOT remove fm
+        assert_that(testee.remove_mw('Fachperson FM')), is_('Fachperson fm')  # do NOT remove FM
+
 
 def match_item_for_job_name(job_name):
     return IsMatchItemForJobName(job_name)
