@@ -103,10 +103,10 @@ class TestCombinedJobtitleClassifier(unittest.TestCase):
         result = jobtitle_combined_classifier.find_job(job_name, sentence)
         assert_that(result, is_('Compliance Officer'))
 
-    def test_find_job_with_expandable_compound_job_name_returns_expandable_job_name(self):
+    def test_find_job_with_expandable_job_name_returns_expandable_job_name(self):
         # arrange
         job_name_1 = 'Polymechaniker'
-        job_name_1 = 'CNC Fräser'
+        job_name_2 = 'CNC Fräser'
         sentence = 'Polymechaniker / CNC Fräser 80% - 100% (m/w)'
         # act
         result_1 = jobtitle_combined_classifier.find_job(job_name_1, sentence)
