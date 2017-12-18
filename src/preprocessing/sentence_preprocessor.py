@@ -9,4 +9,4 @@ class SentencePreprocessor(RelevantTagsPreprocessor):
         for tag in relevant_tags:
             sentences = preproc.to_sentences(tag.getText())
             for sent in sentences:
-                yield tag.namae, sent
+                yield tag.name, sent
