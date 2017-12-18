@@ -1,6 +1,6 @@
 from functools import total_ordering
 
-tag_weights = ['h1', 'h2', 'h3', 'strong', 'default']
+tag_weights = ['title', 'h1', 'h2', 'h3', 'strong', 'default']
 
 
 def calculate_tag_weight(tag):
