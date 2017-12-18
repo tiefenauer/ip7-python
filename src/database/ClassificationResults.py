@@ -50,9 +50,9 @@ class FtsClassificationResults(ClassificationResults):
                                           score_linear=sc_lin)
 
 
-class CombinedClassificatoinResults(ClassificationResults):
+class CombinedClassificationResults(ClassificationResults):
     def __init__(self):
-        super(CombinedClassificatoinResults, self).__init__(Combined_Classification_Results)
+        super(CombinedClassificationResults, self).__init__(Combined_Classification_Results)
 
     def create_entity(self, job_entity, predicted_class, sc_str, sc_tol, sc_lin):
         return Combined_Classification_Results(job=job_entity,
