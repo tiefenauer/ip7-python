@@ -16,7 +16,7 @@ class PagingDataSource(DataSource):
 
     @db_session
     def __iter__(self):
-        num_pages = int(math.ceil(self.count / pagesize))
+        num_pages = int(math.ceil(len(self) / pagesize))
         page_numbers = (i for i in range(1, num_pages))
         for page in (self.query.page(i, pagesize=pagesize) for i in page_numbers):
             for row in page:

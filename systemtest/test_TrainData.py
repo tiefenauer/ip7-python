@@ -24,9 +24,9 @@ class TestTrainData(unittest.TestCase):
         testee = TrainData(args, X28_HTML)
         # assert
         assert_that(count_items(testee), is_(train_data_count))
-        assert_that(testee.count, is_(train_data_count))
-        assert_that(testee.row_from(train_data_count, args.split), is_(None))
-        assert_that(testee.row_to(train_data_count, args.split), is_(greater_than(0)))
+        assert_that(len(testee), is_(train_data_count))
+        assert_that(testee.row_from(), is_(None))
+        assert_that(testee.row_to(), is_(greater_than(0)))
 
     def test_with_split_returns_fraction_of_rows(self):
         # arrange
@@ -37,6 +37,6 @@ class TestTrainData(unittest.TestCase):
         testee = TrainData(args, X28_HTML)
         # assert
         assert_that(count_items(testee), is_(expected_count))
-        assert_that(testee.count, is_(expected_count))
-        assert_that(testee.row_from(train_data_count, args.split), is_(None))
-        assert_that(testee.row_to(train_data_count, args.split), is_(greater_than(0)))
+        assert_that(len(testee), is_(expected_count))
+        assert_that(testee.row_from(), is_(None))
+        assert_that(testee.row_to(), is_(greater_than(0)))

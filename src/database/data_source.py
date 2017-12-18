@@ -8,15 +8,15 @@ class DataSource(ABC):
     def __init__(self, args, Entity):
         self.Entity = Entity
         self.query = self.create_query(args)
-        self.count = self.query.count()
 
     @db_session
     def __iter__(self):
         for row in self.query:
             yield row
 
+    @db_session
     def __len__(self):
-        return self.count
+        return self.query.count()
 
     def create_query(self, args):
         """create Pony ORM query"""

@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import assert_that, is_, greater_than
+from hamcrest import assert_that, is_
 from pony.orm import db_session
 
 import test.testutils
@@ -24,19 +24,21 @@ class TestTestData(unittest.TestCase):
         testee = TestData(args, X28_HTML)
         # assert
         assert_that(count_items(testee), is_(0))
-        assert_that(testee.count, is_(0))
-        assert_that(testee.row_from(train_data_count, args.split), is_(train_data_count))
-        assert_that(testee.row_to(train_data_count, args.split), is_(train_data_count))
+        assert_that(len(testee), is_(0))
+        assert_that(testee.row_from(), is_(train_data_count))
+        assert_that(testee.row_to(), is_(train_data_count))
 
     def test_with_split_returns_fraction_of_rows(self):
         # arrange
         split = 0.1
         args = testutils.create_dummy_args(split=split)
-        expected_count = train_data_count - int(train_data_count * split)
+        expected_split = int(train_data_count * split)
+        expected_count = train_data_count - expected_split
         # act
         testee = TestData(args, X28_HTML)
         # assert
         assert_that(count_items(testee), is_(expected_count))
-        assert_that(testee.count, is_(expected_count))
-        assert_that(testee.row_from(train_data_count, args.split), is_(int(train_data_count * split)))
-        assert_that(testee.row_to(train_data_count, args.split), is_(train_data_count))
+        assert_that(len(testee), is_(expected_count))
+        assert_that(testee.split_row, is_(expected_split))
+        assert_that(testee.row_from(), is_(expected_split))
+        assert_that(testee.row_to(), is_(train_data_count))

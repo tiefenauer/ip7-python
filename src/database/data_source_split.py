@@ -13,23 +13,31 @@ class SplitDataSource(DataSource):
     @db_session
     def __init__(self, args, Entity):
         super(SplitDataSource, self).__init__(args, Entity)
+        # calculate row for split (will be part of first split)
+        self._count = self.query.count()
         split = args.split if hasattr(args, 'split') and args.split else 1
+        self.split_row = int((split or 1) * self._count)
+
         # split data
-        self.query = self.query[self.row_from(self.count, split):self.row_to(self.count, split)]
-        # update count with effective count
-        self.count = self.num_rows(split)
+        row_from = self.row_from()
+        row_to = self.row_to()
+        self.query_split = self.query[row_from:row_to]
+
+    @db_session
+    def __iter__(self):
+        for row in self.query_split:
+            yield row
+
+    @db_session
+    def __len__(self):
+        return len(self.query_split)
 
     @abstractmethod
-    def row_from(self, count, split):
+    def row_from(self):
         """return number of row that should be started from (offset)"""
         return None
 
     @abstractmethod
-    def row_to(self, count, split):
+    def row_to(self):
         """return number of row until which should be iterated (offset + limit)"""
-        return self.count
-
-    @abstractmethod
-    def num_rows(self, split):
-        """calculate number of rows to process with current splitting"""
-        return self.count
+        return len(self)
