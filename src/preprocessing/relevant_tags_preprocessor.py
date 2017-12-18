@@ -1,9 +1,9 @@
 from src.preprocessing import preproc
-from src.preprocessing.tags_preprocessor import TagsPreprocessor
+from src.preprocessing.html_preprocessor import HTMLPreprocessor
 from src.util import html_util
 
 
-class RelevantTagsPreprocessor(TagsPreprocessor):
+class RelevantTagsPreprocessor(HTMLPreprocessor):
     """FTS-Preprocessor extracts relevant tags from markup"""
 
     def preprocess_single(self, row):
