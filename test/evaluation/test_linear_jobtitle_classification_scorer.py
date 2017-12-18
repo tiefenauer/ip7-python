@@ -13,6 +13,7 @@ class TestLinearJobtitleClassificationScorer(unittest.TestCase):
         # arrange/act/assert
         assert_that(testee.calculate_similarity('Polymechaniker', 'Polymechaniker'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer', 'Senior System Engineer'), is_(1))
+        assert_that(testee.calculate_similarity('Verkaufsberater', 'Verkaufsberater Kosmetik'), is_(1))
 
     def test_calculate_similarity_full_match_ignores_mw_forms(self):
         # arrange/act/asser
@@ -29,6 +30,14 @@ class TestLinearJobtitleClassificationScorer(unittest.TestCase):
         assert_that(testee.calculate_similarity('Senior System Engineer   100%', 'Senior System Engineer'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer 60%', 'Senior System Engineer'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer   60%', 'Senior System Engineer'), is_(1))
+
+    def test_calculate_similarity_full_match_ignores_percentage_ranges(self):
+        # arrange/act/asser
+        assert_that(testee.calculate_similarity('Verkaufsberater (70-80%)', 'Verkaufsberater'), is_(1))
+        assert_that(testee.calculate_similarity('Verkaufsberater (70-100%)', 'Verkaufsberater'), is_(1))
+
+    def test_calculate_similarity_with_common_patterns(self):
+        assert_that(testee.calculate_similarity('Junior Accountant (m/w) 80 - 100%', 'Junior Accountant'), is_(1))
 
     def test_calculate_similarity_simple_returns_correct_score(self):
         # arrange/act

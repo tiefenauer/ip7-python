@@ -4,15 +4,9 @@ import re
 from src.classifier.loe.loe_classifier import LoeClassifier
 from src.classifier.loe.loe_fts_features import LoeFtsFeatures
 from src.classifier.tag_classifier import TagClassifier
+from src.util import loe_util
 
 log = logging.getLogger(__name__)
-
-# matches any pattern, hyphenated or not
-LOE_PATTERN = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%?|\d\d\d?\s*%?')
-# matches single LOE: 80%, 100%, ... (arbitrary number of spaces before percent sign
-LOE_PATTERN_SINGLE = re.compile('\d\d\d?\s*%')
-# matches LOE range: 60(%)-80%, 70(%)-100% ... (first percent symbol is optional)
-LOE_PATTERN_RANGE = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%')
 
 
 def group_loe_patterns_by_count(tags):
@@ -55,9 +49,8 @@ def group_loe_patterns_by_count(tags):
 
 def find_loe_patterns_by_tag(tags):
     for tag in tags:
-        results = LOE_PATTERN.findall(tag.getText())
-        for result in results:
-            yield (result.strip(), tag.name)
+        for result in loe_util.find_all_loe(tag.getText()):
+            yield result, tag.name
 
 
 class LoeFtsClassifier(TagClassifier, LoeClassifier):
@@ -70,10 +63,10 @@ class LoeFtsClassifier(TagClassifier, LoeClassifier):
         workquota_max = '100'
         if matches:
             loe = matches[0][0]
-            if re.match(LOE_PATTERN_SINGLE, loe):
+            if loe_util.is_single_percentage(loe):
                 workquota_min = re.sub('\s*%', '', loe)
                 workquota_max = workquota_min
-            if re.match(LOE_PATTERN_RANGE, loe):
+            if loe_util.is_percentate_range(loe):
                 workquota_min, workquota_max = loe.split('-')
             workquota_min = re.sub('\s*%', '', workquota_min)
             workquota_max = re.sub('\s*%', '', workquota_max)

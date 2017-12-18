@@ -56,8 +56,45 @@ class TestJobTitleUtil(unittest.TestCase):
 
     def test_to_male_form_wm_returns_male_form(self):
         assert_that(testee.to_male_form("Schreiner (w/m)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (w/m)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner (W/M)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (W/M)"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreiner w/m"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   w/m"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner W/M"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   W/M"), is_("Schreiner"))
         assert_that(testee.to_male_form("Schreiner wm"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   wm"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner WM"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   WM"), is_("Schreiner"))
+
+    def test_to_male_form_mf_returns_male_form(self):
+        assert_that(testee.to_male_form("Schreiner (m/f)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner (M/F)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (m/f)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (M/F)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner m/f"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner M/F"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   m/f"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   M/F"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner mf"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner MF"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   mf"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   MF"), is_("Schreiner"))
+
+    def test_to_male_form_fm_returns_male_form(self):
+        assert_that(testee.to_male_form("Schreiner (f/m)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner (F/M)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (f/m)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   (F/M)"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner f/m"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner F/M"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   f/m"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner   F/M"), is_("Schreiner"))
+        assert_that(testee.to_male_form("Schreiner fm"), is_("Schreiner fm"))
+        assert_that(testee.to_male_form("Schreiner FM"), is_("Schreiner FM"))
+        assert_that(testee.to_male_form("Schreiner   fm"), is_("Schreiner   fm"))  # do NOT replace fm without slashes
+        assert_that(testee.to_male_form("Schreiner   FM"), is_("Schreiner   FM"))  # do NOT replace FM without slashes
 
     def test_to_male_form_hyphenated_job_name_is_unchanged(self):
         assert_that(testee.to_male_form('Kupfer-Spleisser'), is_('Kupfer-Spleisser'))
@@ -240,7 +277,6 @@ class TestJobTitleUtil(unittest.TestCase):
             'Event Manager'
         ))
 
-
     def test_create_gender_variants_returns_gender_variants(self):
         # arrange
         job_name = 'Schreiner'
@@ -367,9 +403,64 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.normalize_job_title(None), is_(None))
         assert_that(testee.normalize_job_title(''), is_(''))
 
+    def test_normalize_job_title_returns_lowercase(self):
+        assert_that(' '.join(testee.normalize_job_title('Text')), is_('text'))
+
+    def test_normalize_job_title_with_gender_forms_returns_stems(self):
+        assert_that(' '.join(testee.normalize_job_title('Polymechaniker')), is_('polymechan'))
+        assert_that(' '.join(testee.normalize_job_title('Polymechanikerin')), is_('polymechan'))
+        assert_that(' '.join(testee.normalize_job_title('PolymechanikerIn')), is_('polymechan'))
+        assert_that(' '.join(testee.normalize_job_title('Polymechaniker/-in')), is_('polymechan'))
+        assert_that(' '.join(testee.normalize_job_title('Polymechaniker/in')), is_('polymechan'))
+        assert_that(' '.join(testee.normalize_job_title('Polymechaniker/In')), is_('polymechan'))
+
+    def test_normalize_job_title_with_neutral_or_femal_form_returns_male_forms(self):
+        assert_that(' '.join(testee.normalize_job_title('Fachperson')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachfrau')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Coiffeuse')), is_('coiffeur'))
+
+    def test_normalize_job_title_with_mw_forms_returns_male_forms(self):
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (m/w)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (M/W)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson m/w')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson M/W')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson mw')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson MW')), is_('fachmann'))
+
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (m/f)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (M/F)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson m/f')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson M/F')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson mf')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson MF')), is_('fachmann'))
+
+    def test_normalize_job_title_with_wm_forms_returns_male_forms(self):
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (w/m)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (W/M)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson w/m')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson W/M')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson wm')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson WM')), is_('fachmann'))
+
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (f/m)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson (F/M)')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson f/m')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson F/M')), is_('fachmann'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson fm')), is_('fachmann fm'))
+        assert_that(' '.join(testee.normalize_job_title('Fachperson FM')), is_('fachmann fm'))
+
+    def test_normalize_job_title_with_percentage_removes_percentage(self):
+        assert_that(' '.join(testee.normalize_job_title('Schreiner 100%')), is_('schrein'))
+        assert_that(' '.join(testee.normalize_job_title('Schreiner 80%')), is_('schrein'))
+
+    def test_normalize_job_title_with_percentage_range_removes_percentage_range(self):
+        assert_that(' '.join(testee.normalize_job_title('Schreiner 80-100%')), is_('schrein'))
+        assert_that(' '.join(testee.normalize_job_title('Schreiner 70-80%')), is_('schrein'))
+        assert_that(' '.join(testee.normalize_job_title('Junior Accountant (m/w) 80 - 100%')), is_('junior accountant'))
+
     def test_normalize_job_title_normalizes_text(self):
         # arrange
-        text = "Text, Fachperson und Arzt oder Schreinerin Polymechaniker/in (m/w)"
+        text = 'Text, Fachperson und Arzt oder Schreinerin Polymechaniker/in (m/w)'
         # act
         result = testee.normalize_job_title(text)
         result_text = ' '.join(item for item in result)

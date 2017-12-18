@@ -3,6 +3,7 @@ import re
 from src.dataimport.known_jobs import KnownJobs
 # job title patterns
 from src.preprocessing import preproc
+from src.util import loe_util
 
 pattern_hyphenated = re.compile(r'(?=\S*[-])([a-zA-Z-]+)')
 # dynamic patterns
@@ -14,7 +15,9 @@ suffix_pattern_eur_euse = re.compile(r'(eur)?\/?-?([Ee]use)$')
 suffix_pattern_mann_frau = re.compile(r'(mann)?\/?-?([Ff]rau)$')
 suffix_pattern_in = re.compile(r'\/?-?(\(?[iI]n\)?)$')
 suffix_pattern_mw = re.compile(r'\s?(\(?m\/?w\)?)', re.IGNORECASE)
+suffix_pattern_mf = re.compile(r'\s?(\(?m\/?f\)?)', re.IGNORECASE)
 suffix_pattern_wm = re.compile(r'\s?(\(?w\/?m\)?)', re.IGNORECASE)
+suffix_pattern_fm = re.compile(r'\s?(\(?f\/m\)?)', re.IGNORECASE)
 suffix_pattern_person = re.compile(r'(person)$')
 
 # job title suffix patterns: male forms
@@ -42,7 +45,9 @@ def to_male_form(job_name):
     jn = re.sub(suffix_pattern_person, 'mann', jn)
     jn = re.sub(suffix_pattern_in, '', jn)
     jn = re.sub(suffix_pattern_mw, '', jn)
+    jn = re.sub(suffix_pattern_mf, '', jn)
     jn = re.sub(suffix_pattern_wm, '', jn)
+    jn = re.sub(suffix_pattern_fm, '', jn)
     return jn.strip()
 
 
@@ -215,8 +220,9 @@ def normalize_job_name(job_name):
 def normalize_job_title(text):
     if not text:
         return text
-    no_special_chars = preproc.remove_special_chars(text)
-    words = preproc.to_words(no_special_chars)
-    no_stopwords = (preproc.remove_stop_words(words))
-    no_gender = (to_male_form(word) for word in no_stopwords)
-    return (word.strip() for word in preproc.stem(no_gender) if word)
+    text = loe_util.remove_percentage(text)
+    words = preproc.to_words(text)
+    words = preproc.remove_special_chars(words)
+    words = (preproc.remove_stop_words(words))
+    words = (to_male_form(word) for word in words)
+    return (word.strip() for word in preproc.stem(words) if word)
