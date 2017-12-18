@@ -2,6 +2,7 @@ import collections
 
 from src.dataimport.known_jobs import KnownJobs
 from src.preprocessing import preproc
+from src.util import loe_util
 
 mw_tokens = ['m/w', 'w/m', 'm/f', 'f/m']
 
@@ -17,14 +18,17 @@ def find_job(sentence):
         if mw_token in sentence:
             return expand_left_right(mw_token, sentence)
 
+    # no m/w keywords found: search by percentage
+    for percentage_token in loe_util.find_all_loe(sentence):
+        return expand_left_right(percentage_token, sentence)
     # all hope is lost: no job name could be guessed....
     return None
 
 
-def expand_left_right(job_name, sentence):
-    if job_name not in sentence:
+def expand_left_right(token, sentence):
+    if token not in sentence:
         return None
-    job_name_tokens = preproc.to_words(job_name)
+    job_name_tokens = preproc.to_words(token)
     sentence_tokens = [word for word in preproc.to_words(sentence) if word not in ['(', ')']]
 
     ix_from, ix_to = calculate_positions(job_name_tokens, sentence_tokens)
@@ -33,7 +37,7 @@ def expand_left_right(job_name, sentence):
     left = sentence_pos[:ix_from]
     right = sentence_pos[ix_to:]
 
-    initial_content = [job_name] if job_name not in mw_tokens else []
+    initial_content = [token] if token not in mw_tokens and not loe_util.is_percentate(token) else []
     tokens = collections.deque(initial_content)
     search_left(left, tokens)
     search_right(right, tokens)

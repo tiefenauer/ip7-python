@@ -1,7 +1,7 @@
 import re
 
 # matches any pattern, hyphenated or not
-LOE_PATTERN = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%?|\d\d\d?\s*%?')
+LOE_PATTERN = re.compile('\d\d\d?\s*%?\s*-\s*\d\d\d?\s*%|\d\d\d?\s*%')
 # matches single LOE: 80%, 100%, ... (arbitrary number of spaces before percent sign
 LOE_PATTERN_SINGLE = re.compile('\d\d\d?\s*%')
 # matches LOE range: 60(%)-80%, 70(%)-100% ... (first percent symbol is optional)
@@ -14,6 +14,10 @@ def is_single_percentage(text):
 
 def is_percentate_range(text):
     return bool(re.match(LOE_PATTERN_RANGE, text))
+
+
+def is_percentate(text):
+    return is_single_percentage(text) or is_percentate_range(text)
 
 
 def find_all_loe(text):

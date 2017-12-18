@@ -1,7 +1,6 @@
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesCombined
 from src.classifier.tag_classifier import TagClassifier
-from src.dataimport.known_jobs import KnownJobs
 from src.util import pos_util
 
 
@@ -27,12 +26,11 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         # find occurrences of known jobs (including variants) in HTML tags together with positional and POS information
         features_list = []
         i_tag_sentence = list(enumerate(htmltag_sentences_map))
-        for job_name in KnownJobs():
-            for tag_index, (tag_name, sentence) in i_tag_sentence:
-                hit = pos_util.expand_left_right(job_name, sentence)
-                if hit:
-                    features = JobtitleFeaturesCombined(tag_index, hit, tag_name)
-                    features_list.append(features)
+        for tag_index, (tag_name, sentence) in i_tag_sentence:
+            job_hit = pos_util.find_job(sentence)
+            if job_hit:
+                features = JobtitleFeaturesCombined(tag_index, job_hit, tag_name)
+                features_list.append(features)
 
         if len(features_list) > 0:
             best_match = sorted(features_list)[0]
