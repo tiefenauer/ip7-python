@@ -8,6 +8,34 @@ from src.util import pos_util
 
 class TestPOSUtil(unittest.TestCase):
 
+    def test_find_job_name_with_known_job_single_word_returns_known_job(self):
+        # arrange
+        sentence = 'Wir suchen einen Geschäftsführer'
+        # act
+        result = pos_util.find_job(sentence)
+        # assert
+        assert_that(result, is_('Geschäftsführer'))
+
+    def test_find_job_name_with_known_job_multi_word_returns_known_job(self):
+        # arrange
+        sentence = 'Wir suchen einen Vertriebsleiter Einkauf'
+        # act
+        result = pos_util.find_job(sentence)
+        # assert
+        assert_that(result, is_('Vertriebsleiter Einkauf'))
+
+    def test_find_job_name_with_unknown_job_findy_by_mw(self):
+        # single word
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung (m/w)'), is_('Geschäftsführung'))
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung m/w'), is_('Geschäftsführung'))
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung (w/m)'), is_('Geschäftsführung'))
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung w/m'), is_('Geschäftsführung'))
+        # multi word
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung Einkauf (m/w)'), is_('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung Einkauf m/w'), is_('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung Einkauf (w/m)'), is_('Geschäftsführung Einkauf'))
+        assert_that(pos_util.find_job('Wir suchen eine Geschäftsführung Einkauf w/m'), is_('Geschäftsführung Einkauf'))
+
     def test_search_left_returns_all_nouns(self):
         # arrange
         sentence = 'Wir suchen einen motivierten Stellvertreter Geschäftsführer'

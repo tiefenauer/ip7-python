@@ -1,13 +1,31 @@
 import collections
 
+from src.dataimport.known_jobs import KnownJobs
 from src.preprocessing import preproc
+
+mw_tokens = ['m/w', 'w/m', 'm/f', 'f/m']
+
+
+def find_job(sentence):
+    # search for known job names
+    for job_name in KnownJobs():
+        if job_name in sentence:
+            return expand_left_right(job_name, sentence)
+
+    # no known job found: search by keyword: m/w
+    for mw_token in mw_tokens:
+        if mw_token in sentence:
+            return expand_left_right(mw_token, sentence)
+
+    # all hope is lost: no job name could be guessed....
+    return None
 
 
 def expand_left_right(job_name, sentence):
     if job_name not in sentence:
         return None
     job_name_tokens = preproc.to_words(job_name)
-    sentence_tokens = preproc.to_words(sentence)
+    sentence_tokens = [word for word in preproc.to_words(sentence) if word not in ['(', ')']]
 
     ix_from, ix_to = calculate_positions(job_name_tokens, sentence_tokens)
 
@@ -15,7 +33,8 @@ def expand_left_right(job_name, sentence):
     left = sentence_pos[:ix_from]
     right = sentence_pos[ix_to:]
 
-    tokens = collections.deque([job_name])
+    initial_content = [job_name] if job_name not in mw_tokens else []
+    tokens = collections.deque(initial_content)
     search_left(left, tokens)
     search_right(right, tokens)
     return ' '.join(tokens)
