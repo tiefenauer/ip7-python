@@ -10,13 +10,16 @@ mw_tokens = ['m/w', 'w/m', 'm/f', 'f/m']
 def find_jobs(sentence):
     jobs = []
     # find known jobs
-    jobs += find_job_by_keyword(sentence, KnownJobs())
+    for hit in find_job_by_keyword(sentence, KnownJobs()):
+        jobs.append((hit, 'known-job'))
     # find by m/w patterns
     sentence_without_percentage = loe_util.remove_percentage(sentence)
-    jobs += find_job_by_keyword(sentence_without_percentage, mw_tokens)
+    for hit in find_job_by_keyword(sentence_without_percentage, mw_tokens):
+        jobs.append((hit, 'mw'))
     # find by percentages
     sentence_without_mw = jobtitle_util.remove_mw(sentence)
-    jobs += find_job_by_keyword(sentence_without_mw, loe_util.find_all_loe(sentence_without_mw))
+    for hit in find_job_by_keyword(sentence_without_mw, loe_util.find_all_loe(sentence_without_mw)):
+        jobs.append((hit, 'loe'))
     # find by gender forms
     # sentence_without_mw_and_percentage = loe_util.remove_percentage(sentence_without_mw)
     # jobs += find_job_by_keyword(sentence_without_mw_and_percentage, ['/in', '/-in'])
@@ -30,13 +33,15 @@ def find_jobs(sentence):
 
 
 def find_job_by_keyword(sentence, keywords):
-    job_names = []
+    # job_names = []
     for keyword in keywords:
         if keyword in sentence:
             job_name = expand_left_right(keyword, sentence)
-            job_names.append(job_name)
+            if job_name:
+                yield job_name
+            # job_names.append(job_name)
 
-    return job_names
+    # return job_names
 
 
 def expand_left_right(token, sentence):

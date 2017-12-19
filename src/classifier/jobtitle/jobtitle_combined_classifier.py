@@ -29,8 +29,8 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         for tag_index, (tag_name, sentence) in i_tag_sentence:
             job_hits = pos_util.find_jobs(sentence)
             job_hits = list(job_hits)
-            for hit in job_hits:
-                features = JobtitleFeaturesCombined(tag_index, hit, tag_name)
+            for hit, origin in job_hits:
+                features = JobtitleFeaturesCombined(tag_index, hit, tag_name, origin)
                 features_list.append(features)
 
         if len(features_list) > 0:
