@@ -41,6 +41,10 @@ class TestLinearJobtitleClassificationScorer(unittest.TestCase):
         assert_that(testee.calculate_similarity('Tagesmutter/Tagesfamilie', 'Tagesmutter'), is_(0.5))
         assert_that(testee.calculate_similarity('FTTH oder LWL-Spleisser 100%', 'Spleisser'), is_(1/3))
 
+    def test_calculate_similarity_partial_intraword_match_includes_partial_matches(self):
+        assert_that(testee.calculate_similarity('Werkzeugverkaufsberater', 'Verkaufsberater'), is_(0.5))
+        assert_that(testee.calculate_similarity('Werkzeugverkaufsberater Ostschweiz', 'Verkaufsberater'), is_(0.25))
+
     def test_calculate_similarity_with_common_patterns(self):
         assert_that(testee.calculate_similarity('Junior Accountant (m/w) 80 - 100%', 'Junior Accountant'), is_(1))
 
