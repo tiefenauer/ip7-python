@@ -4,7 +4,8 @@ from src.dataimport.known_jobs import KnownJobs
 from src.preprocessing import preproc
 from src.util import loe_util, jobtitle_util
 
-mw_tokens = ['m/w', 'w/m', 'm/f', 'f/m']
+mw_tokens = ['m/w', 'w/m', 'm/f', 'f/m',
+             'M/W', 'W/M', 'M/F', 'F/M']
 
 
 def find_jobs(sentence):
