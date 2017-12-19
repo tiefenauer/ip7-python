@@ -18,7 +18,9 @@ class HTMLPreprocessor(Preprocessor):
     def preprocess_single(self, row):
         soup = preproc.parse(row.html)
         title_tag = preproc.create_tag('title', row.title)
+        # remove tags that are not visible to humans
         [tag.extract() for tag in soup.findAll() if tag.name in NON_HUMAN_READABLE_TAGS]
+        # remove comments
         [tag.extract() for tag in soup.findAll(text=lambda text: isinstance(text, Comment))]
         all_tags = collections.deque(soup.findAll())
         if self.include_title:

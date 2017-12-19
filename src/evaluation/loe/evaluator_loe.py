@@ -7,11 +7,11 @@ from src.evaluation.loe.loe_classification_scorer_tolerant import TolerantLoeCla
 
 class LoeEvaluator(Evaluator):
 
-    def __init__(self, args, classifier):
-        self.scorer_strict = StrictLoeClassificationScorer(classifier.label())
-        self.scorer_tolerant = TolerantLoeClassificationScorer(classifier.label())
-        self.scorer_linear = LinearLoeClassificationScorer(classifier.label())
-        super(LoeEvaluator, self).__init__(args, classifier, LoeClassificationResults())
+    def __init__(self, args):
+        super(LoeEvaluator, self).__init__(args, LoeClassificationResults())
+        self.scorer_strict = StrictLoeClassificationScorer()
+        self.scorer_tolerant = TolerantLoeClassificationScorer()
+        self.scorer_linear = LinearLoeClassificationScorer()
 
     def get_scorers(self):
         return [self.scorer_strict, self.scorer_tolerant, self.scorer_linear]

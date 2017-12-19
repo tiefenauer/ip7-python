@@ -3,6 +3,7 @@ import argparse
 from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
 from src.database.X28TrainData import X28TrainData
 from src.evaluation.loe.evaluator_loe import LoeEvaluator
+from src.preprocessing.loe_preprocessor import LoePreprocessor
 from src.util.log_util import log_setup
 
 parser = argparse.ArgumentParser(description="""Extract level of employment (LOE) - including evaluation""")
@@ -18,9 +19,8 @@ args = parser.parse_args()
 
 logging = log_setup()
 
-x28_data = X28TrainData(args)
-classifier = LoeFtsClassifier(args)
-evaluation = LoeEvaluator(args, classifier)
-
 if __name__ == '__main__':
-    evaluation.evaluate(x28_data)
+    processed_data = LoePreprocessor(X28TrainData(args))
+    classifier = LoeFtsClassifier()
+    evaluation = LoeEvaluator(args)
+    evaluation.evaluate(classifier, processed_data)
