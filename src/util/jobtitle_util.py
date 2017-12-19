@@ -3,7 +3,7 @@ import re
 from src.dataimport.known_jobs import KnownJobs
 # job title patterns
 from src.preprocessing import preproc
-from src.util import loe_util
+from src.util import loe_util, util
 
 pattern_hyphenated = re.compile(r'(?=\S*[-])([a-zA-Z-]+)')
 # gender patterns (not suffixes)
@@ -236,9 +236,11 @@ def normalize_job_title(text):
         return text
     text = loe_util.remove_percentage(text)
     words = preproc.to_words(text)
+    words = (to_male_form(word) for word in words)
+    words = util.flatten(word.split('/') for word in words) # split slashed words into two words
+    words = util.flatten(word.split('-') for word in words) # split hyphenated words into two words
     words = preproc.remove_special_chars(words)
     words = (preproc.remove_stop_words(words))
-    words = (to_male_form(word) for word in words)
     return (word.strip() for word in preproc.stem(words) if word)
 
 
