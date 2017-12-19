@@ -17,8 +17,12 @@ class LinearJobtitleClassificationScorer(LinearClassificationScorer):
         count = 0
 
         for word in predicted_words:
+            # whole match on word
             if word in actual_words:
                 count += 1
+            # partial match on word
+            elif any(word in actual_word for actual_word in actual_words):
+                count += 0.5
         return count / len(actual_words)
 
     def update_accuracy(self, last_score):
