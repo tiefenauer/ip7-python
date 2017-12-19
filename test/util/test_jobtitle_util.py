@@ -460,6 +460,13 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(' '.join(testee.normalize_job_title('Schreiner 70-80%')), is_('schrein'))
         assert_that(' '.join(testee.normalize_job_title('Junior Accountant (m/w) 80 - 100%')), is_('junior accountant'))
 
+    def test_normalize_job_title_with_slashed_expression_returns_single_words(self):
+        assert_that(' '.join(testee.normalize_job_title('Tagesmutter/Tagesfamilie')), is_('tagesmutt tagesfamili'))
+        assert_that(' '.join(testee.normalize_job_title('Schulbusfahrerin/-fahrer')), is_('schulbusfahrerin fahr'))
+
+    def test_normalize_job_title_with_hyphenated_expression_returns_single_words(self):
+        assert_that(' '.join(testee.normalize_job_title('LWL-Spleisser')), is_('lwl spleiss'))
+
     def test_normalize_job_title_normalizes_text(self):
         # arrange
         text = 'Text, Fachperson und Arzt oder Schreinerin Polymechaniker/in (m/w)'
