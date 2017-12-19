@@ -1,4 +1,5 @@
 import unittest
+from unittest import skip
 
 from hamcrest import assert_that, contains, is_, only_contains, empty
 
@@ -8,7 +9,7 @@ from src.util import pos_util
 
 class TestPOSUtil(unittest.TestCase):
 
-    def test_find_job_name_with_no_matches_returns_None(self):
+    def test_find_jobs_with_no_matches_returns_None(self):
         # arrange
         sentence = """An über 60 Standorten in der gesamten Schweiz machen über 400 Lernende ihre Ausbildung in den 
         verschiedensten Berufsrichtungen"""
@@ -17,7 +18,7 @@ class TestPOSUtil(unittest.TestCase):
         # asser
         assert_that(list(result), is_(empty()))
 
-    def test_find_job_name_with_known_job_single_word_returns_known_job(self):
+    def test_find_jobs_with_known_job_single_word_returns_known_job(self):
         # arrange
         sentence = 'Wir suchen einen Geschäftsführer'
         # act
@@ -25,7 +26,7 @@ class TestPOSUtil(unittest.TestCase):
         # assert
         assert_that(result, only_contains('Geschäftsführer'))
 
-    def test_find_job_name_with_known_job_multi_word_returns_known_job(self):
+    def test_find_jobs_with_known_job_multi_word_returns_known_job(self):
         # arrange
         sentence = 'Wir suchen einen Vertriebsleiter Einkauf'
         # act
@@ -33,12 +34,13 @@ class TestPOSUtil(unittest.TestCase):
         # assert
         assert_that(result, only_contains('Vertriebsleiter Einkauf'))
 
-    def test_find_job_name_with_unknown_job_findy_by_gender_form(self):
+    @skip('not supported yet')
+    def test_find_jobs_with_unknown_job_findy_by_gender_form(self):
         result = pos_util.find_jobs('Leiter/in Familienausgleichskassen')
         result = list(result)
         assert_that(result, only_contains('Leiter Familienausgleichskassen'))
 
-    def test_find_job_name_with_unknown_job_findy_by_mw(self):
+    def test_find_jobs_with_unknown_job_findy_by_mw(self):
         # single word
         assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung (m/w)'), only_contains('Geschäftsführung'))
         assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung m/w'), only_contains('Geschäftsführung'))
@@ -54,7 +56,7 @@ class TestPOSUtil(unittest.TestCase):
         assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf w/m'),
                     only_contains('Geschäftsführung Einkauf'))
 
-    def test_find_job_name_with_unknown_job_find_by_by_percentage(self):
+    def test_find_jobs_with_unknown_job_find_by_by_percentage(self):
         # single word
         assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung 100%'), only_contains('Geschäftsführung'))
         assert_that(pos_util.find_jobs('Wir suchen eine Geschäftsführung 80%'), only_contains('Geschäftsführung'))
@@ -70,7 +72,7 @@ class TestPOSUtil(unittest.TestCase):
         assert_that(pos_util.find_jobs('Wir suchen Geschäftsführung Einkauf 80%-100%'),
                     only_contains('Geschäftsführung Einkauf'))
 
-    def test_find_job_name_with_unknown_job_find_by_mw_and_percentage(self):
+    def test_find_jobs_with_unknown_job_find_by_mw_and_percentage(self):
         # arrange
         sentence_1 = 'Wir suchen eine Geschäftsführung (m/w) 100%'
         sentence_2 = 'Wir suchen eine Geschäftsführung 100% (m/w)'
@@ -82,7 +84,7 @@ class TestPOSUtil(unittest.TestCase):
         assert_that(result_1, only_contains('Geschäftsführung'))
         assert_that(result_2, only_contains('Geschäftsführung'))
 
-    def test_find_job_name_with_unknown_job_find_by_gender_form(self):
+    def test_find_jobs_with_unknown_job_find_by_gender_form(self):
         pass
 
     def test_search_left_returns_all_nouns(self):

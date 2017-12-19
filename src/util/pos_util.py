@@ -8,41 +8,35 @@ mw_tokens = ['m/w', 'w/m', 'm/f', 'f/m']
 
 
 def find_jobs(sentence):
-    # search for known job names
-    known_job = ''
-    mw_job = ''
-    percentage_job = ''
-    gender_job = ''
-
-    for job_name in KnownJobs():
-        if job_name in sentence:
-            known_job = expand_left_right(job_name, sentence)
-            break
-
-    if known_job:
-        yield known_job
+    jobs = []
+    # find known jobs
+    jobs += find_job_by_keyword(sentence, KnownJobs())
+    # find by m/w patterns
+    sentence_without_percentage = loe_util.remove_percentage(sentence)
+    jobs += find_job_by_keyword(sentence_without_percentage, mw_tokens)
+    # find by percentages
+    sentence_without_mw = jobtitle_util.remove_mw(sentence)
+    jobs += find_job_by_keyword(sentence_without_mw, loe_util.find_all_loe(sentence_without_mw))
+    # find by gender forms
+    # sentence_without_mw_and_percentage = loe_util.remove_percentage(sentence_without_mw)
+    # jobs += find_job_by_keyword(sentence_without_mw_and_percentage, ['/in', '/-in'])
 
     # search by keyword: gender
     # for match in jobtitle_util.find_all_genderized(sentence):
     #     gender_job = expand_left_right(sentence.split(match[0])[0], sentence)
     # if gender_job:
     #     yield gender_job
+    return jobs
 
-    # search by keyword: m/w
-    sentence_without_percentage = loe_util.remove_percentage(sentence)
-    for mw_token in mw_tokens:
-        if mw_token in sentence_without_percentage:
-            mw_job = expand_left_right(mw_token, sentence_without_percentage)
-            break
-    if mw_job:
-        yield mw_job
 
-    # search by keyword: percentage
-    senntence_without_mw = jobtitle_util.remove_mw(sentence)
-    for percentage_token in loe_util.find_all_loe(senntence_without_mw):
-        percentage_job = expand_left_right(percentage_token, senntence_without_mw)
-    if percentage_job:
-        yield percentage_job
+def find_job_by_keyword(sentence, keywords):
+    job_names = []
+    for keyword in keywords:
+        if keyword in sentence:
+            job_name = expand_left_right(keyword, sentence)
+            job_names.append(job_name)
+
+    return job_names
 
 
 def expand_left_right(token, sentence):
