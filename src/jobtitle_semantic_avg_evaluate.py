@@ -65,7 +65,7 @@ def update_most_similar_job_classes():
 
 
 if not args.model:
-    args.model = 'semantic_avg_2017-11-21-12-38-54_300features_40minwords_10context.gz'
+    args.model = 'semantic_avg_2017-11-23-17-08-20_300features_40minwords_10context.gz'
 
 if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
