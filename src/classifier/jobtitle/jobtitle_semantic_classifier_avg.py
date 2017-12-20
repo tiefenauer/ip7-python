@@ -13,7 +13,7 @@ class JobtitleSemanticClassifierAvg(JobtitleSemanticClassifier):
     of all word vectors from the vacancy that are indexed in the model."""
 
     def predict_class(self, word_list):
-        word_list = util.flatten(word_list)
+        word_list = list(util.flatten(word_list))
         feature_vec = self.to_average_vector(word_list, self.model)
         # query w2v model
         top10 = self.model.similar_by_vector(feature_vec, 1)

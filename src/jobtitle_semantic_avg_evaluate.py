@@ -70,6 +70,8 @@ if not args.model:
 if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     # remove stopwords for evaluation
+    args.id = 436522
+    # args.id = 622603 # FAGE
     preprocessed_data = SemanticPreprocessor(X28TestData(args), remove_stopwords=True)
     classifier = JobtitleSemanticClassifierAvg(args)
     evaluation = SemanticAVGEvaluation(args)
