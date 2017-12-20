@@ -35,14 +35,18 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
         log.info('...done!')
         return model
 
+    def load_model(self):
+        model = super(JobtitleSemanticClassifier, self).load_model()
+        self.index2word_set = set(model.index2word)
+        return model
+
     def to_average_vector(self, word_list, w2v_model):
         """calculates the average vector for a list of words"""
 
         feature_vec = numpy.zeros(self.num_features, dtype='float32')
         num_words = 0
-        index2word_set = set(w2v_model.index2word)
         for word in word_list:
-            if word in index2word_set:
+            if word in self.index2word_set:
                 num_words += 1
                 feature_vec = numpy.add(feature_vec, w2v_model[word])
         if num_words > 0:
