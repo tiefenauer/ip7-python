@@ -13,14 +13,11 @@ log = logging.getLogger(__name__)
 class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
     """Predicts a job title by exploiting semantic information from the vacancy. A Word2Vec model is trained as an
     internal model."""
-
-    def __init__(self, args):
-        super(JobtitleSemanticClassifier, self).__init__(args)
-        self.num_features = 300
-        self.min_word_count = 40
-        self.context = 10
-        self.num_workers = 6
-        self.downsampling = 1e-3
+    num_features = 300
+    min_word_count = 40
+    context = 10
+    num_workers = 6
+    downsampling = 1e-3
 
     def train_w2v_model(self, sentences):
         """trains a new Word2Vec model"""

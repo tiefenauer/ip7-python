@@ -10,8 +10,8 @@ class SemanticPreprocessor(RelevantTagsPreprocessor):
     def preprocess_single(self, row):
         sentences = preproc.to_sentences(row.plaintext)
         word_lists = preproc.sentence_list_to_word_list(sentences)
-        words = (list(preproc.remove_punctuation(words)) for words in word_lists)
+        word_lists = (list(preproc.remove_punctuation(words)) for words in word_lists)
         if self.remove_stopwords:
-            words = preproc.remove_stop_words(words)
-
-        return words
+            word_lists = (preproc.remove_stop_words(words) for words in word_lists)
+        word_lists = list(word_lists)
+        return word_lists
