@@ -11,6 +11,7 @@ class Fetchflow_HTML(pg.Entity):
 
 
 class X28_HTML(pg.Entity):
+    language = Optional(str)
     html = Optional(str)
     plaintext = Optional(str)
     sentences = Optional(str)

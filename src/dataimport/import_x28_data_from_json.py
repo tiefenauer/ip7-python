@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description="""
 Reads X28 JSON data from a directory into a local postgres database. Only the most important attributes are read.
 """)
 parser.add_argument('-t', '--truncate', action='store_true',
-                    help='truncate target tables before extraction (default=True)')
+                    help='truncate target tables before extraction (default=False)')
 args = parser.parse_args()
 
 log_setup()
@@ -30,6 +30,7 @@ if __name__ == '__main__':
     with db_session:
         for text in tqdm(importer, total=importer.num_files, unit=' files'):
             jsonobj = json.loads(text)
+            language = jsonobj['language'] if 'language' in jsonobj else None
             x28_id = jsonobj['id']
             title = jsonobj['title']
             html = jsonobj['htmlcontent']
@@ -41,11 +42,28 @@ if __name__ == '__main__':
                 workquota_min = jsonobj['workquota']['minumum']
             if jsonobj['workquota'] and jsonobj['workquota']['maximum']:
                 workquota_max = jsonobj['workquota']['maximum']
-            X28_HTML(x28_id=x28_id,
-                     html=html,
-                     plaintext=plaintext,
-                     url=url,
-                     title=title,
-                     workquota_min=workquota_min,
-                     workquota_max=workquota_max)
-            commit()
+
+            query = X28_HTML.select(lambda r: r.x28_id == x28_id)
+            if query.count() > 1:
+                # update existing record
+                for row in query:
+                    if language:
+                        row.language = language
+                    row.html = html
+                    row.plaintext = plaintext
+                    row.url = url
+                    row.title = title
+                    row.workquota_min = workquota_min
+                    row.workquota_max = workquota_max
+                    commit()
+            else:
+                # add new record
+                X28_HTML(x28_id=x28_id,
+                         language=language,
+                         html=html,
+                         plaintext=plaintext,
+                         url=url,
+                         title=title,
+                         workquota_min=workquota_min,
+                         workquota_max=workquota_max)
+                commit()

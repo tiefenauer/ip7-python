@@ -8,7 +8,7 @@ class RelevantTagsPreprocessor(HTMLPreprocessor):
 
     def preprocess_single(self, row):
         tags = super(RelevantTagsPreprocessor, self).preprocess_single(row)
-        tags = (tag for tag in tags if tag.name in html_util.RELEVANT_TAGS)
+        tags = (tag for tag in tags if html_util.is_relevant(tag))
         tags = (tag for tag in tags if preproc.tag_is_atomic(tag))
         tags = (preproc.remove_strong_and_b_tags(tag) for tag in tags)
         tags = (html_util.remove_all_attrs(tag) for tag in tags)
