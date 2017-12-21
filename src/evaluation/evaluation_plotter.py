@@ -58,7 +58,7 @@ class EvaluationPlotter(object):
     def __init__(self, label, scorers):
         self.scorers = scorers
 
-        xlabels = [scorer.label() for scorer in scorers]
+        xlabels = [scorer.label for scorer in scorers]
         create_figure(label)
 
         num_plots = len(xlabels)

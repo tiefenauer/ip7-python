@@ -16,10 +16,15 @@ log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
 parser.add_argument('model', nargs='?', help='file with saved model to evaluate_avg')
+parser.add_argument('-c', '--calculate_score', type=bool, default=True,
+                    help=""""(optional) calculate score on-the-fly. If set to Fals processing might be a bit faster 
+                    but score will need to calculated manually afterwards (default: True)""")
 parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
                     help='(optional) fraction value of labeled data to use for training/testing')
 parser.add_argument('-t', '--truncate', action='store_true',
                     help='truncate target tables before extraction (default=True)')
+parser.add_argument('-v', '--visualize', action='store_true',
+                    help='(optional) visualize process by showing a live preview (default=False)')
 parser.add_argument('-w', '--write', action='store_true',
                     help="""Write classification results to DB (default=True). If set to true this will save the 
                     classification results in the DB. If set to false this script will only provide a live view
@@ -66,12 +71,14 @@ def update_most_similar_job_classes():
 
 if not args.model:
     args.model = 'semantic_avg_2017-11-23-17-08-20_300features_40minwords_10context.gz'
+    args.model = 'semantic_avg_2017-11-21-12-38-54_300features_40minwords_10context.gz'
 
 if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     # remove stopwords for evaluation
-    args.id = 436522
+    #args.id = 436522
     # args.id = 622603 # FAGE
+    # args.id = 435470 # Maurer
     preprocessed_data = SemanticPreprocessor(X28TestData(args), remove_stopwords=True)
     classifier = JobtitleSemanticClassifierAvg(args)
     evaluation = SemanticAVGEvaluation(args)
