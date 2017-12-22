@@ -70,15 +70,13 @@ def update_most_similar_job_classes():
 
 
 if not args.model:
-    args.model = 'semantic_avg_2017-11-23-17-08-20_300features_40minwords_10context.gz'
-    args.model = 'semantic_avg_2017-11-21-12-38-54_300features_40minwords_10context.gz'
+    # comment out unused model
+    args.model = 'semantic_fetchflow_x28.gz'
+    args.model = 'semantic_avg_x28.gz'
 
 if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     # remove stopwords for evaluation
-    #args.id = 436522
-    # args.id = 622603 # FAGE
-    # args.id = 435470 # Maurer
     preprocessed_data = SemanticPreprocessor(X28TestData(args), remove_stopwords=True)
     classifier = JobtitleSemanticClassifierAvg(args)
     evaluation = SemanticAVGEvaluation(args)

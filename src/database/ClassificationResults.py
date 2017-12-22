@@ -27,7 +27,7 @@ class ClassificationResults(object):
 
     @db_session
     def truncate(self):
-        log.info('Truncating target tables...')
+        log.info("""Truncating target table {}.clf_method='{}' ...""".format(self.Entity._table_, self.Entity._discriminator_))
         self.Entity.select().delete(bulk=True)
         commit()
         log.info('...done!')

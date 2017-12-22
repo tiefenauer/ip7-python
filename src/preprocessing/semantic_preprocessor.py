@@ -13,5 +13,4 @@ class SemanticPreprocessor(RelevantTagsPreprocessor):
         word_lists = (list(preproc.remove_punctuation(words)) for words in word_lists)
         if self.remove_stopwords:
             word_lists = (preproc.remove_stop_words(words) for words in word_lists)
-        word_lists = list(word_lists)
         return word_lists

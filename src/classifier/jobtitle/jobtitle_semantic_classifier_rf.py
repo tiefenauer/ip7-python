@@ -25,7 +25,7 @@ class JobtitleSemanticClassifierRF(JobtitleSemanticClassifier):
             self.w2v_model = JobtitleSemanticClassifierAvg(args).load_model()
             log.info('loaded pre-trained Word2Vec-Model')
 
-    def predict_class(self, word_list):
+    def predict_class(self, words_lists):
         # TODO: predict a single item, not the whole matrix!
         pass
 

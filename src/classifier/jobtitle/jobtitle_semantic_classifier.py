@@ -18,6 +18,7 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
     context = 10
     num_workers = 6
     downsampling = 1e-3
+    index2word_set = set()
 
     def train_w2v_model(self, sentences):
         """trains a new Word2Vec model"""
@@ -59,6 +60,6 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
                                                                                context=self.context)
 
     @abstractmethod
-    def predict_class(self, word_list):
+    def predict_class(self, words_lists):
         """to be implemented in subclass"""
         return
