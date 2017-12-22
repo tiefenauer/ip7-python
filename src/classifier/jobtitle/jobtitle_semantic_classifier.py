@@ -14,7 +14,7 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
     """Predicts a job title by exploiting semantic information from the vacancy. A Word2Vec model is trained as an
     internal model."""
     num_features = 300
-    min_word_count = 40
+    min_word_count = 20
     context = 10
     num_workers = 6
     downsampling = 1e-3

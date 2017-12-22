@@ -1,5 +1,6 @@
 from src.preprocessing import preproc
 from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
+from src.util import util
 
 
 class SemanticPreprocessor(RelevantTagsPreprocessor):
@@ -8,7 +9,7 @@ class SemanticPreprocessor(RelevantTagsPreprocessor):
         self.remove_stopwords = remove_stopwords
 
     def preprocess_single(self, row):
-        sentences = preproc.to_sentences(row.plaintext)
+        sentences = util.flatten(preproc.to_sentences(paragraph) for paragraph in row.plaintext.split('\n'))
         word_lists = preproc.sentence_list_to_word_list(sentences)
         word_lists = (list(preproc.remove_punctuation(words)) for words in word_lists)
         if self.remove_stopwords:
