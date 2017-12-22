@@ -6,7 +6,8 @@ from tqdm import tqdm
 
 from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
 from src.database.X28TestData import X28TestData
-from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar
+from src.database.entities_pg import Job_Class, Job_Class_Similar, Job_Class_To_Job_Class_Similar, \
+    Semantic_Avg_Classification_Results
 from src.evaluation.jobtitle.evaluator_jobtitle_semantic_avg import SemanticAVGEvaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
@@ -69,10 +70,12 @@ def update_most_similar_job_classes():
     log.info('update_most_similar_job_classes: done!')
 
 
-if not args.model:
-    # comment out unused model
+if args.model == 'fetchflow':
     args.model = 'semantic_fetchflow_x28.gz'
+    Semantic_Avg_Classification_Results._discriminator_ += '-fetchflow'
+else:
     args.model = 'semantic_avg_x28.gz'
+    Semantic_Avg_Classification_Results._discriminator_ += '-x28'
 
 if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')

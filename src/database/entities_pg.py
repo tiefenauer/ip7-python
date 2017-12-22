@@ -71,6 +71,12 @@ class Combined_Classification_Results(Classification_Results):
 class Semantic_Avg_Classification_Results(Classification_Results):
     _discriminator_ = 'jobtitle-semantic-avg'
 
+class Semantic_Avg_Classification_Results_X28(Classification_Results):
+    _discriminator_ = 'jobtitle-semantic-avg-x28'
+
+class Semantic_Avg_Classification_Results_Fetchflow(Classification_Results):
+    _discriminator_ = 'jobtitle-semantic-avg-fetchflow'
+
 
 class Semantic_Rf_Classification_Results(Classification_Results):
     _discriminator_ = 'jobtitle-semantic-rf'

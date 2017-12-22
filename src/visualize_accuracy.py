@@ -21,7 +21,9 @@ classification_methods = [
     'jobtitle-fts',
     'jobtitle-combined',
     'jobtitle-semantic-rf',
-    'jobtitle-semantic-avg',
+    # 'jobtitle-semantic-avg',
+    'jobtitle-semantic-avg-x28',
+    'jobtitle-semantic-avg-fetchflow',
     'jobtitle-structural-nv',
     'jobtitle-structural-nvt',
     'loe-fts'
@@ -45,14 +47,13 @@ def calculate_means_std(score_method):
     means = []
     std = []
     for method in classification_methods:
-        rows = Classification_Results.select(lambda x: x.clf_method == method)
-        rows = list(rows)
-        if len(rows) == 0:
+        query = Classification_Results.select(lambda x: x.clf_method == method)
+        if query.count() == 0:
             means.append(0)
             std.append(0)
         else:
             score_name = 'score_' + score_method
-            scores = np.array([getattr(row, score_name) for row in rows])
+            scores = np.array([getattr(row, score_name) for row in query])
             means.append(np.mean(scores))
             std.append(np.std(scores))
     return means, std
