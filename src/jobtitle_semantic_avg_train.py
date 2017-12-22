@@ -1,4 +1,6 @@
 import argparse
+import logging
+import os
 
 from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
 from src.database.X28TrainData import X28TrainData
@@ -6,6 +8,8 @@ from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
 
 log_setup()
+log = logging.getLogger(__name__)
+
 parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")
 parser.add_argument('source', nargs='?', choices=['fetchflow', 'x28'], default='fetchflow')
 parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
@@ -25,12 +29,19 @@ class FetchflowCorpus(object):
                 yield line.split()
 
 
-sentences = SemanticPreprocessor(X28TrainData(args))
-if args.source == 'fetchflow':
-    # sentences = SemanticPreprocessor(FetchflowTrainData(args))
-    sentences = FetchflowCorpus()
+class X28Corpus(object):
+    def __iter__(self):
+        for row, sentences in SemanticPreprocessor(X28TrainData(args)):
+            for sent in sentences:
+                yield sent
 
-classifier = JobtitleSemanticClassifierAvg(args.model)
 
 if __name__ == '__main__':
+    if args.source == 'fetchflow':
+        sentences = FetchflowCorpus()
+    else:
+        sentences = X28Corpus()
+
+    classifier = JobtitleSemanticClassifierAvg(args.model)
+    logging.info('Training semantic classifier on {} data'.format(args.source))
     classifier.train_classifier(sentences)
