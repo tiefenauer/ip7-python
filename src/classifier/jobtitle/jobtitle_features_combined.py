@@ -1,6 +1,6 @@
 from functools import total_ordering
 
-tag_weights = ['title', 'h1', 'h2', 'h3', 'strong', 'default']
+tag_weights = ['title', 'h1', 'h2', 'h3', 'h4', 'h5', 'strong', 'default']
 origin_weights = ['known-job', 'mw', 'loe', 'default']
 
 

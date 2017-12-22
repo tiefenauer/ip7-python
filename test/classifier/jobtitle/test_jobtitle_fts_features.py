@@ -10,8 +10,8 @@ class TestJobtitleFtsFeatures(unittest.TestCase):
 
     def test_eq_with_same_values_returns_True(self):
         # arrange
-        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=10, num_variants=12)
-        feature2 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=10, num_variants=12)
+        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=10, num_variants=12)
+        feature2 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=10, num_variants=12)
         # act/assert
         assert_that(feature1, is_(feature2))
 
@@ -33,47 +33,47 @@ class TestJobtitleFtsFeatures(unittest.TestCase):
 
     def test_lt_with_different_highest_tag_higher_tag_is_first(self):
         # arrange
-        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=10, num_variants=12)
-        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag='h2', first_position=1, num_occurrences=10,
+        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=10, num_variants=12)
+        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag_name='h2', first_tag_index=1, job_name_count=10,
                                        num_variants=12)
         # act/assert
         assert_that(feature1, is_(less_than(feature2)))
 
     def test_lt_with_different_highest_tag_tag_weight_is_considered_and_not_tag_name(self):
         # arrange
-        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=10, num_variants=12)
-        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag='a', first_position=1, num_occurrences=10,
+        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=10, num_variants=12)
+        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag_name='a', first_tag_index=1, job_name_count=10,
                                        num_variants=12)
         # act/assert
         assert_that(feature1, is_(less_than(feature2)))
 
     def test_lt_with_different_position_lower_tag_is_first(self):
         # arrange
-        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=10, num_variants=12)
-        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag='h1', first_position=2, num_occurrences=10,
+        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=10, num_variants=12)
+        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag_name='h1', first_tag_index=2, job_name_count=10,
                                        num_variants=12)
         # act/assert
         assert_that(feature1, is_(less_than(feature2)))
 
     def test_lt_with_different_occurrence_higher_occurrence_is_first(self):
         # arrange
-        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=12, num_variants=12)
-        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag='h1', first_position=1, num_occurrences=10,
+        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=12, num_variants=12)
+        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag_name='h1', first_tag_index=1, job_name_count=10,
                                        num_variants=12)
         # act/assert
         assert_that(feature1, is_(less_than(feature2)))
 
     def test_lt_with_different_occurrence_and_different_position_higher_occurrence_is_first(self):
         # arrange
-        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=12, num_variants=12)
-        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag='h1', first_position=0, num_occurrences=10, num_variants=12)
+        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=12, num_variants=12)
+        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag_name='h1', first_tag_index=0, job_name_count=10, num_variants=12)
         # act/assert
         assert_that(feature1, is_(less_than(feature2)))
 
     def test_lt_with_different_number_of_variants_higher_number_is_first(self):
         # arrange
-        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=1, num_occurrences=10, num_variants=12)
-        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag='h1', first_position=1, num_occurrences=10,
+        feature1 = JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=1, job_name_count=10, num_variants=12)
+        feature2 = JobtitleFtsFeatures(job_name='Bäcker', highest_tag_name='h1', first_tag_index=1, job_name_count=10,
                                        num_variants=10)
         # act/assert
         assert_that(feature1, is_(less_than(feature2)))
@@ -81,25 +81,25 @@ class TestJobtitleFtsFeatures(unittest.TestCase):
     def test_sorted_features_sorts_features_best_first(self):
         # arrange
         features = [
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=10, num_occurrences=20, num_variants=30),
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h2', first_position=10, num_occurrences=20, num_variants=30),
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h1', first_position=9, num_occurrences=20, num_variants=30),
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h2', first_position=9, num_occurrences=20, num_variants=30),
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=9, num_occurrences=21, num_variants=30),
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h2', first_position=9, num_occurrences=21, num_variants=30),
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h1', first_position=9, num_occurrences=21, num_variants=31),
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h2', first_position=9, num_occurrences=21, num_variants=31)
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=10, job_name_count=20, num_variants=30),
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h2', first_tag_index=10, job_name_count=20, num_variants=30),
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h1', first_tag_index=9, job_name_count=20, num_variants=30),
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h2', first_tag_index=9, job_name_count=20, num_variants=30),
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=9, job_name_count=21, num_variants=30),
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h2', first_tag_index=9, job_name_count=21, num_variants=30),
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h1', first_tag_index=9, job_name_count=21, num_variants=31),
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h2', first_tag_index=9, job_name_count=21, num_variants=31)
         ]
         # act
         result = sorted(features)
         # assert
         assert_that(result, contains(
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h1', first_position=9, num_occurrences=21, num_variants=31),
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=9, num_occurrences=21, num_variants=30),
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h1', first_position=9, num_occurrences=20, num_variants=30),
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h1', first_position=10, num_occurrences=20, num_variants=30),
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h2', first_position=9, num_occurrences=21, num_variants=31),
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h2', first_position=9, num_occurrences=21, num_variants=30),
-            JobtitleFtsFeatures(job_name='Arzt', highest_tag='h2', first_position=9, num_occurrences=20, num_variants=30),
-            JobtitleFtsFeatures(job_name='Koch', highest_tag='h2', first_position=10, num_occurrences=20, num_variants=30)
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h1', first_tag_index=9, job_name_count=21, num_variants=31),
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=9, job_name_count=21, num_variants=30),
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h1', first_tag_index=9, job_name_count=20, num_variants=30),
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h1', first_tag_index=10, job_name_count=20, num_variants=30),
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h2', first_tag_index=9, job_name_count=21, num_variants=31),
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h2', first_tag_index=9, job_name_count=21, num_variants=30),
+            JobtitleFtsFeatures(job_name='Arzt', highest_tag_name='h2', first_tag_index=9, job_name_count=20, num_variants=30),
+            JobtitleFtsFeatures(job_name='Koch', highest_tag_name='h2', first_tag_index=10, job_name_count=20, num_variants=30)
         ))

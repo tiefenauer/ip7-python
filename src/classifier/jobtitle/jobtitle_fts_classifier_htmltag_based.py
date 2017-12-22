@@ -1,39 +1,18 @@
 import math
 
-from src.classifier.jobtitle import jobtitle_fts_features
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
-from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
+from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures, calculate_tag_weight
 from src.classifier.tag_classifier import TagClassifier
 from src.dataimport.known_job_variants import KnownJobVariants
 from src.util.jobtitle_util import count_variant
 
 
-# {
+def count_job_in_tags(tags, job_name_variants):
+    return sum(count_job(tag, job_name_variants) for tag in tags)
 
 
-#   'job_1': [
-#       'job_variant_1': {'h1': 10, 'h2': 5}
-#       'job_variant_2': {'h2': 6}
-#    ]
-# }
-def create_statistics(tags, job_name_variants):
-    """extracts stats about where and how often job names and/or their variants occur in a given
-    @tags: a set of tags
-    @job_name_variants: map 'job_name' -> ['variant1', 'variant2', ...]
-    """
-    features = {}
-    for job_name, variants in job_name_variants:
-        for tag_pos, tag in enumerate(tags):
-            tag_name = tag.name if tag.name else 'default'
-            for variant, count in count_variants(tag.getText(), variants):
-                if job_name not in features:
-                    features[job_name] = {}
-                if variant not in features[job_name]:
-                    features[job_name][variant] = {}
-                if tag_name not in features[job_name][variant]:
-                    features[job_name][variant][tag_name] = []
-                features[job_name][variant][tag_name].append({'tag_pos': tag_pos, 'count': count})
-    return features
+def count_job(tag, job_name_variants):
+    return sum(count for (variant, count) in count_variants(tag.getText(), job_name_variants))
 
 
 def count_variants(text, variants):
@@ -44,34 +23,26 @@ def count_variants(text, variants):
             yield (variant, count)
 
 
-def create_fts_features(features):
-    feature_list = []
-    for job_name in features:
-        num_variants = 0
-        num_occurrences = 0
-        first_position = math.inf
-        lowest_tag_weight = math.inf
-        highest_tag = None
-
-        for job_variant in features[job_name]:
-            num_variants += 1
-            for tag_name in features[job_name][job_variant]:
-                tag_weight = jobtitle_fts_features.calculate_tag_weight(tag_name)
-                if tag_weight < lowest_tag_weight:
-                    lowest_tag_weight = tag_weight
-                    highest_tag = tag_name
-                for pos_count in features[job_name][job_variant][tag_name]:
-                    position = pos_count['tag_pos']
-                    count = pos_count['count']
-                    if position < first_position:
-                        first_position = position
-                    num_occurrences += count
-
-        feature_list.append(JobtitleFtsFeatures(job_name, highest_tag, first_position, num_occurrences, num_variants))
-    return feature_list
-
-
 known_job_variants = KnownJobVariants()
+
+
+def calculate_highest_tag(tags, variants):
+    highest_tag = None
+    min_weight = math.inf
+    for variant in variants:
+        for tag_index, tag in enumerate(tag for tag in tags if variant in tag.getText()):
+            tag_weight = calculate_tag_weight(tag.name)
+            if tag_weight < min_weight:
+                min_weight = tag_weight
+                highest_tag = tag
+    return highest_tag
+
+
+def calculate_first_tag(tags, variants):
+    for variant in variants:
+        for tag_index, tag in enumerate(tags):
+            if variant in tag.getText():
+                return tag_index
 
 
 class FeatureBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
@@ -86,10 +57,19 @@ class FeatureBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
      """
 
     def predict_class(self, tags):
-        stats = create_statistics(tags, known_job_variants)
-        features = create_fts_features(stats)
-        if len(features) > 0:
-            best_match = sorted(features)[0]
+        tags = list(tags)
+        features_list = []
+        for job_name, variants in known_job_variants:
+            job_name_count = count_job_in_tags(tags, variants)
+            if job_name_count > 0:
+                highest_tag = calculate_highest_tag(tags, variants)
+                first_tag_index = calculate_first_tag(tags, variants)
+                features = JobtitleFtsFeatures(job_name, highest_tag.name, first_tag_index, job_name_count)
+                features_list.append(features)
+
+        features_list = sorted(features_list)
+        if len(features_list) > 0:
+            best_match = sorted(features_list)[0]
             return best_match.job_name
         return None
 
