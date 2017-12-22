@@ -4,7 +4,7 @@ import pickle
 
 import nltk
 
-from src.classifier.classifier_based_german_tagger import ClassifierBasedGermanTagger
+from src.classifier.german_pos_tagger import ClassifierBasedGermanTagger
 from src.util.log_util import log_setup
 
 log_setup()

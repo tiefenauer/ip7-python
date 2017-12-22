@@ -9,12 +9,16 @@ from lxml import etree
 from nltk.corpus import stopwords
 from nltk.stem.snowball import GermanStemmer
 
+from src.classifier.german_lemmatizer import GermanLemmatizer
 from src.dataimport.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.util.util import flatten
 
-# german POS tagger
+# German POS tagger
 with open(german_pos_tagger_path, 'rb') as f:
     german_pos_tagger = pickle.load(f)
+
+# German lemmatizer
+german_lemmatizer = GermanLemmatizer()
 
 stopwords_de = set(stopwords.words('german'))
 stemmer = GermanStemmer(ignore_stopwords=True)
@@ -135,6 +139,20 @@ def pos_tag(word_list):
     if is_nested_list(word_list):
         return (german_pos_tagger.tag(words) for words in word_list)
     return german_pos_tagger.tag(word_list)
+
+
+def lemmatize(sentence):
+    words = to_words(sentence)
+    words = remove_punctuation(words)
+    pos_tagged_words = pos_tag(list(words))
+    return (lemma for lemma in (lemmatize_word(word, pos) for word, pos in pos_tagged_words))
+
+
+def lemmatize_word(word, pos):
+    try:
+        return german_lemmatizer.find_lemma(word, pos)
+    except ValueError:
+        return word
 
 
 def is_iterable_and_not_string(text):

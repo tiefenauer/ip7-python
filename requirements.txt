@@ -1,0 +1,11 @@
+tqdm==4.19.2
+pandas==0.20.3
+numpy==1.13.1
+lxml==3.8.0
+nltk==3.2.4
+matplotlib==2.1.0
+gensim==3.0.1
+beautifulsoup4==4.6.0
+PyHamcrest==1.9.0
+pony==0.7.3
+scikit_learn==0.19.1

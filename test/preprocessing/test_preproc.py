@@ -274,6 +274,44 @@ class TestPreprocessing(unittest.TestCase):
             [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')]
         ))
 
+    def test_lemmatize_word_with_single_word_returns_lemma(self):
+        # some nouns
+        assert_that(testee.lemmatize_word('Zentren', 'NN'), is_('Zentrum'))
+        assert_that(testee.lemmatize_word('Abbrüche', 'NN'), is_('Abbruch'))
+        assert_that(testee.lemmatize_word('Ärzte', 'NN'), is_('Arzt'))
+        assert_that(testee.lemmatize_word('Anforderungen', 'NN'), is_('Anforderung'))
+        # some adjectives
+        assert_that(testee.lemmatize_word('lustige', 'ADJ'), is_('lustig'))
+        assert_that(testee.lemmatize_word('anstrengende', 'ADJ'), is_('anstrengend'))
+        assert_that(testee.lemmatize_word('motivierte', 'ADJ'), is_('motiviert'))
+        assert_that(testee.lemmatize_word('höher', 'ADJ'), is_('hoch'))
+        assert_that(testee.lemmatize_word('höhere', 'ADJ'), is_('hoch'))
+        # some adverbs
+        assert_that(testee.lemmatize_word('tagsüber', 'ADV'), is_('tagsüber'))
+        assert_that(testee.lemmatize_word('nachts', 'ADV'), is_('nachts'))
+        assert_that(testee.lemmatize_word('fachlich', 'ADV'), is_('fachlich'))
+        # some verbs
+        assert_that(testee.lemmatize_word('gesucht', 'VB'), is_('suchen'))
+        assert_that(testee.lemmatize_word('kaufen', 'VB'), is_('kaufen'))
+        assert_that(testee.lemmatize_word('kaufe', 'VB'), is_('kaufen'))
+        assert_that(testee.lemmatize_word('kauft', 'VB'), is_('kaufen'))
+        assert_that(testee.lemmatize_word('kaufte', 'VB'), is_('kaufen'))
+        assert_that(testee.lemmatize_word('kauften', 'VB'), is_('kaufen'))
+        assert_that(testee.lemmatize_word('gekauft', 'VB'), is_('kaufen'))
+
+    def test_lemmatize_word_with_unsupported_pos_tag_returns_word(self):
+        assert_that(testee.lemmatize_word('Dies', 'PDS'), is_('Dies'))
+        assert_that(testee.lemmatize_word('ob', 'KOUS'), is_('ob'))
+
+    def test_lemmatize_sentence_returns_lemmatized_words_without_punctuation(self):
+        # arrange
+        sentence = 'Dies ist ein Test zum schauen, ob es funktioniert.'
+        # act
+        result = testee.lemmatize(sentence)
+        result = list(result)
+        # assert
+        assert_that(result, contains('Dies', 'sein', 'ein', 'Test', 'zum', 'schauen', 'ob', 'es', 'funktionieren'))
+
     def test_text_list_to_sentence_list_returns_one_sentence_list_per_text(self):
         # arrange
         text_list = [
