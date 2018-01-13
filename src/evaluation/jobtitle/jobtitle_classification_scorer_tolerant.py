@@ -7,7 +7,7 @@ class TolerantJobtitleClassificationScorer(TolerantClassificationScorer):
     predicted and actual class are normalized in order to compare them.
     """
 
-    def calculate_similarity(self, actual_class, predicted_class):
+    def _calculate_similarity(self, actual_class, predicted_class):
         if not predicted_class:
             return 0
         # normalize before comparison

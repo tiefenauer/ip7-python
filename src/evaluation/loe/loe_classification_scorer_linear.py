@@ -4,7 +4,7 @@ from src.evaluation.classification_scorer_linear import LinearClassificationScor
 class LinearLoeClassificationScorer(LinearClassificationScorer):
     scores = 0
 
-    def calculate_similarity(self, loe_actual, loe_predicted):
+    def _calculate_similarity(self, loe_actual, loe_predicted):
         actual_min, actual_max = loe_actual
         predicted_min, predicted_max = loe_predicted
         sum = 0
