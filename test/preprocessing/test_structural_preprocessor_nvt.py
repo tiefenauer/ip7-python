@@ -87,7 +87,7 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             ['Dies', 'ist', 'noch', 'ein', 'Inhalt']
         ))
 
-    def test_content_words_to_stems_converts_words_to_stem(self):
+    def test_content_words_to_lemmata_converts_words_to_stem(self):
         # arrange
         word_lists = [
             [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
@@ -96,7 +96,7 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')]
         ]
         # act
-        result = structural_preprocessor_nvt.content_words_to_stems(word_lists)
+        result = structural_preprocessor_nvt.content_words_to_lemmata(word_lists)
         # assert
         assert_that(result, contains(
             [('dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('test', 'NN'), ('zum', 'APPRART'),

@@ -10,5 +10,5 @@ class StructuralPreprocessorNV(Preprocessor):
         words_lists = (preproc.remove_punctuation(word_list) for word_list in words_lists)
         tagged_words = preproc.pos_tag(words_lists)
         tagged_words = util.flatten(tagged_words)
-        tagged_stems = ((preproc.stem(word), tag) for word, tag in tagged_words)
-        return tagged_stems
+        tagged_lemmata = ((preproc.lemmatize_word(word, pos), pos) for word, pos in tagged_words)
+        return tagged_lemmata
