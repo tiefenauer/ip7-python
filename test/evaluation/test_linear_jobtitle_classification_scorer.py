@@ -16,7 +16,7 @@ class TestLinearJobtitleClassificationScorer(unittest.TestCase):
         assert_that(testee.calculate_similarity('Verkaufsberater', 'Verkaufsberater Kosmetik'), is_(1))
 
     def test_calculate_similarity_full_match_ignores_mw_forms(self):
-        # arrange/act/asser
+        # arrange/act/assert
         assert_that(testee.calculate_similarity('Senior System Engineer (m/w)', 'Senior System Engineer'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer   (m/w)', 'Senior System Engineer'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer m/w', 'Senior System Engineer'), is_(1))
@@ -25,11 +25,34 @@ class TestLinearJobtitleClassificationScorer(unittest.TestCase):
         assert_that(testee.calculate_similarity('Senior System Engineer   mw', 'Senior System Engineer'), is_(1))
 
     def test_calculate_similarity_full_match_ignores_percentages(self):
-        # arrange/act/asser
+        # arrange/act/assert
         assert_that(testee.calculate_similarity('Senior System Engineer 100%', 'Senior System Engineer'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer   100%', 'Senior System Engineer'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer 60%', 'Senior System Engineer'), is_(1))
         assert_that(testee.calculate_similarity('Senior System Engineer   60%', 'Senior System Engineer'), is_(1))
+
+    def test_calculate_similarity_full_match_ignores_gender(self):
+        # arrange/act/assert
+        assert_that(testee.calculate_similarity('MalerIn', 'Maler'), is_(1))
+        assert_that(testee.calculate_similarity('Maler/in', 'Maler'), is_(1))
+        assert_that(testee.calculate_similarity('Maler/-in', 'Maler'), is_(1))
+        assert_that(testee.calculate_similarity('Maler(in)', 'Maler'), is_(1))
+        assert_that(testee.calculate_similarity('Maler', 'MalerIn'), is_(1))
+        assert_that(testee.calculate_similarity('Maler', 'Maler/in'), is_(1))
+        assert_that(testee.calculate_similarity('Maler', 'Maler/-in'), is_(1))
+        assert_that(testee.calculate_similarity('Maler', 'Maler(in)'), is_(1))
+        assert_that(testee.calculate_similarity('MalerIn', 'Maler/-in'), is_(1))
+        assert_that(testee.calculate_similarity('Maler/in', 'Maler/-in'), is_(1))
+        assert_that(testee.calculate_similarity('Maler/-in', 'MalerIn'), is_(1))
+        assert_that(testee.calculate_similarity('Maler(in)', 'Maler'), is_(1))
+
+    def test_calculate_similarity_prediction_includes_actual_multiple_times_score_is_1(self):
+        assert_that(testee.calculate_similarity('Maler', 'Maler Maler'), is_(1))
+        assert_that(testee.calculate_similarity('Maler', 'Maler/Malerin'), is_(1))
+        assert_that(testee.calculate_similarity('Maler (m/w)', 'Malerin/Maler'), is_(1))
+        assert_that(testee.calculate_similarity('Malerin/Maler (m/w)', 'Malerin/Maler'), is_(1))
+        assert_that(testee.calculate_similarity('Zimmermänner', 'Zimmerer / Zimmermänner'), is_(1))
+        assert_that(testee.calculate_similarity('Leiterin / Leiter Administration', 'Leiter Administration Leiter Administration' ), is_(1))
 
     def test_calculate_similarity_full_match_ignores_percentage_ranges(self):
         # arrange/act/asser
@@ -39,7 +62,7 @@ class TestLinearJobtitleClassificationScorer(unittest.TestCase):
     def test_calculate_similarity_partial_match_includes_partial_words(self):
         assert_that(testee.calculate_similarity('erfahrene Servicemitarbeiter/-innen', 'Servicemitarbeiter'), is_(0.5))
         assert_that(testee.calculate_similarity('Tagesmutter/Tagesfamilie', 'Tagesmutter'), is_(0.5))
-        assert_that(testee.calculate_similarity('FTTH oder LWL-Spleisser 100%', 'Spleisser'), is_(1/3))
+        assert_that(testee.calculate_similarity('FTTH oder LWL-Spleisser 100%', 'Spleisser'), is_(1 / 3))
 
     def test_calculate_similarity_partial_intraword_match_includes_partial_matches(self):
         assert_that(testee.calculate_similarity('Werkzeugverkaufsberater', 'Verkaufsberater'), is_(0.5))

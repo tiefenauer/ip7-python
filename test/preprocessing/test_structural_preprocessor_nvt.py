@@ -24,21 +24,21 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
         # assert
         assert_that(result, contains(
             ('dies', 'PDS', 'h1'),
-            ('ist', 'VAFIN', 'h1'),
+            ('sein', 'VAFIN', 'h1'),
             ('ein', 'ART', 'h1'),
             ('test', 'NN', 'h1'),
             ('zum', 'APPRART', 'h1'),
-            ('schau', 'ADJA', 'h1'),
+            ('schauen', 'ADJA', 'h1'),
             ('ob', 'KOUS', 'h1'),
             ('es', 'PPER', 'h1'),
-            ('funktioniert', 'VVFIN', 'h1'),
+            ('funktionieren', 'VVFIN', 'h1'),
             ('dies', 'PDS', 'h1'),
-            ('ist', 'VAFIN', 'h1'),
+            ('sein', 'VAFIN', 'h1'),
             ('ein', 'ART', 'h1'),
             ('anderer', 'ADJA', 'h1'),
             ('satz', 'NN', 'h1'),
             ('dies', 'PDS', 'p'),
-            ('ist', 'VAFIN', 'p'),
+            ('sein', 'VAFIN', 'p'),
             ('noch', 'ADV', 'p'),
             ('ein', 'ART', 'p'),
             ('inhalt', 'NN', 'p')
@@ -87,7 +87,7 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             ['Dies', 'ist', 'noch', 'ein', 'Inhalt']
         ))
 
-    def test_content_words_to_stems_converts_words_to_stem(self):
+    def test_content_words_to_lemmata_converts_words_to_stem(self):
         # arrange
         word_lists = [
             [('Dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('Test', 'NN'), ('zum', 'APPRART'),
@@ -96,11 +96,11 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')]
         ]
         # act
-        result = structural_preprocessor_nvt.content_words_to_stems(word_lists)
+        result = structural_preprocessor_nvt.content_words_to_lemmata(word_lists)
         # assert
         assert_that(result, contains(
-            [('dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('test', 'NN'), ('zum', 'APPRART'),
-             ('schau', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktioniert', 'VVFIN')],
-            [('dies', 'PDS'), ('ist', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('satz', 'NN')],
-            [('dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('inhalt', 'NN')]
+            [('dies', 'PDS'), ('sein', 'VAFIN'), ('ein', 'ART'), ('test', 'NN'), ('zum', 'APPRART'),
+             ('schauen', 'ADJA'), ('ob', 'KOUS'), ('es', 'PPER'), ('funktionieren', 'VVFIN')],
+            [('dies', 'PDS'), ('sein', 'VAFIN'), ('ein', 'ART'), ('anderer', 'ADJA'), ('satz', 'NN')],
+            [('dies', 'PDS'), ('sein', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('inhalt', 'NN')]
         ))

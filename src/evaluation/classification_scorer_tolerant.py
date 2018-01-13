@@ -9,6 +9,6 @@ class TolerantClassificationScorer(ClassificationScorer):
         super(TolerantClassificationScorer, self).__init__(label='tolerant')
 
     @abstractmethod
-    def calculate_similarity(self, actual_class, predicted_class):
+    def _calculate_similarity(self, actual_class, predicted_class):
         """to bed implemented in subclass"""
         return 0

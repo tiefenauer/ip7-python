@@ -10,9 +10,9 @@ def split_words_by_tag(tags):
             yield html_tag, list(words)
 
 
-def content_words_to_stems(tagged_word_lists):
+def content_words_to_lemmata(tagged_word_lists):
     for tagged_word_list in tagged_word_lists:
-        yield [(preproc.stem(word), pos_tag) for (word, pos_tag) in tagged_word_list]
+        yield [(preproc.lemmatize_word(word, pos).lower(), pos) for (word, pos) in tagged_word_list]
 
 
 class StructuralPreprocessorNVT(RelevantTagsPreprocessor):
@@ -27,10 +27,10 @@ class StructuralPreprocessorNVT(RelevantTagsPreprocessor):
         words_by_tag = split_words_by_tag(relevant_tags)
         html_tags, word_lists = zip(*words_by_tag)
         tagged_words_list = preproc.pos_tag(word_lists)
-        tagged_stems_lists = content_words_to_stems(tagged_words_list)
+        tagged_lemmata_lists = content_words_to_lemmata(tagged_words_list)
 
         processed = []
-        for tagged_stem_list, html_tag in zip(tagged_stems_lists, html_tags):
-            for stem, pos_tag in tagged_stem_list:
-                processed.append((stem, pos_tag, html_tag))
+        for tagged_lemmata_list, html_tag in zip(tagged_lemmata_lists, html_tags):
+            for lemma, pos_tag in tagged_lemmata_list:
+                processed.append((lemma, pos_tag, html_tag))
         return processed

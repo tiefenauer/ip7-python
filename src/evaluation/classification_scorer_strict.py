@@ -9,6 +9,6 @@ class StrictClassificationScorer(ClassificationScorer):
         super(StrictClassificationScorer, self).__init__(label='strict')
 
     @abstractmethod
-    def calculate_similarity(self, actual_class, predicted_class):
+    def _calculate_similarity(self, actual_class, predicted_class):
         """to bed implemented in subclass"""
         return 0

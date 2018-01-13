@@ -5,7 +5,7 @@ from src.util import jobtitle_util
 class LinearJobtitleClassificationScorer(LinearClassificationScorer):
     scores = 0
 
-    def calculate_similarity(self, actual_class, predicted_class):
+    def _calculate_similarity(self, actual_class, predicted_class):
         """calculates similarity as number of words in predicted class that also appear in actual class"""
         if not predicted_class or len(predicted_class) == 0:
             return 0

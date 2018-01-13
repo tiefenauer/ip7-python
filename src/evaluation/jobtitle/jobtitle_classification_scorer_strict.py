@@ -3,5 +3,5 @@ from src.evaluation.classification_scorer_strict import StrictClassificationScor
 
 class StrictJobtitleClassificationScorer(StrictClassificationScorer):
 
-    def calculate_similarity(self, actual_class, predicted_class):
+    def _calculate_similarity(self, actual_class, predicted_class):
         return int(actual_class == predicted_class)

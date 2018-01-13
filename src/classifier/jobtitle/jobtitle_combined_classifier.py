@@ -41,7 +41,7 @@ class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
         return None
 
     def title(self):
-        return 'Jobtitle Classifier: FTS (advanced)'
+        return 'Jobtitle Classifier: FTS (combined)'
 
     def label(self):
         return 'jobtitle-combined'
