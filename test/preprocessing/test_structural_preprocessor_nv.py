@@ -18,14 +18,14 @@ class TestStructuralPreprocessorNV(unittest.TestCase):
         # assert
         assert_that(list(result), contains(
             ('dies', 'PDS'),
-            ('ist', 'VAFIN'),
+            ('sein', 'VAFIN'),
             ('ein', 'ART'),
             ('test', 'NN'),
             ('zum', 'APPRART'),
-            ('schau', 'ADJA'),
+            ('schauen', 'ADJA'),
             ('ob', 'KOUS'),
             ('es', 'PPER'),
-            ('funktioniert', 'VVFIN')
+            ('funktionieren', 'VVFIN')
         ))
 
     def test_preprocess_single_removes_punctuation(self):
@@ -36,14 +36,14 @@ class TestStructuralPreprocessorNV(unittest.TestCase):
         # assert
         assert_that(list(result), contains(
             ('dies', 'PDS'),
-            ('ist', 'VAFIN'),
+            ('sein', 'VAFIN'),
             ('ein', 'ART'),
             ('test', 'NN'),
             ('zum', 'APPRART'),
-            ('schau', 'ADJA'),
+            ('schauen', 'ADJA'),
             ('ob', 'KOUS'),
             ('es', 'PPER'),
-            ('funktioniert', 'VVFIN')
+            ('funktionieren', 'VVFIN')
         ))
 
     def test_preprocess_single_returns_flat_list(self):
@@ -55,16 +55,16 @@ class TestStructuralPreprocessorNV(unittest.TestCase):
         # assert
         assert_that(list(result), contains(
             ('dies', 'PDS'),
-            ('ist', 'VAFIN'),
+            ('sein', 'VAFIN'),
             ('ein', 'ART'),
             ('test', 'NN'),
             ('zum', 'APPRART'),
-            ('schau', 'ADJA'),
+            ('schauen', 'ADJA'),
             ('ob', 'KOUS'),
             ('es', 'PPER'),
-            ('funktioniert', 'VVFIN'),
+            ('funktionieren', 'VVFIN'),
             ('dies', 'PDS'),
-            ('ist', 'VAFIN'),
+            ('sein', 'VAFIN'),
             ('ein', 'ART'),
             ('anderer', 'ADJA'),
             ('satz', 'NN')

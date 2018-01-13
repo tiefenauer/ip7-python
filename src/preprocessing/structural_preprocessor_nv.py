@@ -11,4 +11,4 @@ class StructuralPreprocessorNV(Preprocessor):
         tagged_words = preproc.pos_tag(words_lists)
         tagged_words = util.flatten(tagged_words)
         tagged_lemmata = ((preproc.lemmatize_word(word, pos), pos) for word, pos in tagged_words)
-        return tagged_lemmata
+        return ((lemma.lower(), pos) for lemma, pos in tagged_lemmata)

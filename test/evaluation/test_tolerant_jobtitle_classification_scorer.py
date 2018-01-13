@@ -19,3 +19,6 @@ class TestTolerantJobtitleClassificationScorer(unittest.TestCase):
 
     def test_calculate_similarity_with_predicted_in_actual_returns_one(self):
         assert_that(testee.calculate_similarity("foo bar", "bar"), is_(1))
+
+    def test_calculate_similarity_with_multiple_words_returns_one(self):
+        assert_that(testee.calculate_similarity('Projekt Ingenieur (m/w)', 'Projekt Ingenieur'), is_(1))

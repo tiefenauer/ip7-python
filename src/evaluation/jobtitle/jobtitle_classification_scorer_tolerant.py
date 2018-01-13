@@ -8,11 +8,12 @@ class TolerantJobtitleClassificationScorer(TolerantClassificationScorer):
     """
 
     def calculate_similarity(self, actual_class, predicted_class):
-        similarity = 0
+        if not predicted_class:
+            return 0
         # normalize before comparison
-        actual_class_normalized = jobtitle_util.normalize_job_title(actual_class)
-        predicted_class_normalized = jobtitle_util.normalize_job_name(predicted_class)
+        actual_class_normalized = ' '.join(jobtitle_util.normalize_job_title(actual_class))
+        predicted_class_normalized = ' '.join(jobtitle_util.normalize_job_title(predicted_class))
 
-        if predicted_class and predicted_class_normalized in actual_class_normalized:
-            similarity = 1
-        return similarity
+        if predicted_class_normalized in actual_class_normalized:
+            return 1
+        return 0
