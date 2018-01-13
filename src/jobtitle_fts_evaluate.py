@@ -14,6 +14,9 @@ parser = argparse.ArgumentParser(description="""
 Reads training data and classifies it using full text search.
 """)
 parser.add_argument('id', nargs='?', type=int, help='(optional) single id to process')
+parser.add_argument('-c', '--calculate_score', type=bool, default=True,
+                    help=""""(optional) calculate score on-the-fly. If set to False processing might be a bit faster 
+                    but score will need to calculated manually afterwards (default: True)""")
 parser.add_argument('-s', '--split', nargs='?', type=float, default=1.0,
                     help='(optional) fraction value of labeled data to use for training')
 parser.add_argument('-t', '--truncate', action='store_true',

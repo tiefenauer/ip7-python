@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 classification_methods = [
     'jobtitle-fts',
-    'jobtitle-combined',
+    # 'jobtitle-combined',
     # 'jobtitle-semantic-rf',
     # 'jobtitle-semantic-avg',
     # 'jobtitle-semantic-avg-x28',

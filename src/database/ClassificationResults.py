@@ -21,6 +21,8 @@ class ClassificationResults(object):
         sc_tol = scores[1]
         sc_lin = scores[2]
 
+        predicted_class = predicted_class or ''
+
         classification_result = self.create_entity(row.id, predicted_class[:255], sc_str, sc_tol, sc_lin)
         commit()
         return classification_result

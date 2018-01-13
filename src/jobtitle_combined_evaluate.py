@@ -15,7 +15,7 @@ Reads training data and classifies it using full text search.
 """)
 parser.add_argument('id', nargs='?', type=int, help='(optional) single id to process')
 parser.add_argument('-c', '--calculate_score', type=bool, default=True,
-                    help=""""(optional) calculate score on-the-fly. If set to Fals processing might be a bit faster 
+                    help=""""(optional) calculate score on-the-fly. If set to False processing might be a bit faster 
                     but score will need to calculated manually afterwards (default: True)""")
 parser.add_argument('-i', '--include_title', type=bool, default=True,
                     help='(optional) include title tag in evaluation. Default: True')
