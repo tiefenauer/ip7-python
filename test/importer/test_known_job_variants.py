@@ -1,6 +1,5 @@
 import collections
 import unittest
-from unittest.test.testmock.support import is_instance
 
 from hamcrest import greater_than, assert_that, is_, instance_of
 
@@ -26,6 +25,8 @@ class TestKnownJobVariants(unittest.TestCase):
         assert_that(len(list(testee)), is_(greater_than(0)))
 
     def test_yields_mapping_tuples(self):
-        for job_name, variant in KnownJobVariants():
-            assert_that(is_instance(job_name, str))
-            assert_that(is_instance(variant, str))
+        for job_name, variants in KnownJobVariants():
+            assert_that(job_name, is_(instance_of(str)))
+            assert_that(variants, is_(instance_of(set)))
+            for variant in variants:
+                assert_that(variant, is_(instance_of(str)))
