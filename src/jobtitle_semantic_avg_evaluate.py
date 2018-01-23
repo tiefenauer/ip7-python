@@ -30,7 +30,7 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if args.model == 'fetchflow':
-    args.model = 'semantic_avg_x28.gz'
+    args.model = 'semantic_fetchflow_x28.gz'
     Semantic_Avg_Classification_Results._discriminator_ += '-fetchflow'
 else:
     args.model = 'semantic_avg_x28.gz'
