@@ -1,146 +1,77 @@
 import argparse
 import logging
 import os
-import pickle
-import sys
 
-import nltk
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import accuracy_score
+from src.database.fetchflow_data import FetchflowData
 from tqdm import tqdm
 
-from src import preproc
-from src.importer.data_labeled import LabeledData
+from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
+from src.database.train_data_x28 import X28TrainData
+from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
+from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
+from src.util.log_util import log_setup
 
-logging.basicConfig(stream=sys.stdout, format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+log_setup()
+log = logging.getLogger(__name__)
 
-parser = argparse.ArgumentParser(description="""
-Reads training data and classifies it using full text search.
-""")
-parser.add_argument('-r', '--rebuild', help='force rebuild vocabulary')
+parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")
+parser.add_argument('source', nargs='?', choices=['fetchflow', 'x28'], default='fetchflow')
+parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
+                    help='(optional) fraction value of labeled data to use for training')
+parser.add_argument('-m', '--model',
+                    help='(optional) file with saved model to use. A new model will be created if not set.')
 args = parser.parse_args()
 
-sentence_detector = nltk.data.load('tokenizers/punkt/german.pickle')
 
-data_dir = 'D:/code/ip7-python/resource/models/semantic'
-file_vectorizer = os.path.join(data_dir, 'vectorizer.pkl')
-file_train_features = os.path.join(data_dir, 'train_features.pkl')
-file_test_features = os.path.join(data_dir, 'test_features.pkl')
-file_train_labels = os.path.join(data_dir, 'train_labels.pkl')
-file_test_labels = os.path.join(data_dir, 'test_labels.pkl')
-file_clf_random_forest = os.path.join(data_dir, 'clf_random_forest.pkl')
+class FetchflowCorpus(object):
+    """creates sentences from preprocessed corpus file"""
 
+    def __init__(self):
+        self.dirname = 'D:/db/'
 
-def preprocess(labeled_data):
-    with labeled_data as data:
-        for row in (row for row in tqdm(data, total=data.num_rows, unit=' rows') if row['html']):
-            relevant_tags = preproc.preprocess(row['html'])
-            vacancy_text = ' '.join((tag.getText() for tag in relevant_tags))
-            words = preproc.remove_stop_words(vacancy_text)
-            if len(words) > 0:
-                yield words, row['title']
+    def __iter__(self):
+        with open(os.path.join(self.dirname, 'fetchflowcorpus'), encoding='utf-8') as corpus:
+            for line in corpus:
+                yield line.split()
 
 
-max_features = 500
-train_size = 0.05
-test_size = 0.1
-data_train = LabeledData(split_from=0, split_to=train_size)
-data_test = LabeledData(split_from=train_size, split_to=train_size + test_size)
+class FetchflowOTFCorpus(object):
+    """creates sentences on the fly by preprocessing Fetchflow rows from DB"""
+
+    def __iter__(self):
+        class DummyRow(object):
+            def __init__(self, html):
+                self.html = html
+                self.plaintext = None
+
+        fetchflow_rows = FetchflowData(args)
+        relevant_tags_preprocessor = RelevantTagsPreprocessor(fetchflow_rows, include_title=False)
+        semantic_preprocessor = SemanticPreprocessor(fetchflow_rows)
+        for fetchflow_row in tqdm(fetchflow_rows, unit=' rows'):
+            row = DummyRow(html=fetchflow_row.html)
+            tags = relevant_tags_preprocessor.preprocess_single(row)
+            plaintext = '\n'.join(tag.getText() for tag in tags)
+            row.plaintext = plaintext
+            for sentence in semantic_preprocessor.preprocess_single(row):
+                if len(sentence) > 1:
+                    yield sentence
 
 
-def create_data_labels(dataset):
-    data = []
-    labels = []
-    for raw_data, label in dataset:
-        data.append(raw_data)
-        labels.append(label)
-    return data, labels
-
-
-def load_data(name, dataset, transform_fun, file_features, file_labels):
-    if args.rebuild or not os.path.isfile(file_features):
-        logging.info('loading/cleaning {} data from DB...'.format(name))
-        data, labels = create_data_labels(dataset)
-        logging.info('created {} elements with {} labels'.format(len(data), len(labels)))
-
-        logging.info('creating features from {} data...'.format(name))
-        features = transform_fun(data)
-        features = features.toarray()
-
-        logging.info('saving {}x{} features to file'.format(features.shape[0], features.shape[1]))
-        pickle.dump(labels, open(file_labels, 'wb'))
-        pickle.dump(features, open(file_features, 'wb'))
-        return features, labels
-    else:
-        logging.info('Loading {} data and labels from file...'.format(name))
-        data = pickle.load(open(file_features, 'rb'))
-        labels = pickle.load(open(file_labels, 'rb'))
-        return data, labels
-
-
-def create_train_data(vectorizer):
-    features, labels = load_data(name='train',
-                                 dataset=preprocess(data_train),
-                                 transform_fun=vectorizer.fit_transform,
-                                 file_features=file_train_features,
-                                 file_labels=file_train_labels
-                                 )
-    logging.info('saving vectorizer to file')
-    pickle.dump(vectorizer, open(file_vectorizer, 'wb'))
-    return features, labels
-
-
-def create_test_data(vectorizer):
-    return load_data(name='test',
-                     dataset=preprocess(data_test),
-                     transform_fun=vectorizer.transform,
-                     file_features=file_test_features,
-                     file_labels=file_test_labels
-                     )
-
-
-def create_vectorizer(args):
-    if args.rebuild or not os.path.isfile(file_vectorizer):
-        logging.info('recreating vectorizer...')
-        return CountVectorizer(analyzer="word",
-                               tokenizer=None,
-                               preprocessor=None,
-                               stop_words=None,
-                               max_features=max_features
-                               )
-    else:
-        logging.info('loading vectorizer from file...')
-        return pickle.load(open(file_vectorizer, 'rb'))
-
-
-def train_random_forest():
-    if os.path.exists(file_clf_random_forest):
-        logging.info('Loading RandomForestClassifier from file')
-        return pickle.load(open(file_clf_random_forest, 'rb'))
-
-    logging.info('Training new RandomForestClassifier')
-    clf = RandomForestClassifier(n_estimators=10)
-    clf.fit(train_features, train_labels)
-    pickle.dump(clf, open(file_clf_random_forest, 'wb'))
-    return clf
+class X28Corpus(object):
+    def __iter__(self):
+        for row, sentences in SemanticPreprocessor(X28TrainData(args)):
+            for sent in sentences:
+                yield sent
 
 
 if __name__ == '__main__':
-    # create test/training data
-    logging.info('Creating training data')
-    vectorizer = create_vectorizer(args)
-    train_features, train_labels = create_train_data(vectorizer)
+    if args.source == 'fetchflow':
+        sentences = FetchflowOTFCorpus()
+        # comment out for on-the-fly-processing
+        # sentences = FetchflowCorpus()
+    else:
+        sentences = X28Corpus()
 
-    # train classifier
-    forest = train_random_forest()
-
-    # make predictions
-    test_features, test_labels = create_test_data(vectorizer)
-    logging.info('using trained RandomForestClassifier to predict test features')
-    predictions = forest.predict(test_features)
-
-    # evaluate predictions
-    logging.info('measuring accuracy of predictions')
-    accuracy = accuracy_score(test_labels, predictions)
-    logging.info(accuracy)
+    classifier = JobtitleSemanticClassifier(args.model)
+    logging.info('Training semantic classifier on {} data'.format(args.source))
+    classifier.train_classifier(sentences)
