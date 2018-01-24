@@ -1,5 +1,5 @@
 from src.database.ClassificationResults import StructuralClassificationResults
-from src.evaluation.jobtitle.evaluator_jobtitle import JobtitleEvaluator
+from src.evaluation.evaluator_jobtitle import JobtitleEvaluator
 
 
 class StructuralNVTEvaluator(JobtitleEvaluator):

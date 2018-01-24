@@ -3,7 +3,7 @@ import logging
 
 from src.classifier.jobtitle.jobtitle_classifier_fts import FeatureBasedJobtitleFtsClassifier
 from src.database.x28_data import X28Data
-from src.evaluation.jobtitle.evaluator_jobtitle_fts import JobtitleFtsEvaluator
+from src.evaluation.evaluator_jobtitle_fts import JobtitleFtsEvaluator
 from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 from src.util.log_util import log_setup
 

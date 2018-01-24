@@ -1,5 +1,5 @@
 from src.database.ClassificationResults import FtsClassificationResults
-from src.evaluation.jobtitle.evaluator_jobtitle import JobtitleEvaluator
+from src.evaluation.evaluator_jobtitle import JobtitleEvaluator
 
 
 class JobtitleFtsEvaluator(JobtitleEvaluator):
