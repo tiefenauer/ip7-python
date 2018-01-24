@@ -11,8 +11,8 @@ class SplitDataSource(DataSource):
     """
 
     @db_session
-    def __init__(self, args, Entity):
-        super(SplitDataSource, self).__init__(args, Entity)
+    def __init__(self, Entity, args=None):
+        super(SplitDataSource, self).__init__(Entity, args)
         self._count = self.query.count()
 
         # calculate row for split (will be part of first split)

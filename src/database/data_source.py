@@ -5,7 +5,7 @@ from pony.orm import db_session
 
 class DataSource(ABC):
     @db_session
-    def __init__(self, args, Entity):
+    def __init__(self, Entity, args=None):
         self.Entity = Entity
         self.query = self.create_query(args)
 
@@ -24,5 +24,5 @@ class DataSource(ABC):
         return self.Entity.select(where_clause)
 
     def create_where_clause(self, args):
-        id = args.id if hasattr(args, 'id') and args.id is not None else -1000
+        id = args.id if args and hasattr(args, 'id') and args.id is not None else -1000
         return lambda row: id < 0 or row.id == id
