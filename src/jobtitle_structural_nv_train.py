@@ -2,6 +2,7 @@ import argparse
 
 from src.classifier.jobtitle.jobtitle_structural_classifier_nv import JobtitleStructuralClassifierNV
 from src.database.X28TrainData import X28TrainData
+from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from src.util.log_util import log_setup
 
 parser = argparse.ArgumentParser(description="""Train Structural Classifier (NLTK)""")
@@ -14,8 +15,7 @@ args = parser.parse_args()
 
 logging = log_setup()
 
-data_train = X28TrainData(args)
-classifier = JobtitleStructuralClassifierNV(args)
-
 if __name__ == '__main__':
+    data_train = StructuralPreprocessorNV(X28TrainData(args))
+    classifier = JobtitleStructuralClassifierNV(args)
     classifier.train_classifier(data_train)
