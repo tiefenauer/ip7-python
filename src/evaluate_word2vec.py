@@ -33,7 +33,7 @@ def evaluate_testset(testset_file, results_file):
         csv_writer = csv.writer(output, dialect='excel', delimiter=';')
         lines = (line.strip() for line in input.readlines())
 
-        for i, (job_1, wp_1, job_2, wp_actual) in enumerate((line.split() for line in lines), 1):
+        for i, (job_1, wp_1, job_2, wp_2) in enumerate((line.split() for line in lines), 1):
             positives = [wp_1, job_2]
             negatives = [job_1]
             # prediction from X28-Model
@@ -43,7 +43,7 @@ def evaluate_testset(testset_file, results_file):
             results_ff = predict(model_ff, positives, negatives)
             results_ff = ','.join(item for (item, _) in results_ff)
             # write CSV
-            row = [i, job_1, wp_1, job_2, wp_actual, results_x28, results_ff]
+            row = [i, job_1, wp_1, job_2, wp_2, results_x28, results_ff]
             csv_writer.writerow(row)
 
 
@@ -54,5 +54,5 @@ def predict(model, positives, negatives):
 
 
 if __name__ == '__main__':
-    evaluate_testset(semantic_testset_workplace, 'word2vec_semantic_workplace.csv')
-    evaluate_testset(semantic_testset_activity, 'word2vec_semantic_activity.csv')
+    evaluate_testset(semantic_testset_workplace, resource_dir + 'word2vec_semantic_workplace.csv')
+    evaluate_testset(semantic_testset_activity, resource_dir + 'word2vec_semantic_activity.csv')
