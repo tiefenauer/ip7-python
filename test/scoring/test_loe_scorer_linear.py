@@ -2,12 +2,12 @@ import unittest
 
 from hamcrest import assert_that, is_
 
-from src.evaluation.loe.loe_classification_scorer_linear import LinearLoeClassificationScorer
+from src.scoring.los_scorer_linear import LinearLoeScorer
 
-testee = LinearLoeClassificationScorer()
+testee = LinearLoeScorer()
 
 
-class TestLinearLoeClassificationScorer(unittest.TestCase):
+class TestLinearLoeScorer(unittest.TestCase):
 
     def test_calculate_similarity_without_matching_items_returns_zero(self):
         assert_that(testee.calculate_similarity((80, 100), (40, 40)), is_(0.0))

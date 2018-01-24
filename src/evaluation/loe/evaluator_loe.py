@@ -1,17 +1,17 @@
 from src.database.ClassificationResults import LoeClassificationResults
 from src.evaluation.evaluator import Evaluator
-from src.evaluation.loe.loe_classification_scorer_linear import LinearLoeClassificationScorer
-from src.evaluation.loe.loe_classification_scorer_strict import StrictLoeClassificationScorer
-from src.evaluation.loe.loe_classification_scorer_tolerant import TolerantLoeClassificationScorer
+from src.scoring.los_scorer_linear import LinearLoeScorer
+from src.scoring.los_scorer_strict import StrictLoeScorer
+from src.scoring.los_scorer_tolerant import TolerantLoeScorer
 
 
 class LoeEvaluator(Evaluator):
 
     def __init__(self, args):
         super(LoeEvaluator, self).__init__(args, LoeClassificationResults())
-        self.scorer_strict = StrictLoeClassificationScorer()
-        self.scorer_tolerant = TolerantLoeClassificationScorer()
-        self.scorer_linear = LinearLoeClassificationScorer()
+        self.scorer_strict = StrictLoeScorer()
+        self.scorer_tolerant = TolerantLoeScorer()
+        self.scorer_linear = LinearLoeScorer()
 
     def get_scorers(self):
         return [self.scorer_strict, self.scorer_tolerant, self.scorer_linear]

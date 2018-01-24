@@ -1,16 +1,16 @@
 from src.evaluation.evaluator import Evaluator
-from src.evaluation.jobtitle.jobtitle_classification_scorer_linear import LinearJobtitleClassificationScorer
-from src.evaluation.jobtitle.jobtitle_classification_scorer_strict import StrictJobtitleClassificationScorer
-from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
+from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
+from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
+from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
 
 
 class JobtitleEvaluator(Evaluator):
 
     def __init__(self, args, ResultEntity):
         super(JobtitleEvaluator, self).__init__(args, ResultEntity)
-        self.scorer_strict = StrictJobtitleClassificationScorer()
-        self.scorer_tolerant = TolerantJobtitleClassificationScorer()
-        self.scorer_linear = LinearJobtitleClassificationScorer()
+        self.scorer_strict = StrictJobtitleScorer()
+        self.scorer_tolerant = TolerantJobtitleScorer()
+        self.scorer_linear = LinearJobtitleScorer()
 
     def get_scorers(self):
         return [self.scorer_strict, self.scorer_tolerant, self.scorer_linear]

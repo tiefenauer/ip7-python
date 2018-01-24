@@ -2,12 +2,12 @@ import unittest
 
 from hamcrest import assert_that, is_
 
-from src.evaluation.loe.loe_classification_scorer_tolerant import TolerantLoeClassificationScorer
+from src.scoring.los_scorer_tolerant import TolerantLoeScorer
 
-testee = TolerantLoeClassificationScorer()
+testee = TolerantLoeScorer()
 
 
-class TestTolerantLoeClassificationScorer(unittest.TestCase):
+class TestTolerantLoeScorer(unittest.TestCase):
 
     def test_calculate_similarity_without_matchin_items_returns_zero(self):
         assert_that(testee.calculate_similarity((80, 100), (40, 40)), is_(0))

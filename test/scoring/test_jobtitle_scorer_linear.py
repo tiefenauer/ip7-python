@@ -2,12 +2,12 @@ import unittest
 
 from hamcrest import *
 
-from src.evaluation.jobtitle.jobtitle_classification_scorer_linear import LinearJobtitleClassificationScorer
+from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
 
-testee = LinearJobtitleClassificationScorer()
+testee = LinearJobtitleScorer()
 
 
-class TestLinearJobtitleClassificationScorer(unittest.TestCase):
+class TestLinearJobtitleScorer(unittest.TestCase):
 
     def test_calculate_similarity_full_match_returns_one(self):
         # arrange/act/assert

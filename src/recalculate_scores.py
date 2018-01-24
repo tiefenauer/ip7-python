@@ -5,12 +5,12 @@ from pony.orm import commit, db_session
 from tqdm import tqdm
 
 from src.database.entities_pg import Classification_Results
-from src.evaluation.jobtitle.jobtitle_classification_scorer_linear import LinearJobtitleClassificationScorer
-from src.evaluation.jobtitle.jobtitle_classification_scorer_strict import StrictJobtitleClassificationScorer
-from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
-from src.evaluation.loe.loe_classification_scorer_linear import LinearLoeClassificationScorer
-from src.evaluation.loe.loe_classification_scorer_strict import StrictLoeClassificationScorer
-from src.evaluation.loe.loe_classification_scorer_tolerant import TolerantLoeClassificationScorer
+from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
+from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
+from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
+from src.scoring.los_scorer_linear import LinearLoeScorer
+from src.scoring.los_scorer_strict import StrictLoeScorer
+from src.scoring.los_scorer_tolerant import TolerantLoeScorer
 from src.util.log_util import log_setup
 
 log_setup()
@@ -37,13 +37,13 @@ args = parser.parse_args()
 if __name__ == '__main__':
     clf_method = args.method
     if clf_method == 'loe-fts':
-        scorer_linear = LinearLoeClassificationScorer()
-        scorer_tolerant = TolerantLoeClassificationScorer()
-        scorer_strict = StrictLoeClassificationScorer()
+        scorer_linear = LinearLoeScorer()
+        scorer_tolerant = TolerantLoeScorer()
+        scorer_strict = StrictLoeScorer()
     else:
-        scorer_linear = LinearJobtitleClassificationScorer()
-        scorer_tolerant = TolerantJobtitleClassificationScorer()
-        scorer_strict = StrictJobtitleClassificationScorer()
+        scorer_linear = LinearJobtitleScorer()
+        scorer_tolerant = TolerantJobtitleScorer()
+        scorer_strict = StrictJobtitleScorer()
 
     with db_session:
         i = 0

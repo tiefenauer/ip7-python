@@ -1,7 +1,7 @@
 from src.evaluation.classification_scorer_linear import LinearClassificationScorer
 
 
-class LinearLoeClassificationScorer(LinearClassificationScorer):
+class LinearLoeScorer(LinearClassificationScorer):
     scores = 0
 
     def _calculate_similarity(self, loe_actual, loe_predicted):

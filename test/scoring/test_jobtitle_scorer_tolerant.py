@@ -2,12 +2,12 @@ import unittest
 
 from hamcrest import *
 
-from src.evaluation.jobtitle.jobtitle_classification_scorer_tolerant import TolerantJobtitleClassificationScorer
+from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
 
-testee = TolerantJobtitleClassificationScorer()
+testee = TolerantJobtitleScorer()
 
 
-class TestTolerantJobtitleClassificationScorer(unittest.TestCase):
+class TestTolerantJobtitleScorer(unittest.TestCase):
     def test_calculate_similarity_without_prediction_returns_zero(self):
         assert_that(testee.calculate_similarity("foo bar", None), is_(0))
 
