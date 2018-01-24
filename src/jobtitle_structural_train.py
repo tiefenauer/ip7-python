@@ -1,6 +1,6 @@
 import argparse
 
-from src.classifier.jobtitle.jobtitle_classifier_structural_nvt import JobtitleStructuralClassifierNVT
+from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 from src.database.X28TrainData import X28TrainData
 from src.util.log_util import log_setup
 
@@ -16,7 +16,7 @@ args = parser.parse_args()
 logging = log_setup()
 
 data_train = X28TrainData(args)
-classifier = JobtitleStructuralClassifierNVT(args)
+classifier = JobtitleStructuralClassifier(args)
 
 if __name__ == '__main__':
     classifier.train_classifier(data_train)

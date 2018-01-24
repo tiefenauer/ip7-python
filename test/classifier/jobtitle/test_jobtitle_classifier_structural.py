@@ -2,32 +2,32 @@ import unittest
 
 from hamcrest import assert_that, is_, contains, less_than
 
-from src.classifier.jobtitle import jobtitle_classifier_structural_nvt
-from src.classifier.jobtitle.jobtitle_classifier_structural_nvt import JobtitleStructuralClassifierNVT
+from src.classifier.jobtitle import jobtitle_classifier_structural
+from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 from test.testutils import create_dummy_args
 
 args = create_dummy_args()
-testee = JobtitleStructuralClassifierNVT(args)
+testee = JobtitleStructuralClassifier(args)
 
 
-class TestJobtitleStructuralClassifierNVT(unittest.TestCase):
+class TestJobtitleStructuralClassifier(unittest.TestCase):
     def test_compare_tags(self):
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h1', 'h2'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h2', 'h3'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h3', 'h4'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h1', 'p'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h2', 'p'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h3', 'p'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h4', 'p'), is_(less_than(0)))
+        assert_that(jobtitle_classifier_structural.compare_tag('h1', 'h2'), is_(less_than(0)))
+        assert_that(jobtitle_classifier_structural.compare_tag('h2', 'h3'), is_(less_than(0)))
+        assert_that(jobtitle_classifier_structural.compare_tag('h3', 'h4'), is_(less_than(0)))
+        assert_that(jobtitle_classifier_structural.compare_tag('h1', 'p'), is_(less_than(0)))
+        assert_that(jobtitle_classifier_structural.compare_tag('h2', 'p'), is_(less_than(0)))
+        assert_that(jobtitle_classifier_structural.compare_tag('h3', 'p'), is_(less_than(0)))
+        assert_that(jobtitle_classifier_structural.compare_tag('h4', 'p'), is_(less_than(0)))
 
     def test_get_higher_tag(self):
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h1', 'h2'), is_('h1'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h2', 'h3'), is_('h2'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h3', 'h4'), is_('h3'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h1', 'p'), is_('h1'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h2', 'p'), is_('h2'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h3', 'p'), is_('h3'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h4', 'p'), is_('h4'))
+        assert_that(jobtitle_classifier_structural.get_higher_tag('h1', 'h2'), is_('h1'))
+        assert_that(jobtitle_classifier_structural.get_higher_tag('h2', 'h3'), is_('h2'))
+        assert_that(jobtitle_classifier_structural.get_higher_tag('h3', 'h4'), is_('h3'))
+        assert_that(jobtitle_classifier_structural.get_higher_tag('h1', 'p'), is_('h1'))
+        assert_that(jobtitle_classifier_structural.get_higher_tag('h2', 'p'), is_('h2'))
+        assert_that(jobtitle_classifier_structural.get_higher_tag('h3', 'p'), is_('h3'))
+        assert_that(jobtitle_classifier_structural.get_higher_tag('h4', 'p'), is_('h4'))
 
     def test_top_n_returns_top_n(self):
         # arrange
@@ -89,7 +89,7 @@ class TestJobtitleStructuralClassifierNVT(unittest.TestCase):
             ('verb6', 'VMPP', 'p'),
         ]
         # act
-        result = jobtitle_classifier_structural_nvt.top_n(tagged_words, 'N', 3)
+        result = jobtitle_classifier_structural.top_n(tagged_words, 'N', 3)
         # assert
         assert_that(result, contains(
             ('noun1', 'h1', 6),  # noun1 with highest tag h1 and occurrence 6

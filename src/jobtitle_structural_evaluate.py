@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from src.classifier.jobtitle.jobtitle_classifier_structural_nvt import JobtitleStructuralClassifierNVT
+from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 from src.database.X28TestData import X28TestData
 from src.evaluation.jobtitle.evaluator_jobtitle_structural_nvt import StructuralNVTEvaluator
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
@@ -30,7 +30,7 @@ if not args.model:
 if __name__ == '__main__':
     log.info('evaluating structural classifier')
     data_test = StructuralPreprocessorNVT(X28TestData(args))
-    classifier = JobtitleStructuralClassifierNVT(args)
+    classifier = JobtitleStructuralClassifier(args)
     evaluation = StructuralNVTEvaluator(args)
     evaluation.evaluate(classifier, data_test)
     log.info('evaluate_avg: done!')
