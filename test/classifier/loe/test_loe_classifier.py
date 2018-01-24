@@ -2,8 +2,8 @@ import unittest
 
 from hamcrest import assert_that, contains, is_
 
-from src.classifier.loe import loe_fts_classifier
-from src.classifier.loe.loe_fts_classifier import LoeFtsClassifier
+from src.classifier.loe import loe_classifier
+from src.classifier.loe.loe_classifier import LoeClassifier
 from src.preprocessing import preproc
 
 """
@@ -16,7 +16,7 @@ Anstellung 60%-80% als Maurer
 
 """
 
-testee = LoeFtsClassifier()
+testee = LoeClassifier()
 
 
 class TestLoeFtsClassifier(unittest.TestCase):
@@ -101,7 +101,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
             ('p', 'Anstellung 80-100% als Schreiner')
         ])
         # act
-        result = loe_fts_classifier.find_loe_patterns_by_tag(tags)
+        result = loe_classifier.find_loe_patterns_by_tag(tags)
         # assert
         assert_that(result, contains(
             ('80%-100%', 'h1'),
@@ -120,7 +120,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
             ('h2', 'Anstellung 60-80% als Maurer')
         ])
         # act
-        result = loe_fts_classifier.group_loe_patterns_by_count(tags)
+        result = loe_classifier.group_loe_patterns_by_count(tags)
         # assert
         assert_that(result, contains(
             ('80%-100%', 'h1', 2),
@@ -138,7 +138,7 @@ class TestLoeFtsClassifier(unittest.TestCase):
             ('h1', 'Anstellung 80% als Maurer')
         ])
         # act
-        result = loe_fts_classifier.group_loe_patterns_by_count(tags)
+        result = loe_classifier.group_loe_patterns_by_count(tags)
         # assert
         assert_that(result, contains(
             ('80%', 'h1', 1)

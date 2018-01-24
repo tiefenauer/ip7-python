@@ -10,7 +10,7 @@ def calculate_tag_weight(tag_name):
 
 
 @total_ordering
-class LoeFtsFeatures(object):
+class LoeFeatures(object):
     """helper class to sort occurrences of LOE"""
 
     def __init__(self, pattern, tag_name, count):
