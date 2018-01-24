@@ -3,7 +3,7 @@ import logging
 
 from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
 from src.database.X28TestData import X28TestData
-from src.database.entities_pg import Semantic_Avg_Classification_Results
+from src.database.entities_pg import Semantic_Classification_Results
 from src.evaluation.jobtitle.evaluator_jobtitle_semantic import SemanticAVGEvaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
@@ -31,10 +31,10 @@ args = parser.parse_args()
 
 if args.model == 'fetchflow':
     args.model = 'semantic_fetchflow_x28.gz'
-    Semantic_Avg_Classification_Results._discriminator_ += '-fetchflow'
+    Semantic_Classification_Results._discriminator_ += '-fetchflow'
 else:
     args.model = 'semantic_avg_x28.gz'
-    Semantic_Avg_Classification_Results._discriminator_ += '-x28'
+    Semantic_Classification_Results._discriminator_ += '-x28'
 
 if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')

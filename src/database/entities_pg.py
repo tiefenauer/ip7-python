@@ -68,25 +68,19 @@ class Combined_Classification_Results(Classification_Results):
     _discriminator_ = 'jobtitle-combined'
 
 
-class Semantic_Avg_Classification_Results(Classification_Results):
-    _discriminator_ = 'jobtitle-semantic-avg'
-
-class Semantic_Avg_Classification_Results_X28(Classification_Results):
-    _discriminator_ = 'jobtitle-semantic-avg-x28'
-
-class Semantic_Avg_Classification_Results_Fetchflow(Classification_Results):
-    _discriminator_ = 'jobtitle-semantic-avg-fetchflow'
+class Semantic_Classification_Results(Classification_Results):
+    _discriminator_ = 'jobtitle-semantic'
 
 
-class Semantic_Rf_Classification_Results(Classification_Results):
-    _discriminator_ = 'jobtitle-semantic-rf'
+class Semantic_Classification_Results_X28(Classification_Results):
+    _discriminator_ = 'jobtitle-semantic-x28'
 
 
-class Structural_Classification_NV_Results(Classification_Results):
-    _discriminator_ = 'jobtitle-structural-nv'
+class Semantic_Classification_Results_Fetchflow(Classification_Results):
+    _discriminator_ = 'jobtitle-semantic-fetchflow'
 
 
-class Structural_Classification_NVT_Results(Classification_Results):
+class Structural_Classification_Results(Classification_Results):
     _discriminator_ = 'jobtitle-structural-nvt'
 
 

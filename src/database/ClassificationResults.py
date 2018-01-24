@@ -3,8 +3,8 @@ from abc import abstractmethod
 
 from pony.orm import commit, db_session
 
-from src.database.entities_pg import Semantic_Avg_Classification_Results, Fts_Classification_Results, \
-    Semantic_Rf_Classification_Results, Structural_Classification_NV_Results, Structural_Classification_NVT_Results, \
+from src.database.entities_pg import Semantic_Classification_Results, Fts_Classification_Results, \
+    Structural_Classification_Results, \
     Loe_Classification_Result, Combined_Classification_Results
 
 log = logging.getLogger(__name__)
@@ -29,7 +29,8 @@ class ClassificationResults(object):
 
     @db_session
     def truncate(self):
-        log.info("""Truncating target table {}.clf_method='{}' ...""".format(self.Entity._table_, self.Entity._discriminator_))
+        log.info("""Truncating target table {}.clf_method='{}' ...""".format(self.Entity._table_,
+                                                                             self.Entity._discriminator_))
         self.Entity.select().delete(bulk=True)
         commit()
         log.info('...done!')
@@ -65,50 +66,26 @@ class CombinedClassificationResults(ClassificationResults):
 
 class SemanticAvgClassificationResults(ClassificationResults):
     def __init__(self):
-        super(SemanticAvgClassificationResults, self).__init__(Semantic_Avg_Classification_Results)
+        super(SemanticAvgClassificationResults, self).__init__(Semantic_Classification_Results)
 
     def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
-        return Semantic_Avg_Classification_Results(x28_row=x28_id,
-                                                   job_name=predicted_class,
-                                                   score_strict=sc_str,
-                                                   score_tolerant=sc_tol,
-                                                   score_linear=sc_lin)
+        return Semantic_Classification_Results(x28_row=x28_id,
+                                               job_name=predicted_class,
+                                               score_strict=sc_str,
+                                               score_tolerant=sc_tol,
+                                               score_linear=sc_lin)
 
 
-class SemanticRfClassificationResults(ClassificationResults):
+class StructuralClassificationResults(ClassificationResults):
     def __init__(self):
-        super(SemanticRfClassificationResults, self).__init__(Semantic_Rf_Classification_Results)
+        super(StructuralClassificationResults, self).__init__(Structural_Classification_Results)
 
     def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
-        return Semantic_Rf_Classification_Results(x28_row=x28_id,
-                                                  job_name=predicted_class,
-                                                  score_strict=sc_str,
-                                                  score_tolerant=sc_tol,
-                                                  score_linear=sc_lin)
-
-
-class StructuralClassificationNVResults(ClassificationResults):
-    def __init__(self):
-        super(StructuralClassificationNVResults, self).__init__(Structural_Classification_NV_Results)
-
-    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
-        return Structural_Classification_NV_Results(x28_row=x28_id,
-                                                    job_name=predicted_class,
-                                                    score_strict=sc_str,
-                                                    score_tolerant=sc_tol,
-                                                    score_linear=sc_lin)
-
-
-class StructuralClassificationNVTResults(ClassificationResults):
-    def __init__(self):
-        super(StructuralClassificationNVTResults, self).__init__(Structural_Classification_NVT_Results)
-
-    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
-        return Structural_Classification_NVT_Results(x28_row=x28_id,
-                                                     job_name=predicted_class,
-                                                     score_strict=sc_str,
-                                                     score_tolerant=sc_tol,
-                                                     score_linear=sc_lin)
+        return Structural_Classification_Results(x28_row=x28_id,
+                                                 job_name=predicted_class,
+                                                 score_strict=sc_str,
+                                                 score_tolerant=sc_tol,
+                                                 score_linear=sc_lin)
 
 
 class LoeClassificationResults(ClassificationResults):

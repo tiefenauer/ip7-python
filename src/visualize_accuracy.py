@@ -20,12 +20,10 @@ args = parser.parse_args()
 classification_methods = [
     'jobtitle-fts',
     # 'jobtitle-combined',
-    # 'jobtitle-semantic-rf',
-    # 'jobtitle-semantic-avg',
-    # 'jobtitle-semantic-avg-x28',
-    # 'jobtitle-semantic-avg-fetchflow',
-    # 'jobtitle-structural-nv',
-    # 'jobtitle-structural-nvt',
+    # 'jobtitle-semantic',
+    # 'jobtitle-semantic-x28',
+    # 'jobtitle-semantic-fetchflow',
+    # 'jobtitle-structural',
     # 'loe-fts'
 ]
 
@@ -85,7 +83,8 @@ if __name__ == '__main__':
     with db_session:
         for i, method in enumerate(classification_methods):
             nums[i] = Classification_Results.select(lambda x: x.clf_method == method).count()
-    ax.set_xticklabels((clf_name + '\n' + str(num) + " vacancies classified" for clf_name, num in zip(classification_methods, nums)))
+    ax.set_xticklabels(
+        (clf_name + '\n' + str(num) + " vacancies classified" for clf_name, num in zip(classification_methods, nums)))
 
     ax.legend((rects1[0], rects2[0], rects3[0]), ('strict', 'tolerant', 'linear'))
 

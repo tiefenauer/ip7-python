@@ -20,10 +20,8 @@ classification_methods = [
     'all',
     'jobtitle-fts',
     'jobtitle-combined',
-    'jobtitle-semantic-rf',
-    'jobtitle-semantic-avg',
-    'jobtitle-structural-nv',
-    'jobtitle-structural-nvt',
+    'jobtitle-semantic',
+    'jobtitle-structural',
     'loe-fts'
 ]
 
