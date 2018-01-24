@@ -1,4 +1,4 @@
-from src.database.ClassificationResults import LoeClassificationResults
+from src.database.classification_results import LoeClassificationResults
 from src.evaluation.evaluator import Evaluator
 from src.scoring.loe_scorer_linear import LinearLoeScorer
 from src.scoring.loe_scorer_strict import StrictLoeScorer

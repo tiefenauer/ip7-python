@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
-from src.database.X28TestData import X28TestData
+from src.database.test_data_x28 import X28TestData
 from src.evaluation.evaluator_jobtitle_structural import StructuralNVTEvaluator
 from src.preprocessing.structural_preprocessor import StructuralPreprocessor
 from src.util.log_util import log_setup

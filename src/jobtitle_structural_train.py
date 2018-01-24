@@ -1,7 +1,7 @@
 import argparse
 
 from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
-from src.database.X28TrainData import X28TrainData
+from src.database.train_data_x28 import X28TrainData
 from src.util.log_util import log_setup
 
 parser = argparse.ArgumentParser(description="""Train Structural Classifier (NLTK)""")

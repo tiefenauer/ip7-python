@@ -4,7 +4,7 @@ import unittest
 from hamcrest import assert_that, is_, greater_than
 from pony.orm import db_session
 
-from src.database.TrainData import TrainData
+from src.database.train_data import TrainData
 from src.database.entities_pg import X28_HTML
 from test import testutils
 

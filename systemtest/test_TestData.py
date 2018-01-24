@@ -4,7 +4,7 @@ from hamcrest import assert_that, is_
 from pony.orm import db_session
 
 import test.testutils
-from src.database.TestData import TestData
+from src.database.test_data import TestData
 from src.database.entities_pg import X28_HTML
 from test import testutils
 

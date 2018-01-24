@@ -1,4 +1,4 @@
-from src.database.TestData import TestData
+from src.database.test_data import TestData
 from src.database.entities_pg import X28_HTML
 from src.database.x28_german_data import X28GermanData
 

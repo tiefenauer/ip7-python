@@ -1,4 +1,4 @@
-from src.database.ClassificationResults import StructuralClassificationResults
+from src.database.classification_results import StructuralClassificationResults
 from src.evaluation.evaluator_jobtitle import JobtitleEvaluator
 
 

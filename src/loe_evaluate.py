@@ -1,7 +1,7 @@
 import argparse
 
 from src.classifier.loe.loe_classifier import LoeClassifier
-from src.database.X28TrainData import X28TrainData
+from src.database.train_data_x28 import X28TrainData
 from src.evaluation.evaluator_loe import LoeEvaluator
 from src.preprocessing.loe_preprocessor import LoePreprocessor
 from src.util.log_util import log_setup

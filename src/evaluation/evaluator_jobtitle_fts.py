@@ -1,4 +1,4 @@
-from src.database.ClassificationResults import FtsClassificationResults
+from src.database.classification_results import FtsClassificationResults
 from src.evaluation.evaluator_jobtitle import JobtitleEvaluator
 
 

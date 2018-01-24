@@ -1,4 +1,4 @@
-from src.database.ClassificationResults import SemanticClassificationResults
+from src.database.classification_results import SemanticClassificationResults
 from src.evaluation.evaluator_jobtitle import JobtitleEvaluator
 
 

@@ -6,7 +6,7 @@ from src.database.fetchflow_data import FetchflowData
 from tqdm import tqdm
 
 from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
-from src.database.X28TrainData import X28TrainData
+from src.database.train_data_x28 import X28TrainData
 from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup

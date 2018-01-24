@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
-from src.database.X28TestData import X28TestData
+from src.database.test_data_x28 import X28TestData
 from src.database.entities_pg import Semantic_Classification_Results
 from src.evaluation.evaluator_jobtitle_semantic import SemanticEvaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
