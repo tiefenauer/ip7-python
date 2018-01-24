@@ -4,7 +4,7 @@ import logging
 from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Semantic_Classification_Results
-from src.evaluation.evaluator_jobtitle_semantic import SemanticAVGEvaluation
+from src.evaluation.evaluator_jobtitle_semantic import SemanticEvaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
 
@@ -12,7 +12,7 @@ log_setup()
 log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Classifies data using semantic approach (Word2Vec)""")
-parser.add_argument('model', nargs='?', help='file with saved model to evaluate_avg')
+parser.add_argument('model', nargs='?', help='file with saved model to evaluate')
 parser.add_argument('-c', '--calculate_score', type=bool, default=True,
                     help=""""(optional) calculate score on-the-fly. If set to Fals processing might be a bit faster 
                     but score will need to calculated manually afterwards (default: True)""")
@@ -30,17 +30,17 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if args.model == 'fetchflow':
-    args.model = 'semantic_fetchflow_x28.gz'
+    args.model = 'semantic_model_fetchflow.gz'
     Semantic_Classification_Results._discriminator_ += '-fetchflow'
 else:
-    args.model = 'semantic_avg_x28.gz'
+    args.model = 'semantic_model_x28.gz'
     Semantic_Classification_Results._discriminator_ += '-x28'
 
 if __name__ == '__main__':
-    log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
+    log.info('evaluating Semantic Classifier by averaging vectors...')
     # remove stopwords for evaluation
     preprocessed_data = SemanticPreprocessor(X28TestData(args), remove_stopwords=True)
     classifier = JobtitleSemanticClassifier(args)
-    evaluation = SemanticAVGEvaluation(args)
+    evaluation = SemanticEvaluation(args)
     evaluation.evaluate(classifier, preprocessed_data)
-    log.info('evaluate_avg: done!')
+    log.info('done!')

@@ -1,7 +1,7 @@
-from src.database.ClassificationResults import SemanticAvgClassificationResults
+from src.database.ClassificationResults import SemanticClassificationResults
 from src.evaluation.evaluator_jobtitle import JobtitleEvaluator
 
 
-class SemanticAVGEvaluation(JobtitleEvaluator):
+class SemanticEvaluation(JobtitleEvaluator):
     def __init__(self, args):
-        super(SemanticAVGEvaluation, self).__init__(args, SemanticAvgClassificationResults())
+        super(SemanticEvaluation, self).__init__(args, SemanticClassificationResults())

@@ -33,7 +33,7 @@ if __name__ == '__main__':
     classifier = JobtitleStructuralClassifier(args)
     evaluation = StructuralNVTEvaluator(args)
     evaluation.evaluate(classifier, data_test)
-    log.info('evaluate_avg: done!')
+    log.info('done!')
 
     # # some more evaluation with NLTK
     # data_test = X28TestData(args)

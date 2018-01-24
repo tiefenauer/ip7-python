@@ -82,4 +82,4 @@ class JobtitleSemanticClassifier(ModelClassifier, JobtitleClassifier):
         return 'Semantic Classifier (average vectors)'
 
     def label(self):
-        return 'semantic_avg'
+        return 'semantic'

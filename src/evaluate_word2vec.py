@@ -16,13 +16,13 @@ semantic_testset_workplace = resource_dir + 'semantic_testset_workplace.txt'
 semantic_testset_activity = resource_dir + 'semantic_testset_activity.txt'
 
 # load Word2Vec model trained on X28-Data
-model_x28_name = 'semantic_avg_x28.gz'
+model_x28_name = 'semantic_model_x28.gz'
 path = os.path.join(model_dir, model_x28_name)
 model_x28 = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
 model_x28.init_sims(replace=True)
 
 # load Word2Vec model trained on Fetchflow-Data
-model_fetchflow_name = 'semantic_avg_fetchflow.gz'
+model_fetchflow_name = 'semantic_model_fetchflow.gz'
 path = os.path.join(model_dir, model_fetchflow_name)
 model_ff = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
 model_ff.init_sims(replace=True)

@@ -64,9 +64,9 @@ class CombinedClassificationResults(ClassificationResults):
                                                score_linear=sc_lin)
 
 
-class SemanticAvgClassificationResults(ClassificationResults):
+class SemanticClassificationResults(ClassificationResults):
     def __init__(self):
-        super(SemanticAvgClassificationResults, self).__init__(Semantic_Classification_Results)
+        super(SemanticClassificationResults, self).__init__(Semantic_Classification_Results)
 
     def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
         return Semantic_Classification_Results(x28_row=x28_id,
