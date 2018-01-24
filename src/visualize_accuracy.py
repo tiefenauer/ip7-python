@@ -18,14 +18,14 @@ parser = argparse.ArgumentParser(description="""Plot statistics for classificati
 args = parser.parse_args()
 
 classification_methods = [
-    'jobtitle-fts',
+    # 'jobtitle-fts',
     # 'jobtitle-combined',
     # 'jobtitle-semantic-rf',
     # 'jobtitle-semantic-avg',
     # 'jobtitle-semantic-avg-x28',
     # 'jobtitle-semantic-avg-fetchflow',
-    # 'jobtitle-structural-nv',
-    # 'jobtitle-structural-nvt',
+    'jobtitle-structural-nv',
+    'jobtitle-structural-nvt',
     # 'loe-fts'
 ]
 
