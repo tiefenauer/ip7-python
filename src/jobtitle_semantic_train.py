@@ -2,11 +2,11 @@ import argparse
 import logging
 import os
 
+from src.database.fetchflow_data import FetchflowData
 from tqdm import tqdm
 
-from src.classifier.jobtitle.jobtitle_classifier_semantic_avg import JobtitleSemanticClassifierAvg
+from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
 from src.database.X28TrainData import X28TrainData
-from src.database.fetchflow_data import FetchflowData
 from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
@@ -21,6 +21,7 @@ parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
 parser.add_argument('-m', '--model',
                     help='(optional) file with saved model to use. A new model will be created if not set.')
 args = parser.parse_args()
+
 
 class FetchflowCorpus(object):
     """creates sentences from preprocessed corpus file"""
@@ -67,10 +68,10 @@ if __name__ == '__main__':
     if args.source == 'fetchflow':
         sentences = FetchflowOTFCorpus()
         # comment out for on-the-fly-processing
-        #sentences = FetchflowCorpus()
+        # sentences = FetchflowCorpus()
     else:
         sentences = X28Corpus()
 
-    classifier = JobtitleSemanticClassifierAvg(args.model)
+    classifier = JobtitleSemanticClassifier(args.model)
     logging.info('Training semantic classifier on {} data'.format(args.source))
     classifier.train_classifier(sentences)

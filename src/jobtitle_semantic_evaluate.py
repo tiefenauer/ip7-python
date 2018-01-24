@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from src.classifier.jobtitle.jobtitle_classifier_semantic_avg import JobtitleSemanticClassifierAvg
+from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Semantic_Avg_Classification_Results
 from src.evaluation.jobtitle.evaluator_jobtitle_semantic_avg import SemanticAVGEvaluation
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     log.info('evaluate_avg: evaluating Semantic Classifier by averaging vectors...')
     # remove stopwords for evaluation
     preprocessed_data = SemanticPreprocessor(X28TestData(args), remove_stopwords=True)
-    classifier = JobtitleSemanticClassifierAvg(args)
+    classifier = JobtitleSemanticClassifier(args)
     evaluation = SemanticAVGEvaluation(args)
     evaluation.evaluate(classifier, preprocessed_data)
     log.info('evaluate_avg: done!')
