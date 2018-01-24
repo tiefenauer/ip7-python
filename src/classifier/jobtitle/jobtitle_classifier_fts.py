@@ -2,7 +2,7 @@ import math
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.jobtitle.jobtitle_features_fts import JobtitleFtsFeatures, calculate_tag_weight
-from src.classifier.tag_classifier import TagClassifier
+from src.classifier.rule_based_classifier import RuleBasedClassifier
 from src.dataimport.known_job_variants import KnownJobVariants
 from src.util.jobtitle_util import count_variant
 
@@ -45,7 +45,7 @@ def calculate_first_tag(tags, variants):
                 return tag_index
 
 
-class FeatureBasedJobtitleFtsClassifier(TagClassifier, JobtitleClassifier):
+class FeatureBasedJobtitleFtsClassifier(RuleBasedClassifier, JobtitleClassifier):
     """Predict a jobtitle by performing a full text search (FTS) on the processed data. The text of the processed data
      is searched for occurrences of known job names, including variants (such as male/female form, hyphenated forms
      etc...).

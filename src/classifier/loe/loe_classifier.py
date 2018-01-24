@@ -2,7 +2,7 @@ import re
 
 from src.classifier.classifier import Classifier
 from src.classifier.loe.loe_features import LoeFeatures
-from src.classifier.tag_classifier import TagClassifier
+from src.classifier.rule_based_classifier import RuleBasedClassifier
 from src.util import loe_util
 
 
@@ -50,7 +50,7 @@ def find_loe_patterns_by_tag(tags):
             yield result, tag.name
 
 
-class LoeClassifier(TagClassifier, Classifier):
+class LoeClassifier(RuleBasedClassifier, Classifier):
 
     def predict_class(self, tags):
         matches = group_loe_patterns_by_count(tags)

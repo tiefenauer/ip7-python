@@ -1,10 +1,10 @@
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
 from src.classifier.jobtitle.jobtitle_features_combined import JobtitleFeaturesCombined
-from src.classifier.tag_classifier import TagClassifier
+from src.classifier.rule_based_classifier import RuleBasedClassifier
 from src.util import pos_util
 
 
-class CombinedJobtitleClassifier(TagClassifier, JobtitleClassifier):
+class CombinedJobtitleClassifier(RuleBasedClassifier, JobtitleClassifier):
     """Combines different approaches to one single classifier:
     - FTS approach:
         - known jobs or parts of known jobs are searched in the relevant tags

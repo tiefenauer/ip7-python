@@ -4,7 +4,7 @@ import numpy
 from gensim.models import word2vec
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
-from src.classifier.model_classifier import ModelClassifier
+from src.classifier.model_based_classifier import ModelClassifier
 
 log = logging.getLogger(__name__)
 

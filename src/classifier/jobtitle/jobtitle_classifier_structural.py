@@ -6,7 +6,7 @@ import itertools
 import nltk
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
-from src.classifier.model_classifier import ModelClassifier
+from src.classifier.model_based_classifier import ModelClassifier
 from src.dataimport.known_jobs import KnownJobs
 from src.util import jobtitle_util
 
