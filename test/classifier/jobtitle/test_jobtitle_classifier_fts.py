@@ -4,8 +4,8 @@ from unittest import skip
 from hamcrest import *
 from hamcrest.core.base_matcher import BaseMatcher
 
-from src.classifier.jobtitle import jobtitle_fts_classifier_htmltag_based as clf_htmltag_based
-from src.classifier.jobtitle.jobtitle_fts_classifier_htmltag_based import FeatureBasedJobtitleFtsClassifier
+from src.classifier.jobtitle import jobtitle_classifier_fts as clf_htmltag_based
+from src.classifier.jobtitle.jobtitle_classifier_fts import FeatureBasedJobtitleFtsClassifier
 from src.preprocessing import preproc
 from src.util.jobtitle_util import create_gender_variants
 

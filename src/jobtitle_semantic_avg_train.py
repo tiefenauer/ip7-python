@@ -4,7 +4,7 @@ import os
 
 from tqdm import tqdm
 
-from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
+from src.classifier.jobtitle.jobtitle_classifier_semantic_avg import JobtitleSemanticClassifierAvg
 from src.database.X28TrainData import X28TrainData
 from src.database.fetchflow_data import FetchflowData
 from src.preprocessing.relevant_tags_preprocessor import RelevantTagsPreprocessor

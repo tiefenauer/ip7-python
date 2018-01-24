@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from src.classifier.jobtitle.jobtitle_semantic_classifier_avg import JobtitleSemanticClassifierAvg
+from src.classifier.jobtitle.jobtitle_classifier_semantic_avg import JobtitleSemanticClassifierAvg
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Semantic_Avg_Classification_Results
 from src.evaluation.jobtitle.evaluator_jobtitle_semantic_avg import SemanticAVGEvaluation

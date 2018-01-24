@@ -1,7 +1,7 @@
 import itertools
 import operator
 
-from src.classifier.jobtitle.jobtitle_structural_classifier import JobtitleStructuralClassifier
+from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 
 html_tags = ['title', 'h1', 'h2', 'h3', 'h4']
 

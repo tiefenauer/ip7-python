@@ -1,6 +1,6 @@
 import argparse
 
-from src.classifier.jobtitle.jobtitle_structural_classifier_nvt import JobtitleStructuralClassifierNVT
+from src.classifier.jobtitle.jobtitle_classifier_structural_nvt import JobtitleStructuralClassifierNVT
 from src.database.X28TrainData import X28TrainData
 from src.util.log_util import log_setup
 

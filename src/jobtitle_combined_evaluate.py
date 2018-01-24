@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from src.classifier.jobtitle.jobtitle_combined_classifier import CombinedJobtitleClassifier
+from src.classifier.jobtitle.jobtitle_classifier_combined import CombinedJobtitleClassifier
 from src.database.x28_data import X28Data
 from src.evaluation.jobtitle.evaluator_jobtitle_combined import JobtitleCombinedEvaluator
 from src.preprocessing.sentence_preprocessor import SentencePreprocessor

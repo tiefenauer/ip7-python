@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from src.classifier.jobtitle.jobtitle_structural_classifier_nvt import JobtitleStructuralClassifierNVT
+from src.classifier.jobtitle.jobtitle_classifier_structural_nvt import JobtitleStructuralClassifierNVT
 from src.database.X28TestData import X28TestData
 from src.evaluation.jobtitle.evaluator_jobtitle_structural_nvt import StructuralNVTEvaluator
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT

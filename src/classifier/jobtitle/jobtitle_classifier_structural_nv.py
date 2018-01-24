@@ -1,7 +1,7 @@
 import itertools
 import operator
 
-from src.classifier.jobtitle.jobtitle_structural_classifier import JobtitleStructuralClassifier
+from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 
 number_of_nouns = 5
 number_of_verbs = 5

@@ -2,7 +2,7 @@ import unittest
 
 from hamcrest import assert_that, is_
 
-from src.classifier.jobtitle.jobtitle_combined_classifier import CombinedJobtitleClassifier
+from src.classifier.jobtitle.jobtitle_classifier_combined import CombinedJobtitleClassifier
 from src.preprocessing import preproc
 
 testee = CombinedJobtitleClassifier()

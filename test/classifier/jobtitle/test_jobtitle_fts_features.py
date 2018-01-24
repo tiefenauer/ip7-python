@@ -3,7 +3,7 @@ import unittest
 
 from hamcrest import assert_that, is_, not_, less_than, contains
 
-from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures
+from src.classifier.jobtitle.jobtitle_features_fts import JobtitleFtsFeatures
 
 
 class TestJobtitleFtsFeatures(unittest.TestCase):

@@ -1,7 +1,7 @@
 import math
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
-from src.classifier.jobtitle.jobtitle_fts_features import JobtitleFtsFeatures, calculate_tag_weight
+from src.classifier.jobtitle.jobtitle_features_fts import JobtitleFtsFeatures, calculate_tag_weight
 from src.classifier.tag_classifier import TagClassifier
 from src.dataimport.known_job_variants import KnownJobVariants
 from src.util.jobtitle_util import count_variant

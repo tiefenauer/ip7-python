@@ -3,8 +3,8 @@ import unittest
 
 from hamcrest import assert_that, contains, is_, not_, only_contains
 
-from src.classifier.jobtitle import jobtitle_structural_classifier_nv
-from src.classifier.jobtitle.jobtitle_structural_classifier_nv import JobtitleStructuralClassifierNV
+from src.classifier.jobtitle import jobtitle_classifier_structural_nv
+from src.classifier.jobtitle.jobtitle_classifier_structural_nv import JobtitleStructuralClassifierNV
 from src.database.X28TrainData import X28TrainData
 from src.preprocessing.structural_preprocessor_nv import StructuralPreprocessorNV
 from test.testutils import create_dummy_args, create_dummy_row
@@ -20,7 +20,7 @@ class TestJobtitleStructuralClassifierNV(unittest.TestCase):
         row = create_dummy_row('Baum Baum Baum Baum Baum Haus Haus Haus Haus Maler Maler Maler Bäcker Bäcker')
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = jobtitle_structural_classifier_nv.top_n(tagged_words, 'N', 3)
+        result = jobtitle_classifier_structural_nv.top_n(tagged_words, 'N', 3)
         # assert
         assert_that(result, contains(
             ('baum', 5),
@@ -37,7 +37,7 @@ class TestJobtitleStructuralClassifierNV(unittest.TestCase):
                                 """)
         tagged_words = preprocessor.preprocess_single(row)
         # act
-        result = jobtitle_structural_classifier_nv.top_n(tagged_words, 'V', 3)
+        result = jobtitle_classifier_structural_nv.top_n(tagged_words, 'V', 3)
         # assert
         assert_that(result, only_contains(
             ('sehen', 6),
