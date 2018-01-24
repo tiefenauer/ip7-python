@@ -15,10 +15,10 @@ def content_words_to_lemmata(tagged_word_lists):
         yield [(preproc.lemmatize_word(word, pos).lower(), pos) for (word, pos) in tagged_word_list]
 
 
-class StructuralPreprocessorNVT(RelevantTagsPreprocessor):
+class StructuralPreprocessor(RelevantTagsPreprocessor):
 
     def preprocess_single(self, row):
-        relevant_tags = super(StructuralPreprocessorNVT, self).preprocess_single(row)
+        relevant_tags = super(StructuralPreprocessor, self).preprocess_single(row)
         # evaluate generator already here because markup might not contain any relevant tags
         relevant_tags = list(relevant_tags)
         if not relevant_tags:

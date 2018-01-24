@@ -2,16 +2,16 @@ import unittest
 
 from hamcrest import assert_that, contains, empty, is_
 
-from src.preprocessing import structural_preprocessor_nvt
-from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
+from src.preprocessing import structural_preprocessor
+from src.preprocessing.structural_preprocessor import StructuralPreprocessor
 from src.preprocessing.preproc import create_tags
 from test import testutils
 from test.testutils import create_dummy_row
 
-testee = StructuralPreprocessorNVT()
+testee = StructuralPreprocessor()
 
 
-class TestStructuralPreprocessorNVT(unittest.TestCase):
+class TestStructuralPreprocessor(unittest.TestCase):
     def test_preprocess_single(self):
         # arrange
         markup = """
@@ -60,7 +60,7 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             ('p', 'Dies ist noch ein Inhalt.')
         ])
         # act
-        result = structural_preprocessor_nvt.split_words_by_tag(relevant_tags)
+        result = structural_preprocessor.split_words_by_tag(relevant_tags)
         tags, word_lists = zip(*result)
         # assert
         assert_that(tags, contains('h1', 'h1', 'p'))
@@ -77,7 +77,7 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             ('p', 'Dies ist noch ein Inhalt.')
         ])
         # act
-        result = structural_preprocessor_nvt.split_words_by_tag(relevant_tags)
+        result = structural_preprocessor.split_words_by_tag(relevant_tags)
         tags, word_lists = zip(*result)
         # assert
         assert_that(tags, contains('h1', 'h1', 'p'))
@@ -96,7 +96,7 @@ class TestStructuralPreprocessorNVT(unittest.TestCase):
             [('Dies', 'PDS'), ('ist', 'VAFIN'), ('noch', 'ADV'), ('ein', 'ART'), ('Inhalt', 'NN')]
         ]
         # act
-        result = structural_preprocessor_nvt.content_words_to_lemmata(word_lists)
+        result = structural_preprocessor.content_words_to_lemmata(word_lists)
         # assert
         assert_that(result, contains(
             [('dies', 'PDS'), ('sein', 'VAFIN'), ('ein', 'ART'), ('test', 'NN'), ('zum', 'APPRART'),
