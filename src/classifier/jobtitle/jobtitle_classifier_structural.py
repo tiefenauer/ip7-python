@@ -1,8 +1,8 @@
 import gzip
+import itertools
 import operator
 import pickle
 
-import itertools
 import nltk
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
@@ -127,4 +127,4 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
         return 'Structural Classifier (POS-Tags + HTML Tags)'
 
     def label(self):
-        return 'structural_nvt'
+        return 'structural'

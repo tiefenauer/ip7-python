@@ -81,7 +81,7 @@ class Semantic_Classification_Results_Fetchflow(Classification_Results):
 
 
 class Structural_Classification_Results(Classification_Results):
-    _discriminator_ = 'jobtitle-structural-nvt'
+    _discriminator_ = 'jobtitle-structural'
 
 
 class Loe_Classification_Result(Classification_Results):

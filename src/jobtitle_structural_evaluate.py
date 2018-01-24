@@ -3,7 +3,7 @@ import logging
 
 from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 from src.database.test_data_x28 import X28TestData
-from src.evaluation.evaluator_jobtitle_structural import StructuralNVTEvaluator
+from src.evaluation.evaluator_jobtitle_structural import StructuralEvaluator
 from src.preprocessing.structural_preprocessor import StructuralPreprocessor
 from src.util.log_util import log_setup
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     log.info('evaluating structural classifier')
     data_test = StructuralPreprocessor(X28TestData(args))
     classifier = JobtitleStructuralClassifier(args)
-    evaluation = StructuralNVTEvaluator(args)
+    evaluation = StructuralEvaluator(args)
     evaluation.evaluate(classifier, data_test)
     log.info('done!')
 
