@@ -4,7 +4,7 @@ import logging
 from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
 from src.database.X28TestData import X28TestData
 from src.database.entities_pg import Semantic_Avg_Classification_Results
-from src.evaluation.jobtitle.evaluator_jobtitle_semantic_avg import SemanticAVGEvaluation
+from src.evaluation.jobtitle.evaluator_jobtitle_semantic import SemanticAVGEvaluation
 from src.preprocessing.semantic_preprocessor import SemanticPreprocessor
 from src.util.log_util import log_setup
 
