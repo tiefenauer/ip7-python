@@ -25,7 +25,7 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if not args.model:
-    args.model = 'structural_nvt_2017-11-27-18-05-11_19441rows.gz'
+    args.model = 'structural_model.gz'
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')
