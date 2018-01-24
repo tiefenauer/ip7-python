@@ -1,8 +1,8 @@
-from src.evaluation.classification_scorer_tolerant import TolerantClassificationScorer
+from src.scoring.scorer_tolerant import TolerantScorer
 from src.util import jobtitle_util
 
 
-class TolerantJobtitleScorer(TolerantClassificationScorer):
+class TolerantJobtitleScorer(TolerantScorer):
     """assigns a score of 1 if predicted class appears at least once in actual class
     predicted and actual class are normalized in order to compare them.
     """

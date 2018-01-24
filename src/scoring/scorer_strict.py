@@ -1,12 +1,12 @@
 from abc import abstractmethod
 
-from src.evaluation.classification_scorer import ClassificationScorer
+from src.scoring.scorer import Scorer
 
 
-class LinearClassificationScorer(ClassificationScorer):
+class StrictScorer(Scorer):
 
     def __init__(self):
-        super(LinearClassificationScorer, self).__init__(label='linear')
+        super(StrictScorer, self).__init__(label='strict')
 
     @abstractmethod
     def _calculate_similarity(self, actual_class, predicted_class):

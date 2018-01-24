@@ -2,7 +2,7 @@ import unittest
 
 from hamcrest import assert_that, is_
 
-from src.scoring.los_scorer_tolerant import TolerantLoeScorer
+from src.scoring.loe_scorer_tolerant import TolerantLoeScorer
 
 testee = TolerantLoeScorer()
 

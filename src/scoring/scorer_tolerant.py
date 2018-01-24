@@ -1,12 +1,12 @@
 from abc import abstractmethod
 
-from src.evaluation.classification_scorer import ClassificationScorer
+from src.scoring.scorer import Scorer
 
 
-class TolerantClassificationScorer(ClassificationScorer):
+class TolerantScorer(Scorer):
 
     def __init__(self):
-        super(TolerantClassificationScorer, self).__init__(label='tolerant')
+        super(TolerantScorer, self).__init__(label='tolerant')
 
     @abstractmethod
     def _calculate_similarity(self, actual_class, predicted_class):

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 desc_pattern = "positives={}, negatives={}, performance={}"
 
 
-class ClassificationScorer(ABC):
+class Scorer(ABC):
     def __init__(self, label, threshold=0):
         self.label = label
         self.threshold = threshold

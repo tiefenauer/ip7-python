@@ -1,8 +1,8 @@
 from src.database.ClassificationResults import LoeClassificationResults
 from src.evaluation.evaluator import Evaluator
-from src.scoring.los_scorer_linear import LinearLoeScorer
-from src.scoring.los_scorer_strict import StrictLoeScorer
-from src.scoring.los_scorer_tolerant import TolerantLoeScorer
+from src.scoring.loe_scorer_linear import LinearLoeScorer
+from src.scoring.loe_scorer_strict import StrictLoeScorer
+from src.scoring.loe_scorer_tolerant import TolerantLoeScorer
 
 
 class LoeEvaluator(Evaluator):

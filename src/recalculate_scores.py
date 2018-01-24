@@ -8,9 +8,9 @@ from src.database.entities_pg import Classification_Results
 from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
 from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
 from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
-from src.scoring.los_scorer_linear import LinearLoeScorer
-from src.scoring.los_scorer_strict import StrictLoeScorer
-from src.scoring.los_scorer_tolerant import TolerantLoeScorer
+from src.scoring.loe_scorer_linear import LinearLoeScorer
+from src.scoring.loe_scorer_strict import StrictLoeScorer
+from src.scoring.loe_scorer_tolerant import TolerantLoeScorer
 from src.util.log_util import log_setup
 
 log_setup()
