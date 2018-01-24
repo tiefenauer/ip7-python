@@ -3,7 +3,7 @@ import unittest
 
 from hamcrest import is_, assert_that, contains_inanyorder, empty
 
-from src.dataimport import import_job_names_from_file_and_fts as testee
+from src.importer import import_job_names_from_file_and_fts as testee
 from src.util import jobtitle_util
 
 

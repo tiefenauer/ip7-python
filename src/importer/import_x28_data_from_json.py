@@ -6,7 +6,7 @@ from pony.orm import commit, db_session
 from tqdm import tqdm
 
 from src.database.entities_pg import X28_HTML
-from src.dataimport.x28_json_importer import X28JsonImporter
+from src.importer.x28_json_importer import X28JsonImporter
 from src.util.log_util import log_setup
 
 log_setup()

@@ -2,7 +2,7 @@ import logging
 import os
 
 from src.database.entities_pg import X28_HTML
-from src.dataimport.importer import Importer
+from src.importer.importer import Importer
 
 log = logging.getLogger(__name__)
 

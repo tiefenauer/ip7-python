@@ -1,4 +1,4 @@
-from src.dataimport.known_jobs import KnownJobs
+from src.importer.known_jobs import KnownJobs
 from src.util import jobtitle_util
 from src.util.singleton import Singleton
 

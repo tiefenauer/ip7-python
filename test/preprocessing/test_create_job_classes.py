@@ -2,7 +2,7 @@ import unittest
 
 from hamcrest import assert_that, only_contains
 
-import src.dataimport.import_job_variants as testee
+import src.importer.import_job_variants as testee
 
 
 class TestCreateJobClasses(unittest.TestCase):

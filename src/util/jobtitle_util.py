@@ -1,6 +1,6 @@
 import re
 
-from src.dataimport.known_jobs import KnownJobs
+from src.importer.known_jobs import KnownJobs
 # job title patterns
 from src.preprocessing import preproc
 from src.util import loe_util, util

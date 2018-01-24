@@ -10,7 +10,7 @@ from nltk.corpus import stopwords
 from nltk.stem.snowball import GermanStemmer
 
 from src.classifier.german_lemmatizer import GermanLemmatizer
-from src.dataimport.create_nltk_pos_tagger_german import german_pos_tagger_path
+from src.importer.create_nltk_pos_tagger_german import german_pos_tagger_path
 from src.util.util import flatten
 
 # German POS tagger

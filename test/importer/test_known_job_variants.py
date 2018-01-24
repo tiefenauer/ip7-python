@@ -3,7 +3,7 @@ import unittest
 
 from hamcrest import greater_than, assert_that, is_, instance_of
 
-from src.dataimport.known_job_variants import KnownJobVariants
+from src.importer.known_job_variants import KnownJobVariants
 
 
 class TestKnownJobVariants(unittest.TestCase):
