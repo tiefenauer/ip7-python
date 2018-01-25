@@ -1,5 +1,6 @@
 import argparse
 import logging
+import pickle
 
 from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 from src.database.test_data_x28 import X28TestData
@@ -25,21 +26,18 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if not args.model:
-    args.model = 'structural_model.gz'
+    # args.model = 'structural_model.gz' # old Naive Bayes
+    args.model = 'multinomial.nb'
+
+resource_dir = 'D:/code/ip7-python/resource/'
+with open(resource_dir + args.model, 'rb') as modelfile, open(resource_dir + 'tfidf.vectorizer', 'rb') as vectorizerfile:
+    model = pickle.load(modelfile)
+    vectorizer = pickle.load(vectorizerfile)
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')
     data_test = StructuralPreprocessor(X28TestData(args))
-    classifier = JobtitleStructuralClassifier(args)
+    classifier = JobtitleStructuralClassifier(model, vectorizer)
     evaluation = StructuralEvaluator(args)
     evaluation.evaluate(classifier, data_test)
     log.info('done!')
-
-    # # some more evaluation with NLTK
-    # data_test = X28TestData(args)
-    # data_test_processed = preprocessor.preprocess(data_test, data_test._count)
-    # test_set = ((classifier.extract_features(row.processed), row.title) for row in data_test_processed)
-    # nltk_accuracy = nltk.classify.accuracy(classifier.model, test_set)
-    # log.info('nltk.classify.accuracy: {}'.format(nltk_accuracy))
-    # log.info('classifier.show_most_informative_features(5):')
-    # classifier.model.show_most_informative_features(5)

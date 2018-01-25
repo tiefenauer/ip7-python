@@ -20,16 +20,9 @@ class ModelClassifier(Classifier):
     If no filename is supplied, the file does not exist or the model can not be loaded for any other reason, a new
     model will be trained. Training of a new model can take considerably more time than loading a pre-trained model!"""
 
-    def __init__(self, args):
+    def __init__(self, model):
         super(ModelClassifier, self).__init__()
-        self.model = None
-
-        # try to load model from model file (if specified)
-        model_file = args.model if hasattr(args, 'model') and args.model else None
-        if model_file:
-            self.filename = model_file
-            self.model = self.load_model()
-            self.filename = re.sub(gzip_filename_pattern, '', model_file)
+        self.model = model
 
     def train_classifier(self, train_data):
         """train classifier by training the internal model saving it to file"""

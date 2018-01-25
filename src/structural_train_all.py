@@ -4,7 +4,7 @@ import pickle
 import re
 
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from tqdm import tqdm
 
@@ -86,16 +86,13 @@ def create_corpus(path=noun_corpus_path, simplified=False, limit=0):
 
 
 def train_vectorizer(corpus, min_df=1):
-    if os.path.exists(tfidf_vectors_path):
-        log.info('loading fitted vectors from {}'.format(tfidf_vectors_path))
-        return pickle.load(open(tfidf_vectors_path, 'rb'))
-
-    tfidf_vect = TfidfVectorizer(min_df=min_df)
-    X = tfidf_vect.fit_transform(corpus.data)
-    log.info('Trained TfIdfVectorizer: {} words. '.format(X.shape))
+    log.info('Training TF/IDF Vectorizer')
+    vectorizer = TfidfVectorizer(min_df=min_df)
+    X = vectorizer.fit_transform(corpus.data)
+    log.info('trained vectorizer: {} words. '.format(X.shape))
     with open(tfidf_vectorizer_path, 'wb') as vectorizer_file, open(tfidf_vectors_path, 'wb') as vectors_file:
         log.info('saving vectorizer to {}'.format(tfidf_vectorizer_path))
-        pickle.dump(tfidf_vect, vectorizer_file)
+        pickle.dump(vectorizer, vectorizer_file)
         log.info('saving fitted vectors to {}'.format(tfidf_vectors_path))
         pickle.dump(X, vectors_file)
     return X
@@ -111,9 +108,7 @@ def train_classifier(X, y):
 
 
 if __name__ == '__main__':
-    corpus = create_corpus(path=simplified_corpus_path, simplified=True)
-    log.info('corpus.data={}, corpus.target={}'.format(len(corpus.data), len(corpus.target)))
-    X = train_vectorizer(corpus, min_df=1)
+    X = train_vectorizer()
     y = np.array(corpus.target)
     log.info('X.shape={}, y.shape={}'.format(X.shape, y.shape))
     clf = train_classifier(X, y)
