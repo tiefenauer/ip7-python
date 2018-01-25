@@ -477,6 +477,15 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(result_text, is_('text fachmann arzt schrein polymechan'))
 
     def test_remove_mw_removes_mw(self):
+        # m/w
+        assert_that(testee.remove_mw('Fachperson (m/w)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson (M/W)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson m/w')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson M/W')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson mw')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson MW')), is_('Fachperson')
+
+        # w/m
         assert_that(testee.remove_mw('Fachperson (w/m)')), is_('Fachperson')
         assert_that(testee.remove_mw('Fachperson (W/M)')), is_('Fachperson')
         assert_that(testee.remove_mw('Fachperson w/m')), is_('Fachperson')
@@ -484,6 +493,15 @@ class TestJobTitleUtil(unittest.TestCase):
         assert_that(testee.remove_mw('Fachperson wm')), is_('Fachperson')
         assert_that(testee.remove_mw('Fachperson WM')), is_('Fachperson')
 
+        # m/f
+        assert_that(testee.remove_mw('Fachperson (m/f)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson (M/F)')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson m/f')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson M/F')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson mf')), is_('Fachperson')
+        assert_that(testee.remove_mw('Fachperson MF')), is_('Fachperson')
+
+        # f/m
         assert_that(testee.remove_mw('Fachperson (f/m)')), is_('Fachperson')
         assert_that(testee.remove_mw('Fachperson (F/M)')), is_('Fachperson')
         assert_that(testee.remove_mw('Fachperson f/m')), is_('Fachperson')
