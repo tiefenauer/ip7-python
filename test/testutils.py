@@ -40,9 +40,9 @@ class DummyRow(object):
         self.processed = []
 
 
-def create_dummy_row(plaintext=None, html=None):
+def create_dummy_row(title=None, plaintext=None, html=None):
     row = DummyRow()
-    row.title = ''
+    row.title = title
     row.html = html
     row.plaintext = plaintext
     return row

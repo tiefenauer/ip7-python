@@ -5,7 +5,7 @@ import pickle
 from src.classifier.jobtitle.jobtitle_classifier_structural import JobtitleStructuralClassifier
 from src.database.test_data_x28 import X28TestData
 from src.evaluation.evaluator_jobtitle_structural import StructuralEvaluator
-from src.preprocessing.structural_preprocessor import StructuralPreprocessor
+from src.preprocessing.plaintext_preprocessor import PlaintextPreprocessor
 from src.util.log_util import log_setup
 
 log_setup()
@@ -28,15 +28,15 @@ args = parser.parse_args()
 if not args.model:
     # args.model = 'structural_model.gz' # old Naive Bayes
     args.model = 'multinomial.nb'
-
 resource_dir = 'D:/code/ip7-python/resource/'
-with open(resource_dir + args.model, 'rb') as modelfile, open(resource_dir + 'tfidf.vectorizer', 'rb') as vectorizerfile:
+with open(resource_dir + args.model, 'rb') as modelfile, open(resource_dir + 'tfidf.vectorizer',
+                                                              'rb') as vectorizerfile:
     model = pickle.load(modelfile)
     vectorizer = pickle.load(vectorizerfile)
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')
-    data_test = StructuralPreprocessor(X28TestData(args))
+    data_test = PlaintextPreprocessor(X28TestData(args))
     classifier = JobtitleStructuralClassifier(model, vectorizer)
     evaluation = StructuralEvaluator(args)
     evaluation.evaluate(classifier, data_test)
