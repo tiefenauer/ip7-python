@@ -13,6 +13,9 @@ from src.classifier.jobtitle.jobtitle_classifier_structural import extract_nouns
 from src.database.x28_data import X28Data
 from src.importer.known_jobs import KnownJobs
 from src.preprocessing.structural_preprocessor import StructuralPreprocessor
+from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
+from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
+from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
 from src.util import jobtitle_util
 from src.util.jobtitle_util import remove_mw
 from src.util.loe_util import remove_percentage
@@ -107,7 +110,7 @@ def train_vectorizer(docs, min_df=1):
 
     log.info('Training new TfidfVectorizer')
     tfidf_vect = TfidfVectorizer(min_df=min_df)
-    X = tfidf_vect.fit_transform(docs)
+    X = tfidf_vect.fit_transform(tqdm(docs))
     log.info('Trained TfIdfVectorizer: {} words. '.format(X.shape))
     with open(tfidf_vectorizer_path, 'wb') as vectorizer_file, open(tfidf_vectors_path, 'wb') as vectors_file:
         log.info('saving vectorizer to {}'.format(tfidf_vectorizer_path))
@@ -117,8 +120,12 @@ def train_vectorizer(docs, min_df=1):
     return X
 
 
-def train_classifier(X, y, min_df=1):
-    log.info('Training Classifier')
+def train_classifier(X, y):
+    if os.path.exists(multinomial_nb_path):
+        log.info('loading classifier from {}'.format(multinomial_nb_path))
+        return pickle.load(open(multinomial_nb_path, 'rb'))
+
+    log.info('Training new classifier')
     clf = MultinomialNB()
     clf.fit(X, y)
     with open(multinomial_nb_path, 'wb') as clf_file:
@@ -128,25 +135,60 @@ def train_classifier(X, y, min_df=1):
 
 
 if __name__ == '__main__':
-    # corpus_new = X28Corpus()
-    # with open(x28_corpus_path, 'rb') as corpus_read:
-    #     corpus = pickle.load(corpus_read)
-    #     rows = list(zip(corpus.titles, corpus.plaintexts, corpus.labels, corpus.labels_simplified))
-    #     for title, plaintext, label, label_simplified in tqdm(rows):
-    #         row = create_dummy_row(title=title, plaintext=plaintext)
-    #         nouns, verbs = extract_nouns_and_verbs(row)
-    #         corpus_new.add_sample(row.plaintext, row.title, nouns, verbs, label, label_simplified)
-    #
-    # with open(x28_corpus_path, 'wb') as corpus_write:
-    #     pickle.dump(corpus_new, corpus_write)
+    # create corpus
     corpus = create_corpus()
     log.info('corpus.data={}, corpus.target={}'.format(len(corpus.nouns), len(corpus.labels)))
+
+    # vectorize corpus
     # docs = list(nouns + ' ' + verbs for (nouns, verbs) in zip(corpus.nouns, corpus.verbs))
     docs = corpus.plaintexts
     X = train_vectorizer(docs, 10)
     y = corpus.labels_simplified
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    y2 = corpus.labels
+
+    # train classifier
+    X_train, X_test, y_train, y_test, y2_train, y2_test = train_test_split(X, y, y2)
     clf = train_classifier(X_train, y_train)
-    predicted = clf.predict(X_test)
-    mean = np.mean(predicted == y_test)
+    predictions = clf.predict(X_test)
+
+    # evaluate classifier
+    mean = np.mean(predictions == y_test)
     log.info('mean accuracy: {}'.format(mean))
+
+    # evaluate with strict-, linear- and tolerant-score
+    scorer_strict = StrictJobtitleScorer()
+    scorer_linear = LinearJobtitleScorer()
+    scorer_tolerant = TolerantJobtitleScorer()
+    scores_strict = []
+    scores_linear = []
+    scores_tolerant = []
+    log.info("Comparing with simplified label")
+    for prediction, actual in tqdm(zip(predictions, y_test), total=len(predictions)):
+        score_strict = scorer_strict.calculate_score(actual, prediction)
+        score_linear = scorer_linear.calculate_score(actual, prediction)
+        score_tolerant = scorer_tolerant.calculate_score(actual, prediction)
+        scores_strict.append(score_strict)
+        scores_linear.append(score_linear)
+        scores_tolerant.append(score_tolerant)
+
+    mean = np.mean(scores_strict)
+    log.info('mean scores_strict: {}'.format(mean))
+    mean = np.mean(scores_linear)
+    log.info('mean scores_linear: {}'.format(mean))
+    mean = np.mean(scores_tolerant)
+    log.info('mean scores_tolerant: {}'.format(mean))
+
+    log.info("Comparing with original label")
+    for prediction, actual in tqdm(zip(predictions, y2_test), total=len(predictions)):
+        score_strict = scorer_strict.calculate_score(actual, prediction)
+        score_linear = scorer_linear.calculate_score(actual, prediction)
+        score_tolerant = scorer_tolerant.calculate_score(actual, prediction)
+        scores_strict.append(score_strict)
+        scores_linear.append(score_linear)
+        scores_tolerant.append(score_tolerant)
+    mean = np.mean(scores_strict)
+    log.info('mean scores_strict: {}'.format(mean))
+    mean = np.mean(scores_linear)
+    log.info('mean scores_linear: {}'.format(mean))
+    mean = np.mean(scores_tolerant)
+    log.info('mean scores_tolerant: {}'.format(mean))

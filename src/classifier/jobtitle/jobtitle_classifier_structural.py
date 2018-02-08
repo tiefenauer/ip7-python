@@ -50,6 +50,12 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
         super(JobtitleStructuralClassifier, self).__init__(model)
         self.vectorizer = vectorizer
 
+    def predict_batch(self, batch):
+        docs = [row.plaintext for row in batch]
+        X = self.vectorizer.transform(docs)
+        result = self.model.predict(X)
+        return result.tolist()
+
     def predict_class(self, plaintext):
         # nouns, verbs = extract_nouns_and_verbs_from_row(row)
         # result = self.model.predict([nouns + ' ' + verbs])

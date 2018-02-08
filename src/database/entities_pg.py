@@ -84,6 +84,10 @@ class Structural_Classification_Results(Classification_Results):
     _discriminator_ = 'jobtitle-structural'
 
 
+class Structural_Classification_Results_NVT(Classification_Results):
+    _discriminator_ = 'jobtitle-structural-nvt'
+
+
 class Loe_Classification_Result(Classification_Results):
     _discriminator_ = 'loe-fts'
 
