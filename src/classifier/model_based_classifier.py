@@ -1,11 +1,8 @@
-import gzip
 import logging
-import os
 import re
-import shutil
 from abc import abstractmethod
 
-from src.classifier.classifier import Classifier, path_to_file
+from src.classifier.classifier import Classifier
 
 log = logging.getLogger(__name__)
 
@@ -24,58 +21,6 @@ class ModelClassifier(Classifier):
         super(ModelClassifier, self).__init__()
         self.model = model
 
-    def train_classifier(self, train_data):
-        """train classifier by training the internal model saving it to file"""
-        if self.model:
-            log.info('Model present: using existing model')
-            return self.model
-
-        log.info('No model present: Training new model...')
-        self.model = self.train_model(train_data)
-        log.info('...done!')
-        #
-        self.save_model()
-        return self.model
-
-    def save_model(self):
-        """compress and save a trained model to file"""
-        path = path_to_file(self.filename)
-        log.info('save_model: Saving model to {}'.format(path))
-        # save
-        self.serialize_model(self.model, path)
-        # compress
-        path_gz = path + '.gz'
-        with open(path, 'rb') as f_in, gzip.open(path_gz, 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)
-        os.remove(path)
-        return path_gz
-
-    def load_model(self):
-        """load model from file"""
-        path = path_to_file(self.filename)
-        log.info('load_model: Trying to load model from {}'.format(path))
-        model = self.deserialize_model(path)
-        if model:
-            log.info('load_model: Successfully loaded model from {}'.format(path))
-        else:
-            log.info('load_model: Could not load model from {}'.format(path))
-        return model
-
     @abstractmethod
     def predict_class(self, processed_data):
         """get class for a single item of """
-
-    @abstractmethod
-    def train_model(self, labeled_data):
-        """train classifier with given labeled data"""
-        return
-
-    @abstractmethod
-    def serialize_model(self, model, path):
-        """save model to file using a suitable serialization strategy"""
-        return
-
-    @abstractmethod
-    def deserialize_model(self, path):
-        """load model from file using a suitable deserialization strategy"""
-        return

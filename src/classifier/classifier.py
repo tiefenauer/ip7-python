@@ -1,8 +1,5 @@
 import os
-import time
 from abc import ABC, abstractmethod
-
-from src.util import util
 
 model_dir = 'D:/code/ip7-python/resource/models'
 
@@ -17,9 +14,6 @@ class Classifier(ABC):
     """Abstract base class for a classifier. A classifier takes input data of any kind and converts it using a
     preprocessor. The converted format is used to make the classification."""
 
-    def __init__(self):
-        self.filename = self.default_filename()
-
     def classify(self, processed_data):
         """Preprocess each item of an iterable set of raw data. The  by preprocessing it and forwarding the preprocessed data to the
         abstract method whose further logic depends on the implementing subclass"""
@@ -27,15 +21,6 @@ class Classifier(ABC):
             actual_class = self.get_actual_class(row)
             predicted_class = self.predict_class(row_processed)
             yield row, actual_class, predicted_class
-
-    def default_filename(self):
-        time_str = time.strftime(util.DATE_PATTERN)
-        label = self.label()
-        postfix = self.get_filename_postfix()
-        filename = '{label}_{time}'.format(label=label, time=time_str)
-        if postfix:
-            filename += '_{postfix}'.format(postfix=postfix)
-        return filename
 
     @abstractmethod
     def predict_class(self, processed_data):
@@ -56,7 +41,3 @@ class Classifier(ABC):
     def label(self):
         """short label for visualisation"""
         return
-
-    @abstractmethod
-    def get_filename_postfix(self):
-        """return a custom string to append to the default filename pattern"""

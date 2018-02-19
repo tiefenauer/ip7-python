@@ -1,5 +1,3 @@
-import gzip
-import pickle
 import re
 
 from src.classifier.jobtitle.jobtitle_classifier import JobtitleClassifier
@@ -62,23 +60,6 @@ class JobtitleStructuralClassifier(ModelClassifier, JobtitleClassifier):
         X = self.vectorizer.transform([plaintext])
         result = self.model.predict(X)
         return result[0] if result else 'unknown'
-
-    def train_model(self, labeled_data):
-        pass
-
-    def serialize_model(self, model, path):
-        with open(path, 'wb') as f:
-            pickle.dump(model, f)
-        return path
-
-    def deserialize_model(self, path):
-        model = None
-        with gzip.open(path, 'rb') as f:
-            model = pickle.load(f)
-        return model
-
-    def get_filename_postfix(self):
-        return '{}rows'.format(self.count)
 
     def title(self):
         return 'Structural Classifier (POS-Tags + HTML Tags)'

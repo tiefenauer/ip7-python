@@ -11,11 +11,8 @@ class FetchflowOTFCorpus(object):
     sentence comes from a vacancy and is read from the DB and preprocessed on-the-fly
     """
 
-    def __init__(self, row_id=None):
-        self.row_id = row_id
-
     def __iter__(self):
-        fetchflow_rows = FetchflowData(self.row_id)
+        fetchflow_rows = FetchflowData()
         relevant_tags_preprocessor = RelevantTagsPreprocessor(fetchflow_rows, include_title=False)
         semantic_preprocessor = SemanticPreprocessor(fetchflow_rows)
         for fetchflow_row in tqdm(fetchflow_rows, unit=' rows'):

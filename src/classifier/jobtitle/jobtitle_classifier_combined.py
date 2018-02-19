@@ -45,6 +45,3 @@ class CombinedJobtitleClassifier(RuleBasedClassifier, JobtitleClassifier):
 
     def label(self):
         return 'jobtitle-combined'
-
-    def get_filename_postfix(self):
-        return ''

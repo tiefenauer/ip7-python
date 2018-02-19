@@ -10,6 +10,3 @@ class RuleBasedClassifier(Classifier):
     def predict_class(self, processed_data):
         """to be implemented in subclass"""
         return
-
-    def get_filename_postfix(self):
-        return ''

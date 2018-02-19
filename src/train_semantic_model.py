@@ -1,9 +1,18 @@
+"""
+Train a Word2Vec-Model to use in the semantic approach
+"""
 import argparse
+import gzip
 import logging
+import os
+import pickle
+import shutil
 
-from src.classifier.jobtitle.jobtitle_classifier_semantic import JobtitleSemanticClassifier
+from gensim.models import word2vec
+
 from src.corpus.corpus_fetchflow_otf import FetchflowOTFCorpus
 from src.corpus.x28_corpus_otf import X28OTFCorpus
+from src.util.globals import MODELS_DIR
 from src.util.log_util import log_setup
 
 log_setup()
@@ -11,20 +20,43 @@ log = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="""Train Semantic Classifier (Word2Vec)""")
 parser.add_argument('source', nargs='?', choices=['fetchflow', 'x28'], default='fetchflow')
-parser.add_argument('-s', '--split', nargs='?', type=float, default=0.8,
-                    help='(optional) fraction value of labeled data to use for training')
-parser.add_argument('-m', '--model',
-                    help='(optional) file with saved model to use. A new model will be created if not set.')
 args = parser.parse_args()
+
+model_path = os.path.join(MODELS_DIR, 'semantic.w2v')
+model_path_gzip = os.path.join(MODELS_DIR, 'semantic.w2v.gzip')
+
+
+def train_w2v_model(sentences, num_features=300, min_word_count=20, context=10, num_workers=6, downsampling=1e-3):
+    if os.path.exists(model_path):
+        log.info('Loading Word2Vec model from {}'.format(model_path))
+        return pickle.load(open(model_path, 'rb'))
+
+    log.info('Training new Word2Vec model...')
+    model = word2vec.Word2Vec(sentences,
+                              workers=num_workers,
+                              size=num_features,
+                              min_count=min_word_count,
+                              window=context,
+                              sample=downsampling
+                              )
+    model.init_sims()
+
+    log.info('compressing and saving model to {}'.format(model_path))
+    model.wv.save_word2vec_format(model_path, binary=True)
+    with open(model_path, 'rb') as f_in, gzip.open(model_path_gzip, 'wb') as f_out:
+        shutil.copyfileobj(f_in, f_out)
+    os.remove(model_path)
+    log.info('...done!')
+    return model_path_gzip
+
 
 if __name__ == '__main__':
     if args.source == 'fetchflow':
-        sentences = FetchflowOTFCorpus(args.id)
+        corpus = FetchflowOTFCorpus()
         # comment out for on-the-fly-processing
         # sentences = FetchflowCorpus(args.id)
     else:
-        sentences = X28OTFCorpus()
+        corpus = X28OTFCorpus()
 
-    classifier = JobtitleSemanticClassifier(args.model)
-    logging.info('Training semantic classifier on {} data'.format(args.source))
-    classifier.train_classifier(sentences)
+    logging.info('Training Word2Vec model on {} data'.format(args.source))
+    train_w2v_model(corpus)
