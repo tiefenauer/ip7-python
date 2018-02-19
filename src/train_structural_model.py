@@ -20,8 +20,9 @@ from src.preprocessing.structural_preprocessor import StructuralPreprocessor
 from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
 from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
 from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
+from src.corpus.x28_corpus import X28Corpus
 from src.util import jobtitle_util
-from src.util.globals import MODELS_DIR
+from src.util.globals import MODELS_DIR, CORPUS_DIR
 from src.util.jobtitle_util import remove_mw
 from src.util.loe_util import remove_percentage
 from src.util.log_util import log_setup
@@ -30,36 +31,16 @@ from src.util.pos_util import expand_left_right
 log_setup()
 log = logging.getLogger(__name__)
 
-resource_dir = 'D:/code/ip7-python/resource/models'
-x28_corpus_path = os.path.join(MODELS_DIR, 'x28.corpus')
-simplified_corpus_path = x28_corpus_path + 'x28.corpus.simplified'
-tfidf_vectorizer_path = os.path.join(MODELS_DIR, 'tfidf.vectorizer')
-tfidf_vectors_path = os.path.join(MODELS_DIR, 'tfidf.vectors')
-multinomial_nb_path = os.path.join(MODELS_DIR, 'multinomial.nb')
+x28_corpus = os.path.join(CORPUS_DIR, 'x28.corpus')
+x28_corpus_simplified = os.path.join(CORPUS_DIR, 'x28.corpus.simplified')
+tfidf_vectorizer = os.path.join(MODELS_DIR, 'tfidf.vectorizer')
+tfidf_vectors = os.path.join(MODELS_DIR, 'tfidf.vectors')
+multinomial_nb = os.path.join(MODELS_DIR, 'multinomial.nb')
 
 special_chars = re.compile('([^A-Za-zäöüéèà]*)')
 
 structural_preprocessor = StructuralPreprocessor()
 known_jobs = set(KnownJobs())
-
-
-class X28Corpus(object):
-
-    def __init__(self):
-        self.plaintexts = []
-        self.titles = []
-        self.nouns = []
-        self.verbs = []
-        self.labels = []
-        self.labels_simplified = []
-
-    def add_sample(self, plaintext, title, nouns, verbs, label, label_simplified):
-        self.plaintexts.append(plaintext)
-        self.titles.append(title)
-        self.nouns.append(nouns)
-        self.verbs.append(verbs)
-        self.labels.append(label)
-        self.labels_simplified.append(label_simplified)
 
 
 def extract_label(row):
@@ -84,12 +65,12 @@ def extract_label(row):
 
 
 def create_corpus():
-    if os.path.exists(x28_corpus_path):
-        log.info('loading corpus from {}'.format(x28_corpus_path))
-        return pickle.load(open(x28_corpus_path, 'rb'))
+    if os.path.exists(x28_corpus):
+        log.info('loading corpus from {}'.format(x28_corpus))
+        return pickle.load(open(x28_corpus, 'rb'))
 
     corpus = X28Corpus()
-    log.info('Creating new corpus')
+    log.info('Creating new X28-corpus')
     for row in tqdm(X28Data()):
         label, label_simplified = extract_label(row)
         if not label_simplified:
@@ -97,40 +78,40 @@ def create_corpus():
         nouns, verbs = extract_nouns_and_verbs_from_row(row)
         corpus.add_sample(row.plaintext, row.title, nouns, verbs, label, label_simplified)
 
-    with open(x28_corpus_path, 'wb') as corpusfile:
-        log.info('Saving corpus to {}'.format(x28_corpus_path))
+    with open(x28_corpus, 'wb') as corpusfile:
+        log.info('Saving corpus to {}'.format(x28_corpus))
         pickle.dump(corpus, corpusfile)
 
     return corpus
 
 
 def train_vectorizer(docs, min_df=1):
-    if os.path.exists(tfidf_vectors_path):
-        log.info('loading fitted vectors from {}'.format(tfidf_vectors_path))
-        return pickle.load(open(tfidf_vectors_path, 'rb'))
+    if os.path.exists(tfidf_vectors):
+        log.info('loading fitted vectors from {}'.format(tfidf_vectors))
+        return pickle.load(open(tfidf_vectors, 'rb'))
 
     log.info('Training new TfidfVectorizer')
     tfidf_vect = TfidfVectorizer(min_df=min_df)
     X = tfidf_vect.fit_transform(tqdm(docs))
     log.info('Trained TfIdfVectorizer: {} words. '.format(X.shape))
-    with open(tfidf_vectorizer_path, 'wb') as vectorizer_file, open(tfidf_vectors_path, 'wb') as vectors_file:
-        log.info('saving vectorizer to {}'.format(tfidf_vectorizer_path))
+    with open(tfidf_vectorizer, 'wb') as vectorizer_file, open(tfidf_vectors, 'wb') as vectors_file:
+        log.info('saving vectorizer to {}'.format(tfidf_vectorizer))
         pickle.dump(tfidf_vect, vectorizer_file)
-        log.info('saving fitted vectors to {}'.format(tfidf_vectors_path))
+        log.info('saving fitted vectors to {}'.format(tfidf_vectors))
         pickle.dump(X, vectors_file)
     return X
 
 
 def train_classifier(X, y):
-    if os.path.exists(multinomial_nb_path):
-        log.info('loading classifier from {}'.format(multinomial_nb_path))
-        return pickle.load(open(multinomial_nb_path, 'rb'))
+    if os.path.exists(multinomial_nb):
+        log.info('loading classifier from {}'.format(multinomial_nb))
+        return pickle.load(open(multinomial_nb, 'rb'))
 
     log.info('Training new classifier')
     clf = MultinomialNB()
     clf.fit(X, y)
-    with open(multinomial_nb_path, 'wb') as clf_file:
-        log.info('saving trained classifier to {}'.format(multinomial_nb_path))
+    with open(multinomial_nb, 'wb') as clf_file:
+        log.info('saving trained classifier to {}'.format(multinomial_nb))
         pickle.dump(clf, clf_file)
     return clf
 
