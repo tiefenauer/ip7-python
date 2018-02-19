@@ -33,12 +33,10 @@ from importlib import import_module
 
 from pyphen import Pyphen
 
-resource_dir = 'D:/code/ip7-python/resource/'
-filename = 'nltk_german_lemmatizer.pickle'
-corpus_filename = 'tiger_release_aug07.corrected.16012013.conll09'
+from src.util.globals import RESOURCE_DIR
 
-german_lemmatizer_path = os.path.join(resource_dir, filename)
-corpus_file_path = os.path.join(resource_dir, corpus_filename)
+german_lemmatizer_path = os.path.join(RESOURCE_DIR, 'nltk_german_lemmatizer.pickle')
+corpus_file_path = os.path.join(RESOURCE_DIR, 'tiger_release_aug07.corrected.16012013.conll09')
 
 # valid part-of-speech prefixes
 VALID_POS_PREFIXES = ('N', 'V', 'ADJ', 'ADV')

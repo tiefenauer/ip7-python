@@ -8,7 +8,6 @@ from src.util.log_util import log_setup
 
 log_setup()
 
-resource_dir = 'D:/code/ip7-python/resource/'
 known_jobs = sorted(set(KnownJobs()))
 
 if __name__ == '__main__':

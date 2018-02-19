@@ -1,5 +1,9 @@
+"""
+Evaluates the combined approach on Fetchflow-Vacancies that
+"""
 import argparse
 import logging
+import os
 
 import pandas
 
@@ -14,6 +18,7 @@ from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
 from src.scoring.loe_scorer_linear import LinearLoeScorer
 from src.scoring.loe_scorer_strict import StrictLoeScorer
 from src.scoring.loe_scorer_tolerant import TolerantLoeScorer
+from src.util.globals import RESOURCE_DIR
 from src.util.log_util import log_setup
 
 parser = argparse.ArgumentParser(description="""
@@ -40,6 +45,8 @@ args = parser.parse_args()
 log_setup()
 log = logging.getLogger(__name__)
 
+evaluation_file = os.path.join(RESOURCE_DIR, 'fetchflow_evaluation.xlsx')
+
 
 def make_jobtitel_predictions():
     i = 0
@@ -65,16 +72,19 @@ def make_loe_predictions():
 
 
 if __name__ == '__main__':
+    # uncomment the following line to print jobtitle predictions for the first 100 vacancies to the console
     # make_jobtitel_predictions()
+
+    # uncomment the following line to print LOE predictions for the first 100 vacancies to the console
     # make_loe_predictions()
+
     jt_scorer_strict = StrictJobtitleScorer()
     jt_scorer_linear = LinearJobtitleScorer()
     jt_scorer_tolerant = TolerantJobtitleScorer()
     loe_scorer_strict = StrictLoeScorer()
     loe_scorer_linear = LinearLoeScorer()
     loe_scorer_tolerant = TolerantLoeScorer()
-    resource_dir = 'D:/code/ip7-python/resource/'
-    evaluation_file = resource_dir + 'fetchflow_evaluation.xlsx'
+
     df = pandas.read_excel(evaluation_file, header=0, index_col=0)
     for index, row in df.iterrows():
         jt_actual = row['jobtitle_actual']

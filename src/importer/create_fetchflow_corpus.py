@@ -7,17 +7,17 @@ import psycopg2
 from tqdm import tqdm
 
 from src.preprocessing import preproc
+from src.util.globals import CORPUS_DIR
 
 parser = argparse.ArgumentParser(description="""Train Structural Classifier (NLTK)""")
 args = parser.parse_args()
 
-target_path = 'D:/code/ip7-python/fetchflowcorpus'
-if os.path.exists(target_path):
-    os.remove(target_path)
+corpus_file = os.path.join(CORPUS_DIR, 'fetchflow.corpus')
+if os.path.exists(corpus_file):
+    os.remove(corpus_file)
 
-with open(target_path, 'a', encoding='utf-8') as corpus, \
+with open(corpus_file, 'a', encoding='utf-8') as corpus, \
         psycopg2.connect(host='127.0.0.1', user='postgres', password='postgres', dbname='x28') as conn:
-
     # con't use ORM here because iterating over the whole table will result in a MemoryError!
     cursor = conn.cursor()
     cursor.execute("""SELECT count(*) AS count FROM fetchflow_html""")

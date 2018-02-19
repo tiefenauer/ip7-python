@@ -5,20 +5,19 @@ import pickle
 import nltk
 
 from src.classifier.german_pos_tagger import ClassifierBasedGermanTagger
+from src.util.globals import RESOURCE_DIR
 from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)
 
-resource_dir = 'D:/code/ip7-python/resource/'
 corpus_name = 'tiger_release_aug07.corrected.16012013.conll09'
 
-tagger_pickle = 'nltk_german_pos_tagger.pickle'
-german_pos_tagger_path = os.path.join(resource_dir, tagger_pickle)
+german_pos_tagger_path = os.path.join(RESOURCE_DIR, 'nltk_german_pos_tagger.pickle')
 
 if __name__ == '__main__':
     log.info('reading corpus...')
-    corp = nltk.corpus.ConllCorpusReader(resource_dir, corpus_name,
+    corp = nltk.corpus.ConllCorpusReader(RESOURCE_DIR, corpus_name,
                                          ['ignore', 'words', 'ignore', 'ignore', 'pos'],
                                          encoding='utf-8')
 

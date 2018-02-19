@@ -14,14 +14,14 @@ from tqdm import tqdm
 
 from src.database.entities_pg import Classification_Results, Job_Class
 from src.util import jobtitle_util
+from src.util.globals import RESOURCE_DIR
 from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)
 
-resource_dir = 'D:/code/ip7-python/resource'
-job_titles_tsv = os.path.join(resource_dir, 'job_titles.tsv')
-known_jobs_dirty = os.path.join(resource_dir, 'known_jobs_dirty.tsv')
+job_titles_tsv = os.path.join(RESOURCE_DIR, 'job_titles.tsv')
+known_jobs_dirty = os.path.join(RESOURCE_DIR, 'known_jobs_dirty.tsv')
 
 slashed_jobname_pattern = re.compile('(?<=[a-z])\/(?=[A-Z])')
 trailing_special_chars_pattern = re.compile(r'[\s\/\-_]+$')

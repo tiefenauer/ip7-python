@@ -9,8 +9,6 @@ from pony.orm import db_session
 from src.database.entities_pg import Classification_Results
 from src.util.log_util import log_setup
 
-project_root = 'D:/code/ip7-python/'
-
 log_setup()
 log = logging.getLogger(__name__)
 

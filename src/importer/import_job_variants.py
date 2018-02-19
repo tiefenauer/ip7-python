@@ -13,13 +13,13 @@ from src.database.entities_pg import Job_Class, Job_Class_Variant
 from src.importer.known_jobs import KnownJobs
 from src.preprocessing import preproc
 from src.util import jobtitle_util
+from src.util.globals import RESOURCE_DIR
 from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)
 
-resource_dir = 'D:/code/ip7-python/resource'
-known_jobs_tsv = os.path.join(resource_dir, 'known_jobs.tsv')
+known_jobs_tsv = os.path.join(RESOURCE_DIR, 'known_jobs.tsv')
 
 job_name_part_pattern = re.compile('([a-zA-Z]+)')
 

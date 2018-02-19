@@ -1,7 +1,7 @@
 import argparse
 import logging
+import os
 import pickle
-import numpy as np
 
 from tqdm import tqdm
 
@@ -11,6 +11,7 @@ from src.database.test_data_x28 import X28TestData
 from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
 from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
 from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
+from src.util.globals import RESOURCE_DIR
 from src.util.log_util import log_setup
 
 log_setup()
@@ -33,11 +34,12 @@ args = parser.parse_args()
 if not args.model:
     # args.model = 'structural_model.gz' # old Naive Bayes
     args.model = 'multinomial.nb'
-resource_dir = 'D:/code/ip7-python/resource/'
-with open(resource_dir + args.model, 'rb') as modelfile, open(resource_dir + 'tfidf.vectorizer',
-                                                              'rb') as vectorizerfile:
-    model = pickle.load(modelfile)
-    vectorizer = pickle.load(vectorizerfile)
+
+model_path = os.path.join(RESOURCE_DIR, args.model)
+vectorizer_path = os.path.join(RESOURCE_DIR, 'tfidf.vectorizer')
+with open(model_path, 'rb') as model_file, open(vectorizer_path, 'rb') as vectorizer_file:
+    model = pickle.load(model_file)
+    vectorizer = pickle.load(vectorizer_file)
 
 classifier = JobtitleStructuralClassifier(model, vectorizer)
 results = StructuralClassificationResults()
@@ -69,4 +71,3 @@ for row in tqdm(X28TestData(args)):
 
 # last rows
 evaluate_batch(batch)
-

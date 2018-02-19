@@ -1,29 +1,27 @@
-# evaluates a word2vec model
+"""
+Evaluate a trained Word2Vec model against two testsets:
+- Relationship Job -> Workplace
+- Relationship Job -> Activities
+"""
 import csv
 import logging
 import os
 
 import gensim
 
+from src.util.globals import RESOURCE_DIR, MODELS_DIR
 from src.util.log_util import log_setup
 
 log_setup()
 log = logging.getLogger(__name__)
 
-resource_dir = 'D:/code/ip7-python/resource/'
-model_dir = resource_dir + 'models'
-semantic_testset_workplace = resource_dir + 'semantic_testset_workplace.txt'
-semantic_testset_activity = resource_dir + 'semantic_testset_activity.txt'
-
 # load Word2Vec model trained on X28-Data
-model_x28_name = 'semantic_model_x28.gz'
-path = os.path.join(model_dir, model_x28_name)
+path = os.path.join(MODELS_DIR, 'semantic_model_x28.gz')
 model_x28 = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
 model_x28.init_sims(replace=True)
 
 # load Word2Vec model trained on Fetchflow-Data
-model_fetchflow_name = 'semantic_model_fetchflow.gz'
-path = os.path.join(model_dir, model_fetchflow_name)
+path = os.path.join(MODELS_DIR, 'semantic_model_fetchflow.gz')
 model_ff = gensim.models.KeyedVectors.load_word2vec_format(path, binary=True)
 model_ff.init_sims(replace=True)
 
@@ -54,5 +52,12 @@ def predict(model, positives, negatives):
 
 
 if __name__ == '__main__':
-    evaluate_testset(semantic_testset_workplace, resource_dir + 'word2vec_semantic_workplace.csv')
-    evaluate_testset(semantic_testset_activity, resource_dir + 'word2vec_semantic_activity.csv')
+    # check relation jobtitle -> workplace
+    semantic_testset_workplace = os.path.join(RESOURCE_DIR, 'semantic_testset_workplace.txt')
+    semantic_results_workplace = os.path.join(RESOURCE_DIR, 'word2vec_semantic_workplace.csv')
+    evaluate_testset(semantic_testset_workplace, semantic_results_workplace)
+
+    # check relation jobtitle -> activity
+    semantic_testset_activity = os.path.join(RESOURCE_DIR, 'semantic_testset_activity.txt')
+    semantic_results_activity = os.path.join(RESOURCE_DIR, 'word2vec_semantic_activity.csv')
+    evaluate_testset(semantic_testset_activity, semantic_results_activity)
