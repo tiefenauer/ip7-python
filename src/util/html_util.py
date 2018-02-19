@@ -1,6 +1,8 @@
 from bs4 import Tag
 
 # only these tags will be considered
+from src.util.globals import WEIGHTED_HTML_TAGS
+
 RELEVANT_TAGS = {'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'title', 'ul', 'ol', 'li', 'strong', 'b'}
 
 
@@ -62,3 +64,8 @@ def remove_all_attrs_except_saving(soup):
 
 def remove_tags(tags):
     return (tag.get_text() for tag in tags)
+
+
+def calculate_tag_weight(tag_name):
+    key = tag_name if tag_name in WEIGHTED_HTML_TAGS else 'default'
+    return WEIGHTED_HTML_TAGS.index(key)

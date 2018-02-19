@@ -6,17 +6,16 @@ from src.database.data_source import DataSource
 
 
 class SplitDataSource(DataSource):
-    """Splits the given query into two parts by evaluating the ratio in args.split. Only a part of the original query
-    is then used. Which par that is depends on the implementing class
+    """Splits the given query into two parts for a given ratio. Only a part of the original query resultset
+    is then used. Which par that is depends on the implementing class.
     """
 
     @db_session
-    def __init__(self, Entity, args=None):
-        super(SplitDataSource, self).__init__(Entity, args)
+    def __init__(self, Entity, split):
+        super(SplitDataSource, self).__init__(Entity)
         self._count = self.query.count()
 
         # calculate row for split (will be part of first split)
-        split = args.split if hasattr(args, 'split') and args.split else 1
         self._split_row = int((split or 1) * self._count)
 
         # split original query

@@ -1,3 +1,7 @@
+"""
+Train a Multinomial-NaiveBayes classifier (sklearn-implementation) to use in the structural approach (NVT-Variant)
+"""
+
 import logging
 import os
 import pickle
@@ -17,6 +21,7 @@ from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
 from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
 from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
 from src.util import jobtitle_util
+from src.util.globals import MODELS_DIR
 from src.util.jobtitle_util import remove_mw
 from src.util.loe_util import remove_percentage
 from src.util.log_util import log_setup
@@ -25,16 +30,12 @@ from src.util.pos_util import expand_left_right
 log_setup()
 log = logging.getLogger(__name__)
 
-resource_dir = 'D:/code/ip7-python/resource/'
-x28_corpus = 'x28.corpus'
-tfidf_vectorizer = 'tfidf.vectorizer'
-tfidf_vectors = 'tfidf.vectors'
-multinomial_nb = 'multinomial.nb'
-x28_corpus_path = resource_dir + x28_corpus
-simplified_corpus_path = x28_corpus_path + '.simplified'
-tfidf_vectorizer_path = resource_dir + tfidf_vectorizer
-tfidf_vectors_path = resource_dir + tfidf_vectors
-multinomial_nb_path = resource_dir + multinomial_nb
+resource_dir = 'D:/code/ip7-python/resource/models'
+x28_corpus_path = os.path.join(MODELS_DIR, 'x28.corpus')
+simplified_corpus_path = x28_corpus_path + 'x28.corpus.simplified'
+tfidf_vectorizer_path = os.path.join(MODELS_DIR, 'tfidf.vectorizer')
+tfidf_vectors_path = os.path.join(MODELS_DIR, 'tfidf.vectors')
+multinomial_nb_path = os.path.join(MODELS_DIR, 'multinomial.nb')
 
 special_chars = re.compile('([^A-Za-zäöüéèà]*)')
 

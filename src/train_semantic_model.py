@@ -59,7 +59,7 @@ class FetchflowOTFCorpus(object):
 
 class X28Corpus(object):
     def __iter__(self):
-        for row, sentences in SemanticPreprocessor(X28TrainData(args)):
+        for row, sentences in SemanticPreprocessor(X28TrainData(args.split)):
             for sent in sentences:
                 yield sent
 

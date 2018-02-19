@@ -1,11 +1,6 @@
 from functools import total_ordering
 
-tag_weights = ['title', 'h1', 'h2', 'h3', 'h4', 'h5', 'strong', 'default']
-
-
-def calculate_tag_weight(tag_name):
-    key = tag_name if tag_name in tag_weights else 'default'
-    return tag_weights.index(key)
+from src.util.html_util import calculate_tag_weight
 
 
 @total_ordering
@@ -32,5 +27,5 @@ class JobtitleFtsFeatures(object):
                (other.job_name, other.tag_weight, other.first_tag_index, other.job_name_count)
 
     def __str__(self):
-        return 'JobtitleFtsFeatures(job_name={}, highest_tag_name={}, tag_weight={}, first_tag_index={}, job_name_count={}'\
+        return 'JobtitleFtsFeatures(job_name={}, highest_tag_name={}, tag_weight={}, first_tag_index={}, job_name_count={}' \
             .format(self.job_name, self.highest_tag_name, self.tag_weight, self.first_tag_index, self.job_name_count)

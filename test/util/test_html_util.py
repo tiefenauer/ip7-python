@@ -96,3 +96,19 @@ class TestHtmlParser(unittest.TestCase):
         result = html_util.is_nested(element_with_relevant_children)
         # assert
         assert_that(result, is_(True))
+
+    def test_calculate_tag_weight_returns_correct_value(self):
+        # arrange
+        tags = [
+            ('title', 'h1'),
+            ('h1', 'h2'),
+            ('h2', 'h3'),
+            ('h3', 'h4'),
+            ('h4', 'h5'),
+            ('strong', 'p')
+        ]
+        # act / assert
+        for more_important_tag, less_importand_tag in tags:
+            higher_weight = html_util.calculate_tag_weight(more_important_tag)
+            lower_weight = html_util.calculate_tag_weight(less_importand_tag)
+            assert_that(higher_weight, is_(less_than(lower_weight)))
