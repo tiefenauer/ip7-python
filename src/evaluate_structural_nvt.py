@@ -1,10 +1,18 @@
+"""
+Evaluate the structural approach (NVT-variant) against X28-Data.
+"""
+
 import argparse
+import gzip
 import logging
+import os
+import pickle
 
 from src.classifier.jobtitle.jobtitle_classifier_structural_nvt import JobtitleStructuralClassifierNVT
-from src.database.X28TestData import X28TestData
+from src.database.test_data_x28 import X28TestData
 from src.evaluation.evaluator_jobtitle_structural_nvt import StructuralNVTEvaluator
 from src.preprocessing.structural_preprocessor_nvt import StructuralPreprocessorNVT
+from src.util.globals import MODELS_DIR
 from src.util.log_util import log_setup
 
 log_setup()
@@ -25,12 +33,16 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if not args.model:
-    args.model = 'structural_nvt_2017-11-27-18-05-11_19441rows.gz'
+    args.model = 'structural_model_nvt.gz'
+
+model_path = os.path.join(MODELS_DIR, args.model)
+with gzip.open(model_path, 'rb') as f:
+    model = pickle.load(f)
 
 if __name__ == '__main__':
     log.info('evaluating structural classifier')
-    data_test = StructuralPreprocessorNVT(X28TestData(args))
-    classifier = JobtitleStructuralClassifierNVT(args)
+    data_test = StructuralPreprocessorNVT(X28TestData(args.split))
+    classifier = JobtitleStructuralClassifierNVT(model)
     evaluation = StructuralNVTEvaluator(args)
     evaluation.evaluate(classifier, data_test)
     log.info('evaluate_avg: done!')

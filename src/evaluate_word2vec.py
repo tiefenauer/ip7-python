@@ -1,5 +1,5 @@
 """
-Evaluate a trained Word2Vec model against two testsets:
+Evaluate a pre-trained Word2Vec model against two testsets:
 - Relationship Job -> Workplace
 - Relationship Job -> Activities
 """

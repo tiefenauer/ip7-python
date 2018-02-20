@@ -1,3 +1,6 @@
+"""
+Evaluate the combined approach against X28-Data.
+"""
 import argparse
 import logging
 
@@ -32,7 +35,7 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if __name__ == '__main__':
-    processed_data = SentencePreprocessor(X28Data(args), args.include_title)
+    processed_data = SentencePreprocessor(X28Data(args.id), args.include_title)
     classifier = CombinedJobtitleClassifier()
     evaluation = JobtitleCombinedEvaluator(args)
     evaluation.evaluate(classifier, processed_data)

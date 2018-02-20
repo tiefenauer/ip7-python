@@ -5,7 +5,7 @@ from pony.orm import commit, db_session
 
 from src.database.entities_pg import Semantic_Classification_Results, Fts_Classification_Results, \
     Structural_Classification_Results, \
-    Loe_Classification_Result, Combined_Classification_Results
+    Loe_Classification_Result, Combined_Classification_Results, Structural_Classification_Results_NVT
 
 log = logging.getLogger(__name__)
 
@@ -86,6 +86,18 @@ class StructuralClassificationResults(ClassificationResults):
                                                  score_strict=sc_str,
                                                  score_tolerant=sc_tol,
                                                  score_linear=sc_lin)
+
+
+class StructuralClassificationNVTResults(ClassificationResults):
+    def __init__(self):
+        super(StructuralClassificationNVTResults, self).__init__(Structural_Classification_Results_NVT)
+
+    def create_entity(self, x28_id, predicted_class, sc_str, sc_tol, sc_lin):
+        return Structural_Classification_Results_NVT(x28_row=x28_id,
+                                                     job_name=predicted_class,
+                                                     score_strict=sc_str,
+                                                     score_tolerant=sc_tol,
+                                                     score_linear=sc_lin)
 
 
 class LoeClassificationResults(ClassificationResults):

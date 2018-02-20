@@ -1,3 +1,7 @@
+"""
+Evaluate the structural approach against X28-Data.
+"""
+
 import argparse
 import logging
 import os
@@ -11,7 +15,7 @@ from src.database.test_data_x28 import X28TestData
 from src.scoring.jobtitle_scorer_linear import LinearJobtitleScorer
 from src.scoring.jobtitle_scorer_strict import StrictJobtitleScorer
 from src.scoring.jobtitle_scorer_tolerant import TolerantJobtitleScorer
-from src.util.globals import RESOURCE_DIR
+from src.util.globals import MODELS_DIR
 from src.util.log_util import log_setup
 
 log_setup()
@@ -35,8 +39,8 @@ if not args.model:
     # args.model = 'structural_model.gz' # old Naive Bayes
     args.model = 'multinomial.nb'
 
-model_path = os.path.join(RESOURCE_DIR, args.model)
-vectorizer_path = os.path.join(RESOURCE_DIR, 'tfidf.vectorizer')
+model_path = os.path.join(MODELS_DIR, args.model)
+vectorizer_path = os.path.join(MODELS_DIR, 'tfidf.vectorizer')
 with open(model_path, 'rb') as model_file, open(vectorizer_path, 'rb') as vectorizer_file:
     model = pickle.load(model_file)
     vectorizer = pickle.load(vectorizer_file)
@@ -63,7 +67,7 @@ def evaluate_batch(batch):
         results.update_classification(row, prediction, scores)
 
 
-for row in tqdm(X28TestData(args)):
+for row in tqdm(X28TestData(args.split)):
     batch.append(row)
     if len(batch) == 1000:
         evaluate_batch(batch)

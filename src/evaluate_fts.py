@@ -1,3 +1,6 @@
+"""
+Evaluate the brute force approach against X28-Data.
+"""
 import argparse
 import logging
 
@@ -30,7 +33,7 @@ parser.add_argument('-w', '--write', action='store_true',
 args = parser.parse_args()
 
 if __name__ == '__main__':
-    data_preprocessed = RelevantTagsPreprocessor(X28Data(args))
+    data_preprocessed = RelevantTagsPreprocessor(X28Data(args.id))
     classifier = FeatureBasedJobtitleFtsClassifier()
     evaluator = JobtitleFtsEvaluator(args)
     evaluator.evaluate(classifier, data_preprocessed)

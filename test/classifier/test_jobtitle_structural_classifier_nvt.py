@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import assert_that, is_, contains, less_than
+from hamcrest import assert_that, is_, contains
 
 from src.classifier.jobtitle import jobtitle_classifier_structural_nvt
 from src.classifier.jobtitle.jobtitle_classifier_structural_nvt import JobtitleStructuralClassifierNVT
@@ -11,23 +11,6 @@ testee = JobtitleStructuralClassifierNVT(args)
 
 
 class TestJobtitleStructuralClassifierNVT(unittest.TestCase):
-    def test_compare_tags(self):
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h1', 'h2'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h2', 'h3'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h3', 'h4'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h1', 'p'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h2', 'p'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h3', 'p'), is_(less_than(0)))
-        assert_that(jobtitle_classifier_structural_nvt.compare_tag('h4', 'p'), is_(less_than(0)))
-
-    def test_get_higher_tag(self):
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h1', 'h2'), is_('h1'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h2', 'h3'), is_('h2'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h3', 'h4'), is_('h3'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h1', 'p'), is_('h1'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h2', 'p'), is_('h2'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h3', 'p'), is_('h3'))
-        assert_that(jobtitle_classifier_structural_nvt.get_higher_tag('h4', 'p'), is_('h4'))
 
     def test_top_n_returns_top_n(self):
         # arrange
@@ -112,7 +95,7 @@ class TestJobtitleStructuralClassifierNVT(unittest.TestCase):
             ('suchen', 'V', 'div')
         ]
         # act
-        features = testee.extract_features(tagged_words)
+        features = jobtitle_classifier_structural_nvt.extract_features(tagged_words)
         # assert
         assert_that(features['N-word-1'], is_('Baumeister'))
         assert_that(features['N-tag-1'], is_('h1'))

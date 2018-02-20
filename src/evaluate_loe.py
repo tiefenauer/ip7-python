@@ -1,3 +1,6 @@
+"""
+Evaluate the LOE-Extraction against X28-Data.
+"""
 import argparse
 
 from src.classifier.loe.loe_classifier import LoeClassifier

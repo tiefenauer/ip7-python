@@ -1,3 +1,6 @@
+"""
+recalculatae scores for classification results that are already written to the DB
+"""
 import argparse
 import logging
 

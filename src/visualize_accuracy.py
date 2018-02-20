@@ -1,3 +1,6 @@
+"""
+Visualize the performance of 1..n approaches in a bar chart
+"""
 import argparse
 import logging
 import subprocess

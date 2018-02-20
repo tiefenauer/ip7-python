@@ -1,5 +1,5 @@
 """
-Evaluates the combined approach on Fetchflow-Vacancies that
+Evaluate the combined approach against Fetchflow-Data.
 """
 import argparse
 import logging

@@ -5,5 +5,5 @@ from src.database.x28_german_data import X28GermanData
 
 class X28Data(PagingDataSource, X28GermanData):
 
-    def __init__(self, args=None):
-        super(X28Data, self).__init__(X28_HTML, args)
+    def __init__(self, row_id=None):
+        super(X28Data, self).__init__(X28_HTML, row_id)
